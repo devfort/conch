@@ -14,7 +14,7 @@ typedef struct window_chrome_s {
 window_chrome_s chrome = {
   .border_width = 1,
   .padding_y = 1,
-  .padding_x = 2,
+  .padding_x = 1,
   .blast_padding = 1,
   .blast_height = 2,
 };
@@ -64,6 +64,8 @@ void render(WINDOW *window, blast_list_s *blasts,
 
   const int max_blasts = usable_lines / (chrome.blast_padding + chrome.blast_height);
 
+  werase(window);
+
   render_chrome(window);
 
   blast_s blast = {
@@ -73,16 +75,16 @@ void render(WINDOW *window, blast_list_s *blasts,
     .timestamp = max_y,
   };
 
-  mvwvline(window, 1, 3, ' ' | COLOR_PAIR(NORMAL_COLOR), max_y - (chrome.border_width * 2));
+  mvwvline(window, 1, blast_x, ' ' | COLOR_PAIR(NORMAL_COLOR), max_y - (chrome.border_width * 2));
 
   int blast_y = first_blast_y;
   for(int i = 0; i < max_blasts; ++i) {
     render_blast(window, blast_y, blast_x, &blast, SELECTED_COLOR);
     blast_y += chrome.blast_padding + chrome.blast_height;
   }
-
   wrefresh(window);
 }
+
 void respond_to_keypresses() {}
 
 void init_colors() {
