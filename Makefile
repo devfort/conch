@@ -25,6 +25,7 @@ all: $(BINS)
 blastlist_check: blastlist.o conchbackend.o
 conchbackend_check: conchbackend.o
 
+CHECKTASKS=$(patsubst %_check,check_%,$(BINS_TEST))
 check: $(BINS_TEST)
 	@set -e && for t in $^; do \
 		./$$t; \
@@ -54,4 +55,4 @@ $(BINS): %: %.o
 
 -include .deps/*.d
 
-.PHONY: all clean reformat test $(TESTTASKS)
+.PHONY: all clean reformat check $(CHECKTASKS)

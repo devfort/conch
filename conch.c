@@ -38,12 +38,11 @@ void render_chrome(WINDOW *window) {
   mvwprintw(window, 0, 3, " conch <@ ");
 }
 
-void render_blast(WINDOW *window, int y, int x, blastlist_item *blast, int status_color) {
+void render_blast(WINDOW *window, int y, int x, blastlist_item *blast,
+                  int status_color) {
   mvwvline(window, y, x, ' ' | COLOR_PAIR(status_color), 2);
-  mvwprintw(window, y, x + 2,
-            blast->content);
-  mvwprintw(window, y + 1, x + 2,
-            "--%s at %d", blast->user, blast->id);
+  mvwprintw(window, y, x + 2, blast->content);
+  mvwprintw(window, y + 1, x + 2, "--%s at %d", blast->user, blast->id);
 }
 
 void get_updates(blastlist_item *blasts) {
@@ -57,15 +56,18 @@ void render(WINDOW *window, screen_state_s *current_screen) {
   const int first_blast_y = chrome.padding_y + chrome.border_width;
   const int blast_x = chrome.padding_x + chrome.border_width;
 
-  const int usable_lines = max_y - ((chrome.border_width * 2) + (chrome.padding_y * 2));
+  const int usable_lines =
+      max_y - ((chrome.border_width * 2) + (chrome.padding_y * 2));
 
-  const int max_blasts = usable_lines / (chrome.blast_padding + chrome.blast_height);
+  const int max_blasts =
+      usable_lines / (chrome.blast_padding + chrome.blast_height);
 
   werase(window);
 
   render_chrome(window);
 
-  mvwvline(window, 1, blast_x, ' ' | COLOR_PAIR(NORMAL_COLOR), max_y - (chrome.border_width * 2));
+  mvwvline(window, 1, blast_x, ' ' | COLOR_PAIR(NORMAL_COLOR),
+           max_y - (chrome.border_width * 2));
 
   blastlist_item *blast = current_screen->current_blast;
 
@@ -82,17 +84,16 @@ void render(WINDOW *window, screen_state_s *current_screen) {
 int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
   const int input = wgetch(window);
 
-  switch (input) {
-    case KEY_UP:
-      break;
+  switch(input) {
+  case KEY_UP:
+    break;
 
-    case KEY_DOWN:
-      break;
+  case KEY_DOWN:
+    break;
 
-    case 'q':
-      endwin();
-      exit(0);
-
+  case 'q':
+    endwin();
+    exit(0);
   }
 
   return input == ERR;
@@ -112,7 +113,8 @@ WINDOW *init_screen() {
   noecho();
   refresh();
 
-  if (has_colors()) init_colors();
+  if(has_colors())
+    init_colors();
 
   // Render status bar and other chrome
   WINDOW *window = newwin(0, 0, 0, 0);
@@ -125,21 +127,19 @@ int main(int argc, char **argv) {
   WINDOW *main_window = init_screen();
   nodelay(main_window, 1);
 
-  blastlist_item temp_blast = {
-    .id = 1,
-    .user = "fort",
-    .content = "We're going to need a bigger moat.",
-    .next = &temp_blast
-  };
+  blastlist_item temp_blast = {.id = 1,
+                               .user = "fort",
+                               .content =
+                                   "We're going to need a bigger moat.",
+                               .next = &temp_blast };
 
   screen_state_s current_screen = {
-    .current_blast = &temp_blast,
-    .blast_offset = 0,
+    .current_blast = &temp_blast, .blast_offset = 0,
   };
 
-  while (1) {
+  while(1) {
     // Poll postgres
-    //get_updates(blasts);
+    // get_updates(blasts);
     // Render screen based on new data
     render(main_window, &current_screen);
     // Respond to keypresses

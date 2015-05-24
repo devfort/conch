@@ -24,6 +24,7 @@ int conch_check_runsuite(Suite *s) {
   return (number_failed == 0) ? 0 : 1;
 }
 
-#define CONCH_CHECK_MAIN(suite) int main(void) { return conch_check_runsuite(suite()); }
+#define CONCH_CHECK_MAIN(suite)                                                \
+  int main(void) { return conch_check_runsuite(suite()); }
 
 #endif
