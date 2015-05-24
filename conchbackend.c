@@ -6,6 +6,7 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <stdbool.h>
+#include <inttypes.h>
 #include <libpq-fe.h>
 
 struct mouthpiece {
@@ -106,7 +107,7 @@ result_set *conch_blasts_before(mouthpiece *mp, id before_token) {
   int written = snprintf(page_size_as_string, 6, "%d", mp->settings.page_size);
   assert(written <= 6);
   char max_id_as_string[6];
-  written = snprintf(max_id_as_string, 6, "%lu", before_token);
+  written = snprintf(max_id_as_string, 6, "%" PRIid, before_token);
   assert(written <= 6);
 
   const char *const params[] = { max_id_as_string, page_size_as_string };

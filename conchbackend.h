@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 typedef uint64_t id;
+#define PRIid PRIu64
 
 typedef struct {
   id id;
