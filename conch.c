@@ -3,6 +3,12 @@
 #include <stdio.h>
 #include <time.h>
 
+enum blast_status {
+  NORMAL = 0,
+  NEW = ':',
+  SELECTED = '>',
+};
+
 typedef struct blast_s {
   uint64_t id;
   char *text;
@@ -27,9 +33,11 @@ WINDOW *init_screen() {
   return window;
 }
 
-void render_blast(WINDOW *window, int y, int x, blast_s *blast) {
-  mvwprintw(window, y, x, blast->text);
-  mvwprintw(window, y + 1, x, "--%s at %d", blast->author, blast->timestamp);
+void render_blast(WINDOW *window, int y, int x, blast_s *blast, int status) {
+  mvwvline(window, y, x, status, 2);
+  mvwprintw(window, y, x + 2, blast->text);
+  mvwprintw(window, y + 1, x + 2, "--%s at %d", blast->author,
+            blast->timestamp);
 }
 
 void get_updates(blast_list_s *blasts) {
@@ -43,7 +51,7 @@ void render(WINDOW *window, blast_list_s *blasts,
     .author = "Steve and Alex",
     .timestamp = time(NULL),
   };
-  render_blast(window, 2, 3, &blast);
+  render_blast(window, 2, 2, &blast, SELECTED);
   wrefresh(window);
 }
 void respond_to_keypresses() {}
