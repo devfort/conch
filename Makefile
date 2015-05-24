@@ -1,16 +1,34 @@
-.PHONY: clean
+CFLAGS?=--std=c99 -Wall -Wformat -Werror --pedantic
+LDFLAGS?=-lpq
+DEPS?=.deps
 
-conch: conch.c
-	gcc --std=c99 conch.c -lncurses -oconch
+CHECK_BINS=$(patsubst %.c,%,$(wildcard *_check.c))
 
-conchbackend_check: conchbackend_check.c conchbackend.c conchbackend.h
-	gcc -Wall -Werror -pedantic --std=c99 conchbackend_check.c conchbackend.c -lpq -lcheck -oconchbackend_check
+default: conch
 
-check: conchbackend_check
-	./conchbackend_check
+conch: conch.o
+	$(CC) $(LDFLAGS) -lncurses -o $@ $^
+
+conchbackend_check: conchbackend.o
+
+check: $(CHECK_BINS)
+	@for c in $(CHECK_BINS); do \
+		./$$c; \
+	done
 
 reformat: *.c *.h
 	clang-format -i *.h *.c
 
 clean:
-	rm -f conch conchbackend_check *.o
+	rm -rf conch *.o $(DEPS) $(CHECK_BINS)
+
+%.o: %.c
+	@mkdir -p ${DEPS}
+	$(CC) $(CFLAGS) -MMD -MF ${DEPS}/$(notdir $(patsubst %.c,%.d,$<)) -o $@ -c $<
+
+%_check: %_check.o
+	$(CC) $(LDFLAGS) -lcheck -o $@ $^
+
+-include .deps/*.d
+
+.PHONY: default check clean reformat
