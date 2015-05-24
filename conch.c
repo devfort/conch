@@ -168,7 +168,10 @@ blastlist *init_blasts() {
 
   result_set *result = conch_recent_blasts(conn);
 
-  return conch_blastlist_new(result);
+  blastlist *blasts = conch_blastlist_new(result);
+  conch_free_result_set(result);
+  conch_disconnect(conn);
+  return blasts;
 }
 
 int main(int argc, char **argv) {
@@ -182,8 +185,11 @@ int main(int argc, char **argv) {
   };
 
   while(1) {
+    blasts = init_blasts();
+    screen.current_blast = blasts->head;
     render(main_window, &screen);
     respond_to_keypresses(main_window, &screen);
+
   }
   endwin();
 }
