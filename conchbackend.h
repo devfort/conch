@@ -2,7 +2,6 @@
 #define _CONCH_BACKEND_H
 
 #include <stdint.h>
-#include <libpq-fe.h>
 
 typedef uint64_t id;
 
@@ -30,10 +29,7 @@ typedef struct {
   uint16_t page_size;
 } settings;
 
-typedef struct {
-  PGconn *connection;
-  settings settings;
-} mouthpiece;
+typedef struct mouthpiece mouthpiece;
 
 mouthpiece *conch_connect(settings settings);
 void conch_disconnect(mouthpiece *mp);

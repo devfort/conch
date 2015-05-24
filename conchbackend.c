@@ -6,6 +6,12 @@
 #include <arpa/inet.h>
 #include <string.h>
 #include <stdbool.h>
+#include <libpq-fe.h>
+
+struct mouthpiece {
+  PGconn *connection;
+  settings settings;
+};
 
 mouthpiece *conch_connect(settings settings) {
   PGconn *connection = PQconnectdb("host=core.fort dbname=bugle user=bugle");
