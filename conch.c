@@ -1,6 +1,7 @@
 #include <curses.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 typedef struct window_chrome_s {
@@ -32,8 +33,10 @@ typedef struct blast_s {
   time_t timestamp;
 } blast_s;
 
-typedef void *blast_list_s;
-typedef void *screen_state_s;
+typedef struct screen_state_s {
+  blast_s *current_blast;
+  int blast_offset;
+} screen_state_s;
 
 void render_chrome(WINDOW *window) {
   box(window, 0, 0);
@@ -48,11 +51,11 @@ void render_blast(WINDOW *window, int y, int x, blast_s *blast, int status_color
             "--%s at %d", blast->author, blast->timestamp);
 }
 
-void get_updates(blast_list_s *blasts) {
+void get_updates(blast_s *blasts) {
   // Return if new blasts
 }
 
-void render(WINDOW *window, blast_list_s *blasts,
+void render(WINDOW *window, blast_s *blasts,
             screen_state_s *current_screen) {
 
   int max_y = getmaxy(window);
@@ -72,7 +75,7 @@ void render(WINDOW *window, blast_list_s *blasts,
     .id = 1,
     .text = "This is a blast!",
     .author = "Steve and Alex",
-    .timestamp = max_y,
+    .timestamp = time(NULL),
   };
 
   mvwvline(window, 1, blast_x, ' ' | COLOR_PAIR(NORMAL_COLOR), max_y - (chrome.border_width * 2));
@@ -85,7 +88,24 @@ void render(WINDOW *window, blast_list_s *blasts,
   wrefresh(window);
 }
 
-void respond_to_keypresses() {}
+int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
+  const int input = wgetch(window);
+
+  switch (input) {
+    case KEY_UP:
+      break;
+
+    case KEY_DOWN:
+      break;
+
+    case 'q':
+      endwin();
+      exit(0);
+
+  }
+
+  return input == ERR;
+}
 
 void init_colors() {
   start_color();
@@ -112,15 +132,17 @@ WINDOW *init_screen() {
 
 int main(int argc, char **argv) {
   WINDOW *main_window = init_screen();
-  blast_list_s blasts = NULL;
-  screen_state_s current_screen = NULL;
+  nodelay(main_window, 1);
+
+  blast_s *blasts = NULL;
+  screen_state_s *current_screen = NULL;
   while (1) {
     // Poll postgres
     get_updates(blasts);
     // Render screen based on new data
     render(main_window, blasts, current_screen);
     // Respond to keypresses
-    respond_to_keypresses();
+    respond_to_keypresses(main_window, current_screen);
     // Render screen again
   }
   endwin();
