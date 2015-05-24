@@ -62,13 +62,31 @@ void get_updates(blast_list_s *blasts) {
 }
 void render(WINDOW *window, blast_list_s *blasts,
             screen_state_s *current_screen) {
+
+  int max_y = 0;
+  int max_x = 0;
+  getmaxyx(window, max_y, max_x);
+
+  const int first_blast_y = chrome.padding_y + chrome.border_width;
+  const int blast_x = chrome.padding_x + chrome.border_width;
+
+  const int usable_lines = max_y - ((chrome.border_width * 2) + (chrome.padding_y * 2));
+
+  const int max_blasts = usable_lines / (chrome.blast_padding + chrome.blast_height);
+
   blast_s blast = {
     .id = 1,
     .text = "This is a blast!",
     .author = "Steve and Alex",
     .timestamp = time(NULL),
   };
-  render_blast(window, 2, 2, &blast, SELECTED);
+
+  int blast_y = first_blast_y;
+  for(int i = 0; i < max_blasts; ++i) {
+    render_blast(window, blast_y, blast_x, &blast, SELECTED);
+    blast_y += chrome.blast_padding + chrome.blast_height;
+  }
+
   wrefresh(window);
 }
 void respond_to_keypresses() {}
