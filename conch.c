@@ -37,7 +37,7 @@ typedef void *screen_state_s;
 
 void render_chrome(WINDOW *window) {
   box(window, 0, 0);
-  mvwprintw(window, 0, 3, "conch");
+  mvwprintw(window, 0, 3, " conch <@ ");
 }
 
 void render_blast(WINDOW *window, int y, int x, blast_s *blast, int status_color) {
