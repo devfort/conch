@@ -15,6 +15,8 @@ LDFLAGS+=$(shell pkg-config --libs $(LIBS))
 # seems to be available in system include directories.
 LDFLAGS+=-lncurses
 
+CFLAGS_TEST=$(CFLAGS)
+CFLAGS_TEST+=$(shell pkg-config --cflags $(LIBS_TEST))
 LDFLAGS_TEST=$(LDFLAGS)
 LDFLAGS_TEST+=$(shell pkg-config --libs $(LIBS_TEST))
 
@@ -43,9 +45,14 @@ $(BINS): %: %.o
 	@$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c
-	@mkdir -p ${DEPS}
+	@mkdir -p $(DEPS)
 	@echo "CC  $@"
 	@$(CC) -o $@ -c $< $(CFLAGS) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<))
+
+%_check.o: %_check.c
+	@mkdir -p $(DEPS)
+	@echo "CC  $@"
+	@$(CC) -o $@ -c $< $(CFLAGS_TEST) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<))
 
 %_check: %_check.o
 	@echo "LD  $@"
