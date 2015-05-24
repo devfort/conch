@@ -1,3 +1,4 @@
+#include <locale.h>
 #include <curses.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -191,6 +192,7 @@ blastlist *init_blasts() {
 }
 
 int main(int argc, char **argv) {
+  setlocale(LC_ALL, "");
   WINDOW *main_window = init_screen();
   nodelay(main_window, 1);
 
