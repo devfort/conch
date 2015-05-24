@@ -37,6 +37,8 @@ typedef struct screen_state_s {
 void render_chrome(WINDOW *window) {
   box(window, 0, 0);
   mvwprintw(window, 0, 3, " conch <@ ");
+
+  render_clock(window);
 }
 
 void render_clock(WINDOW *window) {
@@ -92,7 +94,6 @@ void render(WINDOW *window, screen_state_s *screen) {
   werase(window);
 
   render_chrome(window);
-  render_clock(window);
 
   mvwvline(window, 1, blast_x, ' ' | COLOR_PAIR(NORMAL_COLOR),
            max_y - (chrome.border_width * 2));
@@ -201,7 +202,7 @@ int main(int argc, char **argv) {
     screen.current_blast = blasts->head;
     render(main_window, &screen);
     respond_to_keypresses(main_window, &screen);
-
   }
+
   endwin();
 }
