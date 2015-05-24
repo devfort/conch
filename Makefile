@@ -1,13 +1,19 @@
 CFLAGS?=--std=c99 -Wall -Wformat -Werror --pedantic
-LDFLAGS?=-lpq
+LDFLAGS?=
 DEPS?=.deps
+
+LIBS=libpq ncurses
+CHECK_LIBS=check
+
+CFLAGS+=$(shell pkg-config --cflags $(LIBS))
+LDFLAGS+=$(shell pkg-config --libs $(LIBS))
 
 CHECK_BINS=$(patsubst %.c,%,$(wildcard *_check.c))
 
 default: conch
 
 conch: conch.o
-	$(CC) $(LDFLAGS) -lncurses -o $@ $^
+	$(CC) $(LDFLAGS) -o $@ $^
 
 conchbackend_check: conchbackend.o
 
@@ -27,7 +33,7 @@ clean:
 	$(CC) $(CFLAGS) -MMD -MF ${DEPS}/$(notdir $(patsubst %.c,%.d,$<)) -o $@ -c $<
 
 %_check: %_check.o
-	$(CC) $(LDFLAGS) -lcheck -o $@ $^
+	$(CC) $(LDFLAGS) $(shell pkg-config --libs $(CHECK_LIBS)) -o $@ $^
 
 -include .deps/*.d
 

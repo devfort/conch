@@ -2,7 +2,7 @@
 #define _CONCH_BACKEND_H
 
 #include <stdint.h>
-#include <postgresql/libpq-fe.h>
+#include <libpq-fe.h>
 
 typedef uint64_t id;
 
