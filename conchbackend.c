@@ -43,7 +43,7 @@ result_set *conch_recent_blasts(mouthpiece *mp) {
 
   ExecStatusType query_result_status = PQresultStatus(query_result);
 
-  if (query_result_status != PGRES_TUPLES_OK) {
+  if(query_result_status != PGRES_TUPLES_OK) {
     fprintf(stderr, "Error from DB: %s, %s\n, ", PQerrorMessage(mp->connection),
             PQresStatus(query_result_status));
     result->error = 1;
@@ -59,7 +59,7 @@ result_set *conch_recent_blasts(mouthpiece *mp) {
     result->count = PQntuples(query_result);
     result->blasts = malloc(sizeof(blast) * result->count);
 
-    for (int i = 0; i < PQntuples(query_result); i++) {
+    for(int i = 0; i < PQntuples(query_result); i++) {
       int len = PQgetlength(query_result, i, id_column);
       assert(len == 4);
       uint32_t id = ntohl(*((int32_t *)PQgetvalue(query_result, i, id_column)));
@@ -76,7 +76,7 @@ result_set *conch_recent_blasts(mouthpiece *mp) {
 }
 
 void conch_free_result_set(result_set *result) {
-  for (int i = 0; i < result->count; i++) {
+  for(int i = 0; i < result->count; i++) {
     free(result->blasts[i].content);
     free(result->blasts[i].user);
   }
