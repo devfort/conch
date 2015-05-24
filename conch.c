@@ -28,6 +28,7 @@ enum conch_color {
   NORMAL_COLOR = 0,
   NEW_COLOR = 2,
   SELECTED_COLOR = 3,
+  TIMELINE_COLOR = 4,
 };
 
 typedef struct screen_state_s {
@@ -56,24 +57,19 @@ void render_chrome(WINDOW *window) {
   render_clock(window);
 }
 
-int render_blast(WINDOW *window, int y, int x, blastlist_item *blast,
-                 int status_color) {
-  mvwvline(window, y, x, ' ' | COLOR_PAIR(status_color), 2);
+int render_blast(WINDOW *window, int y, int x, blastlist_item *blast, chtype highlight) {
+  mvwvline(window, y, x, highlight, 2);
   mvwprintw(window, y, x + 2, blast->content);
   mvwprintw(window, y + 1, x + 2, "--%s at %d", blast->user, blast->id);
 
   return chrome.blast_height;
 }
 
-void get_updates(blastlist_item *blasts) {
-  // Return if new blasts
-}
-
 int blast_highlight(blastlist_item *blast, screen_state_s *screen) {
   if(blast == screen->current_blast) {
-    return SELECTED_COLOR;
+    return ' ' | COLOR_PAIR(SELECTED_COLOR);
   } else {
-    return NORMAL_COLOR;
+    return ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR);
   }
 }
 
@@ -99,7 +95,7 @@ void render(WINDOW *window, screen_state_s *screen) {
 
   render_chrome(window);
 
-  mvwvline(window, 1, blast_x, ' ' | COLOR_PAIR(NORMAL_COLOR),
+  mvwvline(window, 1, blast_x, ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR),
            max_y - (chrome.border_width * 2));
 
   if(0 == max_blasts) {
@@ -110,12 +106,9 @@ void render(WINDOW *window, screen_state_s *screen) {
   blastlist_item *blast = screen->current_blast;
 
   int blast_y = first_blast_y;
-  int active_highlight = NORMAL_COLOR;
   for(int i = 0; i < max_blasts; ++i) {
-    active_highlight = blast_highlight(blast, screen);
-
     int blast_height =
-        render_blast(window, blast_y, blast_x, blast, active_highlight);
+        render_blast(window, blast_y, blast_x, blast, blast_highlight(blast, screen));
 
     blast_y += chrome.blast_padding + blast_height;
 
@@ -155,12 +148,17 @@ int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
 void init_colors() {
   start_color();
   use_default_colors();
+
+  init_color(100, 333, 333, 333);
+
   init_pair(NORMAL_COLOR, COLOR_WHITE, COLOR_BLACK);
   init_pair(NEW_COLOR, COLOR_BLUE, COLOR_BLUE);
   init_pair(SELECTED_COLOR, COLOR_WHITE, COLOR_RED);
+  init_pair(TIMELINE_COLOR, 100, -1);
 }
 
 WINDOW *init_screen() {
+  setlocale(LC_ALL, "");
   initscr();
   cbreak();
   noecho();
@@ -169,16 +167,18 @@ WINDOW *init_screen() {
   if(has_colors())
     init_colors();
 
-  // Render status bar and other chrome
+  // get initial screen setup while we wait for connections
   WINDOW *window = newwin(0, 0, 0, 0);
   render_chrome(window);
+
+  nodelay(window, 1);
   wrefresh(window);
+
   return window;
 }
 
 blastlist *init_blasts(mouthpiece *conn) {
   result_set *result = conch_recent_blasts(conn);
-
   blastlist *blasts = conch_blastlist_new(result);
   conch_free_result_set(result);
   return blasts;
@@ -186,29 +186,23 @@ blastlist *init_blasts(mouthpiece *conn) {
 
 void update_blasts(mouthpiece *conn, blastlist *blasts) {
   result_set *result = conch_blasts_after(conn, blasts->head->id);
-
   if(!result) {
     return;
   }
 
   conch_blastlist_insert(blasts, result);
-
   conch_free_result_set(result);
 }
 
 int main(int argc, char **argv) {
-  setlocale(LC_ALL, "");
   WINDOW *main_window = init_screen();
-  nodelay(main_window, 1);
 
   settings config = {
     .page_size = 42,
   };
-
   mouthpiece *conn = conch_connect(config);
 
   blastlist *blasts = init_blasts(conn);
-
   screen_state_s screen = {
     .current_blast = blasts->head, .blast_offset = 0,
   };
