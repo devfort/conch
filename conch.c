@@ -19,10 +19,10 @@ window_chrome_s chrome = {
   .blast_height = 2,
 };
 
-enum blast_status {
-  NORMAL = 0,
-  NEW = ':',
-  SELECTED = '>',
+enum conch_color {
+  NORMAL_COLOR = 1,
+  NEW_COLOR = 2,
+  SELECTED_COLOR = 3,
 };
 
 typedef struct blast_s {
@@ -40,8 +40,8 @@ void render_chrome(WINDOW *window) {
   mvwprintw(window, 0, 3, "conch");
 }
 
-void render_blast(WINDOW *window, int y, int x, blast_s *blast, int status) {
-  mvwvline(window, y, x, status, 2);
+void render_blast(WINDOW *window, int y, int x, blast_s *blast, int status_color) {
+  mvwvline(window, y, x, ' ' | COLOR_PAIR(status_color), 2);
   mvwprintw(window, y, x + 2,
             blast->text);
   mvwprintw(window, y + 1, x + 2,
@@ -73,9 +73,11 @@ void render(WINDOW *window, blast_list_s *blasts,
     .timestamp = max_y,
   };
 
+  mvwvline(window, 1, 3, ' ' | COLOR_PAIR(NORMAL_COLOR), max_y - (chrome.border_width * 2));
+
   int blast_y = first_blast_y;
   for(int i = 0; i < max_blasts; ++i) {
-    render_blast(window, blast_y, blast_x, &blast, SELECTED);
+    render_blast(window, blast_y, blast_x, &blast, SELECTED_COLOR);
     blast_y += chrome.blast_padding + chrome.blast_height;
   }
 
@@ -83,10 +85,21 @@ void render(WINDOW *window, blast_list_s *blasts,
 }
 void respond_to_keypresses() {}
 
+void init_colors() {
+  start_color();
+  use_default_colors();
+  init_pair(NORMAL_COLOR, COLOR_WHITE, COLOR_BLACK);
+  init_pair(NEW_COLOR, COLOR_BLUE, COLOR_BLUE);
+  init_pair(SELECTED_COLOR, COLOR_WHITE, COLOR_RED);
+}
+
 WINDOW *init_screen() {
   initscr();
   cbreak();
   noecho();
+  refresh();
+
+  if (has_colors()) init_colors();
 
   // Render status bar and other chrome
   WINDOW *window = newwin(0, 0, 0, 0);
