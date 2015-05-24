@@ -17,7 +17,7 @@ typedef struct {
   // If != 0, the call has failed. When we know more there will be useful
   // error codes here...
   int error;
-  // Tokens to pass to paging. 
+  // Tokens to pass to paging.
   id before_token;
   id after_token;
   // Number of blasts then a pointer to that many valid blasts.
