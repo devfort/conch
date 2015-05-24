@@ -191,6 +191,21 @@ blastlist *init_blasts() {
   return blasts;
 }
 
+void update_blasts(blastlist *blasts) {
+  settings config = {
+    .page_size = 42,
+  };
+
+  mouthpiece *conn = conch_connect(config);
+
+  result_set *result = conch_blasts_after(conn, blasts->head->id);
+
+  conch_blastlist_insert(blasts, result);
+
+  conch_free_result_set(result);
+  conch_disconnect(conn);
+}
+
 int main(int argc, char **argv) {
   setlocale(LC_ALL, "");
   WINDOW *main_window = init_screen();
@@ -203,8 +218,7 @@ int main(int argc, char **argv) {
   };
 
   while(1) {
-    blasts = init_blasts();
-    screen.current_blast = blasts->head;
+    update_blasts(blasts);
     render(main_window, &screen);
     respond_to_keypresses(main_window, &screen);
   }
