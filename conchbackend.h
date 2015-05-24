@@ -32,7 +32,7 @@ typedef struct {
 
 typedef struct {
   PGconn *connection;
-  settings settings; 
+  settings settings;
 } mouthpiece;
 
 mouthpiece *conch_connect(settings settings);
