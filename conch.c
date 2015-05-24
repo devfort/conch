@@ -3,6 +3,22 @@
 #include <stdio.h>
 #include <time.h>
 
+typedef struct window_chrome_s {
+  int border_width;
+  int padding_y;
+  int padding_x;
+  int blast_padding;
+  int blast_height;
+} window_chrome_s;
+
+window_chrome_s chrome = {
+  .border_width = 1,
+  .padding_y = 1,
+  .padding_x = 2,
+  .blast_padding = 1,
+  .blast_height = 2,
+};
+
 enum blast_status {
   NORMAL = 0,
   NEW = ':',
@@ -35,9 +51,10 @@ WINDOW *init_screen() {
 
 void render_blast(WINDOW *window, int y, int x, blast_s *blast, int status) {
   mvwvline(window, y, x, status, 2);
-  mvwprintw(window, y, x + 2, blast->text);
-  mvwprintw(window, y + 1, x + 2, "--%s at %d", blast->author,
-            blast->timestamp);
+  mvwprintw(window, y, x + 2,
+            blast->text);
+  mvwprintw(window, y + 1, x + 2,
+            "--%s at %d", blast->author, blast->timestamp);
 }
 
 void get_updates(blast_list_s *blasts) {
