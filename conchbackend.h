@@ -2,7 +2,7 @@
 #define _CONCH_BACKEND_H
 
 #include <stdint.h>
-#include <libpq-fe.h>
+#include <postgresql/libpq-fe.h>
 
 typedef uint64_t id;
 
@@ -35,13 +35,13 @@ typedef struct {
   settings settings; 
 } mouthpiece;
 
-mouthpiece *connect(settings settings);
-void disconnect(mouthpiece *mp);
+mouthpiece *conch_connect(settings settings);
+void conch_disconnect(mouthpiece *mp);
 
-result_set *recent_blasts(mouthpiece *mp);
-result_set *blasts_before(mouthpiece *mp, id before_token);
-result_set *blasts_after(mouthpiece *mp, id after_token);
+result_set *conch_recent_blasts(mouthpiece *mp);
+result_set *conch_blasts_before(mouthpiece *mp, id before_token);
+result_set *conch_blasts_after(mouthpiece *mp, id after_token);
 
-void free_result_set(result_set *results);
+void conch_free_result_set(result_set *results);
 
 #endif

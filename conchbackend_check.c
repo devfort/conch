@@ -5,8 +5,9 @@
 START_TEST(test_can_connect_and_disconnect)
 {
   settings settings = {.page_size=10};
-  mouthpiece *mp = connect(settings);
-  disconnect(mp);
+  mouthpiece *mp = conch_connect(settings);
+  ck_assert_ptr_ne(mp, (void*)0);
+  conch_disconnect(mp);
 }
 END_TEST
 
