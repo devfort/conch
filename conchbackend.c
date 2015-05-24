@@ -59,7 +59,10 @@ static result_set *pg_result_to_result_set(mouthpiece *mp,
 
     int n = PQntuples(query_result);
 
-    assert(n > 0);
+    if (n == 0) {
+      conch_free_result_set(result);
+      return NULL;
+    }
 
     result->after_token =
         pg_char_to_int(PQgetvalue(query_result, 0, id_column));
