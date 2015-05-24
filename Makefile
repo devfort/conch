@@ -3,42 +3,55 @@ CFLAGS?=--std=c99 -Wall -Wformat -Werror --pedantic
 LDFLAGS?=
 DEPS?=.deps
 
+BINS=conch
+BINS_TEST=$(patsubst %.c,%,$(wildcard *_check.c))
+
 LIBS=libpq
-CHECK_LIBS=check
+LIBS_TEST=check
 
+CFLAGS+=$(shell pkg-config --cflags $(LIBS))
+LDFLAGS+=$(shell pkg-config --libs $(LIBS))
+
+# Oh, ncurses. :(
 NCURSES_CONFIG=$(shell which ncurses5-config || which ncurses5.4-config)
+CFLAGS+=$(shell $(NCURSES_CONFIG) --cflags)
+LDFLAGS+=-L$(shell $(NCURSES_CONFIG) --libdir) $(shell $(NCURSES_CONFIG) --libs)
 
-CFLAGS+=$(shell pkg-config --cflags $(LIBS)) $(shell ${NCURSES_CONFIG} --cflags)
-LDFLAGS+=$(shell pkg-config --libs $(LIBS)) -L$(shell ${NCURSES_CONFIG} --libdir) $(shell ${NCURSES_CONFIG} --libs)
+LDFLAGS_TEST=$(LDFLAGS)
+LDFLAGS_TEST+=$(shell pkg-config --libs $(LIBS_TEST))
 
-CHECK_BINS=$(patsubst %.c,%,$(wildcard *_check.c))
-
-default: conch
-
-conch: conch.o
-	$(CC) $(LDFLAGS) -o $@ $^
+all: $(BINS)
 
 blastlist_check: blastlist.o conchbackend.o
 conchbackend_check: conchbackend.o
 
-check: $(CHECK_BINS)
-	@for c in $(CHECK_BINS); do \
-		./$$c; \
+test: $(BINS_TEST)
+	@set -e && for t in $^; do \
+		./$$t; \
+		echo ----; \
 	done
+test_%: %_check
+	./$<
+
+clean:
+	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST)
 
 reformat: *.c *.h
 	clang-format -i *.h *.c
 
-clean:
-	rm -rf conch *.o $(DEPS) $(CHECK_BINS)
+$(BINS): %: %.o
+	@echo "LD  $@"
+	@$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c
 	@mkdir -p ${DEPS}
-	$(CC) $(CFLAGS) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<)) -o $@ -c $<
+	@echo "CC  $@"
+	@$(CC) -o $@ -c $< $(CFLAGS) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<))
 
 %_check: %_check.o
-	$(CC) -o $@ $^ $(LDFLAGS) $(shell pkg-config --libs $(CHECK_LIBS))
+	@echo "LD  $@"
+	@$(CC) -o $@ $^ $(LDFLAGS_TEST)
 
 -include .deps/*.d
 
-.PHONY: default check clean reformat
+.PHONY: all clean reformat test $(TESTTASKS)
