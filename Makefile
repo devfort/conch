@@ -34,7 +34,7 @@ clean:
 	$(CC) $(CFLAGS) -MMD -MF ${DEPS}/$(notdir $(patsubst %.c,%.d,$<)) -o $@ -c $<
 
 %_check: %_check.o
-	$(CC) $(LDFLAGS) $(shell pkg-config --libs $(CHECK_LIBS)) -o $@ $^
+	$(CC) -o $@ $^ $(LDFLAGS) $(shell pkg-config --libs $(CHECK_LIBS))
 
 -include .deps/*.d
 
