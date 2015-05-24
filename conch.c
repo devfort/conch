@@ -176,13 +176,7 @@ WINDOW *init_screen() {
   return window;
 }
 
-blastlist *init_blasts() {
-  settings config = {
-    .page_size = 42,
-  };
-
-  mouthpiece *conn = conch_connect(config);
-
+blastlist *init_blasts(mouthpiece *conn) {
   result_set *result = conch_recent_blasts(conn);
 
   blastlist *blasts = conch_blastlist_new(result);
@@ -191,19 +185,16 @@ blastlist *init_blasts() {
   return blasts;
 }
 
-void update_blasts(blastlist *blasts) {
-  settings config = {
-    .page_size = 42,
-  };
-
-  mouthpiece *conn = conch_connect(config);
-
+void update_blasts(mouthpiece *conn, blastlist *blasts) {
   result_set *result = conch_blasts_after(conn, blasts->head->id);
+
+  if(!result) {
+    return;
+  }
 
   conch_blastlist_insert(blasts, result);
 
   conch_free_result_set(result);
-  conch_disconnect(conn);
 }
 
 int main(int argc, char **argv) {
@@ -211,14 +202,20 @@ int main(int argc, char **argv) {
   WINDOW *main_window = init_screen();
   nodelay(main_window, 1);
 
-  blastlist *blasts = init_blasts();
+  settings config = {
+    .page_size = 42,
+  };
+
+  mouthpiece *conn = conch_connect(config);
+
+  blastlist *blasts = init_blasts(conn);
 
   screen_state_s screen = {
     .current_blast = blasts->head, .blast_offset = 0,
   };
 
   while(1) {
-    update_blasts(blasts);
+    update_blasts(conn, blasts);
     render(main_window, &screen);
     respond_to_keypresses(main_window, &screen);
   }
