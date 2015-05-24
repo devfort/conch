@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "blastlist.h"
+
 typedef struct window_chrome_s {
   int border_width;
   int padding_y;
@@ -26,15 +28,8 @@ enum conch_color {
   SELECTED_COLOR = 3,
 };
 
-typedef struct blast_s {
-  uint64_t id;
-  char *text;
-  char *author;
-  time_t timestamp;
-} blast_s;
-
 typedef struct screen_state_s {
-  blast_s *current_blast;
+  blastlist_item *current_blast;
   int blast_offset;
 } screen_state_s;
 
@@ -43,20 +38,19 @@ void render_chrome(WINDOW *window) {
   mvwprintw(window, 0, 3, " conch <@ ");
 }
 
-void render_blast(WINDOW *window, int y, int x, blast_s *blast, int status_color) {
+void render_blast(WINDOW *window, int y, int x, blastlist_item *blast, int status_color) {
   mvwvline(window, y, x, ' ' | COLOR_PAIR(status_color), 2);
   mvwprintw(window, y, x + 2,
-            blast->text);
+            blast->content);
   mvwprintw(window, y + 1, x + 2,
-            "--%s at %d", blast->author, blast->timestamp);
+            "--%s at %d", blast->user, blast->id);
 }
 
-void get_updates(blast_s *blasts) {
+void get_updates(blastlist_item *blasts) {
   // Return if new blasts
 }
 
-void render(WINDOW *window, blast_s *blasts,
-            screen_state_s *current_screen) {
+void render(WINDOW *window, screen_state_s *current_screen) {
 
   int max_y = getmaxy(window);
 
@@ -71,19 +65,16 @@ void render(WINDOW *window, blast_s *blasts,
 
   render_chrome(window);
 
-  blast_s blast = {
-    .id = 1,
-    .text = "This is a blast!",
-    .author = "Steve and Alex",
-    .timestamp = time(NULL),
-  };
-
   mvwvline(window, 1, blast_x, ' ' | COLOR_PAIR(NORMAL_COLOR), max_y - (chrome.border_width * 2));
+
+  blastlist_item *blast = current_screen->current_blast;
 
   int blast_y = first_blast_y;
   for(int i = 0; i < max_blasts; ++i) {
-    render_blast(window, blast_y, blast_x, &blast, SELECTED_COLOR);
+    render_blast(window, blast_y, blast_x, blast, SELECTED_COLOR);
     blast_y += chrome.blast_padding + chrome.blast_height;
+
+    blast = blast->next;
   }
   wrefresh(window);
 }
@@ -134,15 +125,25 @@ int main(int argc, char **argv) {
   WINDOW *main_window = init_screen();
   nodelay(main_window, 1);
 
-  blast_s *blasts = NULL;
-  screen_state_s *current_screen = NULL;
+  blastlist_item temp_blast = {
+    .id = 1,
+    .user = "fort",
+    .content = "We're going to need a bigger moat.",
+    .next = &temp_blast
+  };
+
+  screen_state_s current_screen = {
+    .current_blast = &temp_blast,
+    .blast_offset = 0,
+  };
+
   while (1) {
     // Poll postgres
-    get_updates(blasts);
+    //get_updates(blasts);
     // Render screen based on new data
-    render(main_window, blasts, current_screen);
+    render(main_window, &current_screen);
     // Respond to keypresses
-    respond_to_keypresses(main_window, current_screen);
+    respond_to_keypresses(main_window, &current_screen);
     // Render screen again
   }
   endwin();
