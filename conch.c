@@ -20,7 +20,7 @@ window_chrome_s chrome = {
 };
 
 enum conch_color {
-  NORMAL_COLOR = 1,
+  NORMAL_COLOR = 0,
   NEW_COLOR = 2,
   SELECTED_COLOR = 3,
 };
