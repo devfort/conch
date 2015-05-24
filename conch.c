@@ -70,8 +70,13 @@ void render(WINDOW *window, screen_state_s *screen) {
   const int usable_lines =
       max_y - ((chrome.border_width * 2) + (chrome.padding_y * 2));
 
-  const int max_blasts =
-      usable_lines / (chrome.blast_padding + chrome.blast_height);
+  int max_blasts;
+
+  if(usable_lines == chrome.blast_height) {
+    max_blasts = 1;
+  } else {
+    max_blasts = usable_lines / (chrome.blast_padding + chrome.blast_height);
+  }
 
   werase(window);
 
@@ -79,6 +84,11 @@ void render(WINDOW *window, screen_state_s *screen) {
 
   mvwvline(window, 1, blast_x, ' ' | COLOR_PAIR(NORMAL_COLOR),
            max_y - (chrome.border_width * 2));
+
+  if(0 == max_blasts) {
+    mvwprintw(window, first_blast_y, blast_x + 1,
+              "You're gonna need a bigger boat! (Or window.)");
+  }
 
   blastlist_item *blast = screen->current_blast;
 
