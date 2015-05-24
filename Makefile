@@ -11,10 +11,9 @@ LIBS_TEST=check
 CFLAGS+=$(shell pkg-config --cflags $(LIBS))
 LDFLAGS+=$(shell pkg-config --libs $(LIBS))
 
-# Oh, ncurses. :(
-NCURSES_CONFIG=$(shell which ncurses5-config || which ncurses5.4-config)
-CFLAGS+=$(shell $(NCURSES_CONFIG) --cflags)
-LDFLAGS+=-L$(shell $(NCURSES_CONFIG) --libdir) $(shell $(NCURSES_CONFIG) --libs)
+# ncurses doesn't seem to ship with .pc files on all platforms, but it does
+# seems to be available in system include directories.
+LDFLAGS+=-lncurses
 
 LDFLAGS_TEST=$(LDFLAGS)
 LDFLAGS_TEST+=$(shell pkg-config --libs $(LIBS_TEST))
