@@ -102,8 +102,8 @@ void render(WINDOW *window, screen_state_s *screen) {
 
     blast_y += chrome.blast_padding + blast_height;
 
-    if(blast->prev) {
-      blast = blast->prev;
+    if(blast->next) {
+      blast = blast->next;
     } else {
       break;
     }
