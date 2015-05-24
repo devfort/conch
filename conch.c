@@ -39,6 +39,17 @@ void render_chrome(WINDOW *window) {
   mvwprintw(window, 0, 3, " conch <@ ");
 }
 
+void render_clock(WINDOW *window) {
+  char time_str[1024];
+  time_t now = time(NULL);
+  struct tm *now_tm = localtime(&now);
+  size_t time_len = strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", now_tm);
+
+  int max_x = getmaxx(window);
+
+  mvwprintw(window, 0, max_x - time_len - chrome.border_width - chrome.padding_x, time_str);
+}
+
 int render_blast(WINDOW *window, int y, int x, blastlist_item *blast,
                  int status_color) {
   mvwvline(window, y, x, ' ' | COLOR_PAIR(status_color), 2);
@@ -81,6 +92,7 @@ void render(WINDOW *window, screen_state_s *screen) {
   werase(window);
 
   render_chrome(window);
+  render_clock(window);
 
   mvwvline(window, 1, blast_x, ' ' | COLOR_PAIR(NORMAL_COLOR),
            max_y - (chrome.border_width * 2));
