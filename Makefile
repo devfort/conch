@@ -4,5 +4,8 @@ conchbackend_check: conchbackend_check.c conchbackend.c conchbackend.h
 check: conchbackend_check
 	./conchbackend_check
 
+reformat: *.c *.h
+	clang-format -i *.h *.c
+
 clean:
 	rm -f conchbackend_check *.o
