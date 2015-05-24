@@ -25,7 +25,9 @@ typedef struct {
   blast *blasts;
 } result_set;
 
-typedef struct { uint16_t page_size; } settings;
+typedef struct {
+  uint16_t page_size;
+} settings;
 
 typedef struct mouthpiece mouthpiece;
 
