@@ -13,4 +13,4 @@ reformat: *.c *.h
 	clang-format -i *.h *.c
 
 clean:
-	rm -f conchbackend_check *.o
+	rm -f conch conchbackend_check *.o
