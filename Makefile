@@ -15,6 +15,7 @@ default: conch
 conch: conch.o
 	$(CC) $(LDFLAGS) -o $@ $^
 
+blastlist_check: blastlist.o conchbackend.o
 conchbackend_check: conchbackend.o
 
 check: $(CHECK_BINS)
