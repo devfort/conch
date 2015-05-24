@@ -2,7 +2,6 @@
 
 #include "conchbackend.h"
 
-
 START_TEST(test_can_connect_and_disconnect) {
   settings settings = { .page_size = 10 };
   mouthpiece *mp = conch_connect(settings);
@@ -18,6 +17,7 @@ START_TEST(test_can_retrieve_most_recent) {
   ck_assert_int_eq(recent->error, 0);
   ck_assert_int_ne(recent->count, 0);
   ck_assert_int_le(recent->count, settings.page_size);
+  conch_free_result_set(recent);
   conch_disconnect(mp);
 }
 END_TEST

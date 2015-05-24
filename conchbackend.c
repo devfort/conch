@@ -74,3 +74,11 @@ result_set *conch_recent_blasts(mouthpiece *mp) {
 
   return result;
 }
+
+void conch_free_result_set(result_set *result) {
+  for (int i = 0; i < result->count; i++) {
+    free(result->blasts[i].content);
+    free(result->blasts[i].user);
+  }
+  free(result->blasts);
+}
