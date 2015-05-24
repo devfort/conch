@@ -133,14 +133,14 @@ int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
 
   switch(input) {
   case 'j':
-    if(screen->current_blast->prev) {
-      screen->current_blast = screen->current_blast->prev;
+    if(screen->current_blast->next) {
+      screen->current_blast = screen->current_blast->next;
     }
     break;
 
   case 'k':
-    if(screen->current_blast->next) {
-      screen->current_blast = screen->current_blast->next;
+    if(screen->current_blast->prev) {
+      screen->current_blast = screen->current_blast->prev;
     }
     break;
 
