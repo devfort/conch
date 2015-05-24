@@ -1,4 +1,5 @@
-conch
-*_check
 *.a
 *.o
+/*_check
+/.deps
+/conch
