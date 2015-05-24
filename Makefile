@@ -2,11 +2,13 @@ CFLAGS?=--std=c99 -Wall -Wformat -Werror --pedantic
 LDFLAGS?=
 DEPS?=.deps
 
-LIBS=libpq ncurses
+LIBS=libpq
 CHECK_LIBS=check
 
-CFLAGS+=$(shell pkg-config --cflags $(LIBS))
-LDFLAGS+=$(shell pkg-config --libs $(LIBS))
+NCURSES_CONFIG=$(shell which ncurses5-config || which ncurses5.4-config)
+
+CFLAGS+=$(shell pkg-config --cflags $(LIBS)) $(shell ${NCURSES_CONFIG} --cflags)
+LDFLAGS+=$(shell pkg-config --libs $(LIBS)) -L$(shell ${NCURSES_CONFIG} --libdir) $(shell ${NCURSES_CONFIG} --libs)
 
 CHECK_BINS=$(patsubst %.c,%,$(wildcard *_check.c))
 
