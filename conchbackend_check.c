@@ -40,6 +40,7 @@ START_TEST(test_can_page_backwards) {
   ck_assert_int_ne(past->after_token, 0);
 
   conch_free_result_set(recent);
+  conch_free_result_set(past);
   conch_disconnect(mp);
 }
 END_TEST
