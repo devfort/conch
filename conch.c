@@ -181,7 +181,6 @@ blastlist *init_blasts(mouthpiece *conn) {
 
   blastlist *blasts = conch_blastlist_new(result);
   conch_free_result_set(result);
-  conch_disconnect(conn);
   return blasts;
 }
 
