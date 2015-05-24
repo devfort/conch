@@ -55,9 +55,7 @@ void get_updates(blast_list_s *blasts) {
 void render(WINDOW *window, blast_list_s *blasts,
             screen_state_s *current_screen) {
 
-  int max_y = 0;
-  int max_x = 0;
-  getmaxyx(window, max_y, max_x);
+  int max_y = getmaxy(window);
 
   const int first_blast_y = chrome.padding_y + chrome.border_width;
   const int blast_x = chrome.padding_x + chrome.border_width;
