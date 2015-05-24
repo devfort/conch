@@ -128,6 +128,34 @@ result_set *conch_blasts_before(mouthpiece *mp, id before_token) {
   return pg_result_to_result_set(mp, query_result);
 }
 
+result_set *conch_blasts_after(mouthpiece *mp, id after_token) {
+  char page_size_as_string[6];
+  int written = snprintf(page_size_as_string, 6, "%d", mp->settings.page_size);
+  assert(written <= 6);
+  char max_id_as_string[6];
+  written = snprintf(max_id_as_string, 6, "%" PRIid, after_token);
+  assert(written <= 6);
+
+  const char *const params[] = { max_id_as_string, page_size_as_string };
+  Oid paramTypes[] = { 23, 23 };
+
+  PGresult *query_result = PQexecParams(
+      mp->connection,
+      "select id, message, name from ("
+      "select id, message, "
+      "(select username from auth_user where auth_user.id = user_id) as name "
+      "from bugle_blast "
+      "where id > $1::integer "
+      "order by id asc "
+      "limit $2::integer "
+      ") as backwards order by id desc",
+      2, paramTypes, params, NULL, NULL,
+      true // Ask for result set in binary format rather than text.
+      );
+
+  return pg_result_to_result_set(mp, query_result);
+}
+
 void conch_free_result_set(result_set *result) {
   for(int i = 0; i < result->count; i++) {
     free(result->blasts[i].content);
