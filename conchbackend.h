@@ -31,7 +31,7 @@ typedef struct {
 } settings;
 
 typedef struct {
-  PGConn *connection;
+  PGconn *connection;
   settings settings; 
 } mouthpiece;
 
