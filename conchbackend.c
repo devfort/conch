@@ -5,6 +5,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
+#include <stdbool.h>
 
 mouthpiece *conch_connect(settings settings) {
   PGconn *connection = PQconnectdb("host=core.fort dbname=bugle user=bugle");
@@ -25,6 +26,8 @@ static char *strclone(char *c) {
   return target;
 }
 
+static uint32_t pg_char_to_int(char *s) { return ntohl(*((int32_t *)s)); }
+
 result_set *conch_recent_blasts(mouthpiece *mp) {
   result_set *result = malloc(sizeof(result_set));
 
@@ -33,13 +36,16 @@ result_set *conch_recent_blasts(mouthpiece *mp) {
   assert(written <= 6);
 
   const char *const params[] = { page_size_as_string };
+  Oid paramTypes[] = { 23 };
 
   PGresult *query_result = PQexecParams(
       mp->connection,
       "select id, message, "
       "(select username from auth_user where auth_user.id = user_id) as name "
       "from bugle_blast order by id desc limit $1::integer;",
-      1, NULL, params, NULL, NULL, 1);
+      1, paramTypes, params, NULL, NULL,
+      true // Ask for result set in binary format rather than text.
+      );
 
   ExecStatusType query_result_status = PQresultStatus(query_result);
 
@@ -59,10 +65,19 @@ result_set *conch_recent_blasts(mouthpiece *mp) {
     result->count = PQntuples(query_result);
     result->blasts = malloc(sizeof(blast) * result->count);
 
-    for(int i = 0; i < PQntuples(query_result); i++) {
+    int n = PQntuples(query_result);
+
+    assert(n > 0);
+
+    result->after_token =
+        pg_char_to_int(PQgetvalue(query_result, 0, id_column));
+    result->before_token =
+        pg_char_to_int(PQgetvalue(query_result, n - 1, id_column));
+
+    for(int i = 0; i < n; i++) {
       int len = PQgetlength(query_result, i, id_column);
       assert(len == 4);
-      uint32_t id = ntohl(*((int32_t *)PQgetvalue(query_result, i, id_column)));
+      uint32_t id = pg_char_to_int(PQgetvalue(query_result, i, id_column));
       blast *blast = result->blasts + i;
       blast->id = id;
       blast->user = strclone(PQgetvalue(query_result, i, name_column));

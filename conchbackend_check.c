@@ -17,6 +17,8 @@ START_TEST(test_can_retrieve_most_recent) {
   ck_assert_int_eq(recent->error, 0);
   ck_assert_int_ne(recent->count, 0);
   ck_assert_int_le(recent->count, settings.page_size);
+  ck_assert_int_ne(recent->before_token, 0);
+  ck_assert_int_ne(recent->after_token, 0);
   conch_free_result_set(recent);
   conch_disconnect(mp);
 }
