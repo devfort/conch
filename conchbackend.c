@@ -28,12 +28,18 @@ static char *strclone(char *c) {
 result_set *conch_recent_blasts(mouthpiece *mp) {
   result_set *result = malloc(sizeof(result_set));
 
+  char page_size_as_string[6];
+  int written = snprintf(page_size_as_string, 6, "%d", mp->settings.page_size);
+  assert(written <= 6);
+
+  const char *const params[] = { page_size_as_string };
+
   PGresult *query_result = PQexecParams(
       mp->connection,
       "select id, message, "
       "(select username from auth_user where auth_user.id = user_id) as name "
-      "from bugle_blast order by id desc;",
-      0, NULL, NULL, NULL, NULL, 1);
+      "from bugle_blast order by id desc limit $1::integer;",
+      1, NULL, params, NULL, NULL, 1);
 
   ExecStatusType query_result_status = PQresultStatus(query_result);
 
