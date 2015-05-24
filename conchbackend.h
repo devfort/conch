@@ -8,12 +8,7 @@ typedef uint64_t id;
 
 typedef struct {
   id id;
-  char *name;
-} user;
-
-typedef struct {
-  id id;
-  user *user;
+  char *user;
   char *content;
 } blast;
 
