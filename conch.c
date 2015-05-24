@@ -72,11 +72,22 @@ void render(WINDOW *window, screen_state_s *current_screen) {
   blastlist_item *blast = current_screen->current_blast;
 
   int blast_y = first_blast_y;
+  int active_color = NORMAL_COLOR;
   for(int i = 0; i < max_blasts; ++i) {
-    render_blast(window, blast_y, blast_x, blast, SELECTED_COLOR);
+    if (blast == current_screen->current_blast) {
+        active_color = SELECTED_COLOR;
+    } else {
+        active_color = NORMAL_COLOR;
+    }
+
+    render_blast(window, blast_y, blast_x, blast, active_color);
     blast_y += chrome.blast_padding + chrome.blast_height;
 
-    blast = blast->next;
+    if (blast->prev) {
+        blast = blast->prev;
+    } else {
+        break;
+    }
   }
   wrefresh(window);
 }
@@ -84,16 +95,22 @@ void render(WINDOW *window, screen_state_s *current_screen) {
 int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
   const int input = wgetch(window);
 
-  switch(input) {
-  case KEY_UP:
-    break;
+  switch (input) {
+    case 'j':
+      if (screen->current_blast->prev) {
+          screen->current_blast = screen->current_blast->prev;
+      }
+      break;
 
-  case KEY_DOWN:
-    break;
+    case 'k':
+      if (screen->current_blast->next) {
+          screen->current_blast = screen->current_blast->next;
+      }
+      break;
 
-  case 'q':
-    endwin();
-    exit(0);
+    case 'q':
+      endwin();
+      exit(0);
   }
 
   return input == ERR;
@@ -127,14 +144,33 @@ int main(int argc, char **argv) {
   WINDOW *main_window = init_screen();
   nodelay(main_window, 1);
 
-  blastlist_item temp_blast = {.id = 1,
-                               .user = "fort",
-                               .content =
-                                   "We're going to need a bigger moat.",
-                               .next = &temp_blast };
+  blastlist_item b1 = {
+    .id = 1,
+    .user = "fort",
+    .content = "AAA",
+  };
+  blastlist_item b2 = {
+    .id = 2,
+    .user = "fort",
+    .content = "BBB",
+  };
+  blastlist_item b3 = {
+    .id = 3,
+    .user = "fort",
+    .content = "CCC",
+  };
+
+  b1.prev = 0;
+  b2.prev = &b1;
+  b3.prev = &b2;
+
+  b1.next = &b2;
+  b2.next = &b3;
+  b3.next = 0;
 
   screen_state_s current_screen = {
-    .current_blast = &temp_blast, .blast_offset = 0,
+    .current_blast = &b3,
+    .blast_offset = 0,
   };
 
   while(1) {
