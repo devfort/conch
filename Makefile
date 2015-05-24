@@ -1,3 +1,5 @@
+.PHONY: clean
+
 conch: conch.c
 	gcc --std=c99 conch.c -lncurses -oconch
 
