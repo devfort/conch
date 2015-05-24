@@ -25,13 +25,13 @@ all: $(BINS)
 blastlist_check: blastlist.o conchbackend.o
 conchbackend_check: conchbackend.o
 
-test: $(BINS_TEST)
+check: $(BINS_TEST)
 	@set -e && for t in $^; do \
 		./$$t; \
 		echo ----; \
 	done
-test_%: %_check
-	./$<
+check_%: %_check
+	@./$<
 
 clean:
 	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST)
