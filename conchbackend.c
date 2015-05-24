@@ -34,24 +34,9 @@ static char *strclone(char *c) {
 
 static uint32_t pg_char_to_int(char *s) { return ntohl(*((int32_t *)s)); }
 
-result_set *conch_recent_blasts(mouthpiece *mp) {
+static result_set *pg_result_to_result_set(mouthpiece *mp,
+                                           PGresult *query_result) {
   result_set *result = malloc(sizeof(result_set));
-
-  char page_size_as_string[6];
-  int written = snprintf(page_size_as_string, 6, "%d", mp->settings.page_size);
-  assert(written <= 6);
-
-  const char *const params[] = { page_size_as_string };
-  Oid paramTypes[] = { 23 };
-
-  PGresult *query_result = PQexecParams(
-      mp->connection,
-      "select id, message, "
-      "(select username from auth_user where auth_user.id = user_id) as name "
-      "from bugle_blast order by id desc limit $1::integer;",
-      1, paramTypes, params, NULL, NULL,
-      true // Ask for result set in binary format rather than text.
-      );
 
   ExecStatusType query_result_status = PQresultStatus(query_result);
 
@@ -64,7 +49,7 @@ result_set *conch_recent_blasts(mouthpiece *mp) {
     result->after_token = 0;
   } else {
     assert(PQnfields(query_result) == 3);
-
+    result->error = 0;
     int id_column = PQfnumber(query_result, "id");
     int name_column = PQfnumber(query_result, "name");
     int message_column = PQfnumber(query_result, "message");
@@ -94,6 +79,26 @@ result_set *conch_recent_blasts(mouthpiece *mp) {
   PQclear(query_result);
 
   return result;
+}
+
+result_set *conch_recent_blasts(mouthpiece *mp) {
+  char page_size_as_string[6];
+  int written = snprintf(page_size_as_string, 6, "%d", mp->settings.page_size);
+  assert(written <= 6);
+
+  const char *const params[] = { page_size_as_string };
+  Oid paramTypes[] = { 23 };
+
+  PGresult *query_result = PQexecParams(
+      mp->connection,
+      "select id, message, "
+      "(select username from auth_user where auth_user.id = user_id) as name "
+      "from bugle_blast order by id desc limit $1::integer;",
+      1, paramTypes, params, NULL, NULL,
+      true // Ask for result set in binary format rather than text.
+      );
+
+  return pg_result_to_result_set(mp, query_result);
 }
 
 void conch_free_result_set(result_set *result) {
