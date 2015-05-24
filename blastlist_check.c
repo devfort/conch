@@ -91,6 +91,63 @@ START_TEST(test_blastlist_multiple) {
 }
 END_TEST
 
+START_TEST(test_blastlist_insert) {
+  blastlist_item *cur, *prev;
+  blast b1 = {
+    .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
+  };
+  blast b2 = {
+    .id = 2, .user = "elephant", .content = "Splashy splashy water.",
+  };
+  result_set rs = { 0 };
+  result_set rs1 = {
+    .count = 1, .blasts = &b1,
+  };
+  result_set rs2 = {
+    .count = 1, .blasts = &b2,
+  };
+
+  // Construct an empty blastlist
+  blastlist *bl = conch_blastlist_new(&rs);
+
+  // Insert result set 1
+  conch_blastlist_insert(bl, &rs1);
+
+  cur = bl->head;
+
+  // There should now be one item in the list
+  ck_assert_ptr_ne(cur, (void *)0);
+  ck_assert_str_eq(cur->user, b1.user);
+  ck_assert_str_eq(cur->content, b1.content);
+  ck_assert_ptr_eq(cur->prev, (void *)0);
+  ck_assert_ptr_eq(cur->next, (void *)0);
+
+  // Insert result set 2
+  conch_blastlist_insert(bl, &rs2);
+
+  prev = NULL;
+  cur = bl->head;
+
+  ck_assert_ptr_ne(cur, (void *)0);
+  ck_assert(cur->id == b2.id);
+  ck_assert_str_eq(cur->user, b2.user);
+  ck_assert_str_eq(cur->content, b2.content);
+  ck_assert_ptr_eq(cur->prev, prev);
+  ck_assert_ptr_ne(cur->next, (void *)0);
+
+  prev = cur;
+  cur = cur->next;
+
+  ck_assert(cur->id == b1.id);
+  ck_assert_str_eq(cur->user, b1.user);
+  ck_assert_str_eq(cur->content, b1.content);
+  ck_assert_ptr_eq(cur->prev, prev);
+  ck_assert_ptr_eq(cur->next, (void *)0);
+
+  conch_blastlist_free(bl);
+}
+END_TEST
+
 Suite *blastlist_suite(void) {
   Suite *s;
   TCase *tc_core;
@@ -100,6 +157,7 @@ Suite *blastlist_suite(void) {
   tcase_add_test(tc_core, test_blastlist_empty);
   tcase_add_test(tc_core, test_blastlist_single);
   tcase_add_test(tc_core, test_blastlist_multiple);
+  tcase_add_test(tc_core, test_blastlist_insert);
   suite_add_tcase(s, tc_core);
 
   return s;

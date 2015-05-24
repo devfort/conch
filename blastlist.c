@@ -37,6 +37,24 @@ static void conch_blastlist_item_free(blastlist_item *it) {
   free(it);
 }
 
+static blastlist_item *ll_from_resultset(result_set *rs) {
+  // If there are no items in the resultset, return NULL;
+  if(rs->count < 1) {
+    return NULL;
+  }
+
+  blastlist_item *head = conch_blastlist_item_new(rs->blasts);
+  blastlist_item *cur = head;
+
+  for(uint64_t i = 1; i < rs->count; ++i) {
+    cur->next = conch_blastlist_item_new(rs->blasts + i);
+    cur->next->prev = cur;
+    cur = cur->next;
+  }
+
+  return head;
+}
+
 blastlist *conch_blastlist_new(result_set *rs) {
   blastlist *bl = (blastlist *)calloc(1, sizeof(blastlist));
 
@@ -45,22 +63,36 @@ blastlist *conch_blastlist_new(result_set *rs) {
     abort();
   }
 
-  // If there are no items in the resultset, return an empty blastlist.
-  if(rs->count < 1) {
-    return bl;
+  bl->head = ll_from_resultset(rs);
+
+  return bl;
+}
+
+void conch_blastlist_insert(blastlist *bl, result_set *rs) {
+  blastlist_item *new = ll_from_resultset(rs);
+
+  if(new == NULL) {
+    return;
   }
 
-  // Otherwise, we append to the linked list
-  bl->head = conch_blastlist_item_new(rs->blasts);
-  blastlist_item *cur = bl->head;
-
-  for(uint64_t i = 1; i < rs->count; ++i) {
-    cur->next = conch_blastlist_item_new(rs->blasts + i);
-    cur->next->prev = cur;
+  // Prepend the new linked list to the existing one by first finding the tail
+  // of the new linked list...
+  blastlist_item *cur = new;
+  while(1) {
+    if(cur->next == NULL) {
+      break;
+    }
     cur = cur->next;
   }
 
-  return bl;
+  // ...pointing the tail at the current head...
+  if(bl->head != NULL) {
+    cur->next = bl->head;
+    cur->next->prev = cur;
+  }
+
+  // ...and update the head pointer.
+  bl->head = new;
 }
 
 void conch_blastlist_free(blastlist *bl) {
