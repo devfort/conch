@@ -1,3 +1,4 @@
+CC=clang
 CFLAGS?=--std=c99 -Wall -Wformat -Werror --pedantic
 LDFLAGS?=
 DEPS?=.deps
