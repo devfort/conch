@@ -35,18 +35,9 @@ typedef struct blast_s {
 typedef void *blast_list_s;
 typedef void *screen_state_s;
 
-WINDOW *init_screen() {
-  initscr();
-  cbreak();
-  noecho();
-
-  // Render status bar and other chrome
-  WINDOW *window = newwin(0, 0, 0, 0);
+void render_chrome(WINDOW *window) {
   box(window, 0, 0);
   mvwprintw(window, 0, 3, "conch");
-  wrefresh(window);
-
-  return window;
 }
 
 void render_blast(WINDOW *window, int y, int x, blast_s *blast, int status) {
@@ -60,6 +51,7 @@ void render_blast(WINDOW *window, int y, int x, blast_s *blast, int status) {
 void get_updates(blast_list_s *blasts) {
   // Return if new blasts
 }
+
 void render(WINDOW *window, blast_list_s *blasts,
             screen_state_s *current_screen) {
 
@@ -74,11 +66,13 @@ void render(WINDOW *window, blast_list_s *blasts,
 
   const int max_blasts = usable_lines / (chrome.blast_padding + chrome.blast_height);
 
+  render_chrome(window);
+
   blast_s blast = {
     .id = 1,
     .text = "This is a blast!",
     .author = "Steve and Alex",
-    .timestamp = time(NULL),
+    .timestamp = max_y,
   };
 
   int blast_y = first_blast_y;
@@ -90,6 +84,18 @@ void render(WINDOW *window, blast_list_s *blasts,
   wrefresh(window);
 }
 void respond_to_keypresses() {}
+
+WINDOW *init_screen() {
+  initscr();
+  cbreak();
+  noecho();
+
+  // Render status bar and other chrome
+  WINDOW *window = newwin(0, 0, 0, 0);
+  render_chrome(window);
+  wrefresh(window);
+  return window;
+}
 
 int main(int argc, char **argv) {
   WINDOW *main_window = init_screen();
