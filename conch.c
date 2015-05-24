@@ -38,18 +38,28 @@ void render_chrome(WINDOW *window) {
   mvwprintw(window, 0, 3, " conch <@ ");
 }
 
-void render_blast(WINDOW *window, int y, int x, blastlist_item *blast,
-                  int status_color) {
+int render_blast(WINDOW *window, int y, int x, blastlist_item *blast,
+                 int status_color) {
   mvwvline(window, y, x, ' ' | COLOR_PAIR(status_color), 2);
   mvwprintw(window, y, x + 2, blast->content);
   mvwprintw(window, y + 1, x + 2, "--%s at %d", blast->user, blast->id);
+
+  return chrome.blast_height;
 }
 
 void get_updates(blastlist_item *blasts) {
   // Return if new blasts
 }
 
-void render(WINDOW *window, screen_state_s *current_screen) {
+int blast_highlight(blastlist_item *blast, screen_state_s *screen) {
+  if(blast == screen->current_blast) {
+    return SELECTED_COLOR;
+  } else {
+    return NORMAL_COLOR;
+  }
+}
+
+void render(WINDOW *window, screen_state_s *screen) {
 
   int max_y = getmaxy(window);
 
@@ -69,24 +79,22 @@ void render(WINDOW *window, screen_state_s *current_screen) {
   mvwvline(window, 1, blast_x, ' ' | COLOR_PAIR(NORMAL_COLOR),
            max_y - (chrome.border_width * 2));
 
-  blastlist_item *blast = current_screen->current_blast;
+  blastlist_item *blast = screen->current_blast;
 
   int blast_y = first_blast_y;
-  int active_color = NORMAL_COLOR;
+  int active_highlight = NORMAL_COLOR;
   for(int i = 0; i < max_blasts; ++i) {
-    if (blast == current_screen->current_blast) {
-        active_color = SELECTED_COLOR;
-    } else {
-        active_color = NORMAL_COLOR;
-    }
+    active_highlight = blast_highlight(blast, screen);
 
-    render_blast(window, blast_y, blast_x, blast, active_color);
-    blast_y += chrome.blast_padding + chrome.blast_height;
+    int blast_height =
+        render_blast(window, blast_y, blast_x, blast, active_highlight);
 
-    if (blast->prev) {
-        blast = blast->prev;
+    blast_y += chrome.blast_padding + blast_height;
+
+    if(blast->prev) {
+      blast = blast->prev;
     } else {
-        break;
+      break;
     }
   }
   wrefresh(window);
@@ -95,22 +103,22 @@ void render(WINDOW *window, screen_state_s *current_screen) {
 int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
   const int input = wgetch(window);
 
-  switch (input) {
-    case 'j':
-      if (screen->current_blast->prev) {
-          screen->current_blast = screen->current_blast->prev;
-      }
-      break;
+  switch(input) {
+  case 'j':
+    if(screen->current_blast->prev) {
+      screen->current_blast = screen->current_blast->prev;
+    }
+    break;
 
-    case 'k':
-      if (screen->current_blast->next) {
-          screen->current_blast = screen->current_blast->next;
-      }
-      break;
+  case 'k':
+    if(screen->current_blast->next) {
+      screen->current_blast = screen->current_blast->next;
+    }
+    break;
 
-    case 'q':
-      endwin();
-      exit(0);
+  case 'q':
+    endwin();
+    exit(0);
   }
 
   return input == ERR;
@@ -145,19 +153,13 @@ int main(int argc, char **argv) {
   nodelay(main_window, 1);
 
   blastlist_item b1 = {
-    .id = 1,
-    .user = "fort",
-    .content = "AAA",
+    .id = 1, .user = "fort", .content = "AAA",
   };
   blastlist_item b2 = {
-    .id = 2,
-    .user = "fort",
-    .content = "BBB",
+    .id = 2, .user = "fort", .content = "BBB",
   };
   blastlist_item b3 = {
-    .id = 3,
-    .user = "fort",
-    .content = "CCC",
+    .id = 3, .user = "fort", .content = "CCC",
   };
 
   b1.prev = 0;
@@ -168,19 +170,14 @@ int main(int argc, char **argv) {
   b2.next = &b3;
   b3.next = 0;
 
-  screen_state_s current_screen = {
-    .current_blast = &b3,
-    .blast_offset = 0,
+  screen_state_s screen = {
+    .current_blast = &b3, .blast_offset = 0,
   };
 
   while(1) {
-    // Poll postgres
     // get_updates(blasts);
-    // Render screen based on new data
-    render(main_window, &current_screen);
-    // Respond to keypresses
-    respond_to_keypresses(main_window, &current_screen);
-    // Render screen again
+    render(main_window, &screen);
+    respond_to_keypresses(main_window, &screen);
   }
   endwin();
 }
