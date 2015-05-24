@@ -1,6 +1,7 @@
+#include "checkrunner.h"
+
 #include "conchbackend.h"
 
-#include <check.h>
 
 START_TEST(test_can_connect_and_disconnect) {
   settings settings = { .page_size = 10 };
@@ -22,16 +23,4 @@ Suite *conchbackend_suite(void) {
   return s;
 }
 
-int main(void) {
-  int number_failed;
-  Suite *s;
-  SRunner *sr;
-
-  s = conchbackend_suite();
-  sr = srunner_create(s);
-
-  srunner_run_all(sr, CK_VERBOSE);
-  number_failed = srunner_ntests_failed(sr);
-  srunner_free(sr);
-  return (number_failed == 0) ? 0 : 1;
-}
+CONCH_CHECK_MAIN(conchbackend_suite)

@@ -1,7 +1,8 @@
+#include "checkrunner.h"
+
 #include "blastlist.h"
 #include "conchbackend.h"
 
-#include <check.h>
 
 START_TEST(test_make_empty_result_set) {
   result_set rs = { 0 };
@@ -26,16 +27,4 @@ Suite *blastlist_suite(void) {
   return s;
 }
 
-int run_check_suite(Suite *s) {
-  int number_failed;
-  SRunner *sr;
-
-  sr = srunner_create(s);
-
-  srunner_run_all(sr, CK_VERBOSE);
-  number_failed = srunner_ntests_failed(sr);
-  srunner_free(sr);
-  return (number_failed == 0) ? 0 : 1;
-}
-
-int main(void) { return run_check_suite(blastlist_suite()); }
+CONCH_CHECK_MAIN(blastlist_suite)
