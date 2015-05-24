@@ -41,7 +41,7 @@ void render_clock(WINDOW *window) {
   time_t now = time(NULL);
   struct tm *now_tm = localtime(&now);
   size_t time_len =
-      strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", now_tm);
+      strftime(time_str, sizeof(time_str), " %Y-%m-%d %H:%M:%S ", now_tm);
 
   int max_x = getmaxx(window);
 
