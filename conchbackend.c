@@ -16,6 +16,9 @@ struct mouthpiece {
 
 mouthpiece *conch_connect(settings settings) {
   PGconn *connection = PQconnectdb("host=core.fort dbname=bugle user=bugle");
+  if (PQstatus(connection) == CONNECTION_BAD) {
+    return NULL;
+  }
   mouthpiece *mp = malloc(sizeof(mouthpiece));
   mp->settings = settings;
   mp->connection = connection;

@@ -196,11 +196,14 @@ void update_blasts(mouthpiece *conn, blastlist *blasts) {
 
 int main(int argc, char **argv) {
   WINDOW *main_window = init_screen();
+  mouthpiece *conn;
 
   settings config = {
     .page_size = 42,
   };
-  mouthpiece *conn = conch_connect(config);
+  do {
+    conn = conch_connect(config);
+  } while (conn == NULL);
 
   blastlist *blasts = init_blasts(conn);
   screen_state_s screen = {
