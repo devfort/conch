@@ -50,8 +50,8 @@ void respond_to_keypresses() {}
 
 int main(int argc, char **argv) {
   WINDOW *main_window = init_screen();
-  blast_list_s blasts;
-  screen_state_s current_screen;
+  blast_list_s blasts = NULL;
+  screen_state_s current_screen = NULL;
   while (1) {
     // Poll postgres
     get_updates(blasts);
