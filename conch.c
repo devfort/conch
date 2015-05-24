@@ -34,22 +34,25 @@ typedef struct screen_state_s {
   int blast_offset;
 } screen_state_s;
 
+void render_clock(WINDOW *window) {
+  char time_str[1024];
+  time_t now = time(NULL);
+  struct tm *now_tm = localtime(&now);
+  size_t time_len =
+      strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", now_tm);
+
+  int max_x = getmaxx(window);
+
+  mvwprintw(window, 0,
+            max_x - time_len - chrome.border_width - chrome.padding_x,
+            time_str);
+}
+
 void render_chrome(WINDOW *window) {
   box(window, 0, 0);
   mvwprintw(window, 0, 3, " conch <@ ");
 
   render_clock(window);
-}
-
-void render_clock(WINDOW *window) {
-  char time_str[1024];
-  time_t now = time(NULL);
-  struct tm *now_tm = localtime(&now);
-  size_t time_len = strftime(time_str, sizeof(time_str), "%Y-%m-%d %H:%M:%S", now_tm);
-
-  int max_x = getmaxx(window);
-
-  mvwprintw(window, 0, max_x - time_len - chrome.border_width - chrome.padding_x, time_str);
 }
 
 int render_blast(WINDOW *window, int y, int x, blastlist_item *blast,

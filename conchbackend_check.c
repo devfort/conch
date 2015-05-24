@@ -46,7 +46,7 @@ START_TEST(test_can_page_backwards) {
 END_TEST
 
 START_TEST(test_can_page_forwards) {
-  settings settings = { .page_size = 2 };
+  settings settings = {.page_size = 2 };
   mouthpiece *mp = conch_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
   result_set *past = conch_blasts_before(mp, recent->before_token);
@@ -65,7 +65,7 @@ START_TEST(test_can_page_forwards) {
 END_TEST
 
 START_TEST(test_can_page_forward_one_page) {
-  settings settings = { .page_size = 2 };
+  settings settings = {.page_size = 2 };
   mouthpiece *mp = conch_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
 
