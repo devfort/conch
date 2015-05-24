@@ -31,7 +31,7 @@ clean:
 
 %.o: %.c
 	@mkdir -p ${DEPS}
-	$(CC) $(CFLAGS) -MMD -MF ${DEPS}/$(notdir $(patsubst %.c,%.d,$<)) -o $@ -c $<
+	$(CC) $(CFLAGS) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<)) -o $@ -c $<
 
 %_check: %_check.o
 	$(CC) -o $@ $^ $(LDFLAGS) $(shell pkg-config --libs $(CHECK_LIBS))
