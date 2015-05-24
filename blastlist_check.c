@@ -7,8 +7,8 @@ START_TEST(test_blastlist_empty) {
   result_set rs = { 0 };
   blastlist *bl = conch_blastlist_new(&rs);
 
-  ck_assert_ptr_ne(bl, (void *)0);
-  ck_assert_ptr_eq(bl->head, (void *)0);
+  ck_assert_ptr_ne(bl, NULL);
+  ck_assert_ptr_eq(bl->head, NULL);
 
   conch_blastlist_free(bl);
 }
@@ -24,8 +24,8 @@ START_TEST(test_blastlist_single) {
   blastlist *bl = conch_blastlist_new(&rs);
 
   // List should exist and have head
-  ck_assert_ptr_ne(bl, (void *)0);
-  ck_assert_ptr_ne(bl->head, (void *)0);
+  ck_assert_ptr_ne(bl, NULL);
+  ck_assert_ptr_ne(bl->head, NULL);
 
   // List head should contain the correct content
   ck_assert(bl->head->id == b.id);
@@ -33,8 +33,8 @@ START_TEST(test_blastlist_single) {
   ck_assert_str_eq(bl->head->content, b.content);
 
   // And both LL pointers should be NULL
-  ck_assert_ptr_eq(bl->head->prev, (void *)0);
-  ck_assert_ptr_eq(bl->head->next, (void *)0);
+  ck_assert_ptr_eq(bl->head->prev, NULL);
+  ck_assert_ptr_eq(bl->head->next, NULL);
 
   conch_blastlist_free(bl);
 }
@@ -56,8 +56,8 @@ START_TEST(test_blastlist_multiple) {
   blastlist *bl = conch_blastlist_new(&rs);
 
   // List should exist and have head
-  ck_assert_ptr_ne(bl, (void *)0);
-  ck_assert_ptr_ne(bl->head, (void *)0);
+  ck_assert_ptr_ne(bl, NULL);
+  ck_assert_ptr_ne(bl->head, NULL);
 
   // Check list items
   blastlist_item *prev = NULL;
@@ -67,7 +67,7 @@ START_TEST(test_blastlist_multiple) {
   ck_assert_str_eq(cur->user, b1.user);
   ck_assert_str_eq(cur->content, b1.content);
   ck_assert_ptr_eq(cur->prev, prev);
-  ck_assert_ptr_ne(cur->next, (void *)0);
+  ck_assert_ptr_ne(cur->next, NULL);
 
   prev = cur;
   cur = cur->next;
@@ -76,7 +76,7 @@ START_TEST(test_blastlist_multiple) {
   ck_assert_str_eq(cur->user, b2.user);
   ck_assert_str_eq(cur->content, b2.content);
   ck_assert_ptr_eq(cur->prev, prev);
-  ck_assert_ptr_ne(cur->next, (void *)0);
+  ck_assert_ptr_ne(cur->next, NULL);
 
   prev = cur;
   cur = cur->next;
@@ -85,7 +85,7 @@ START_TEST(test_blastlist_multiple) {
   ck_assert_str_eq(cur->user, b3.user);
   ck_assert_str_eq(cur->content, b3.content);
   ck_assert_ptr_eq(cur->prev, prev);
-  ck_assert_ptr_eq(cur->next, (void *)0);
+  ck_assert_ptr_eq(cur->next, NULL);
 
   conch_blastlist_free(bl);
 }
@@ -116,11 +116,11 @@ START_TEST(test_blastlist_insert) {
   cur = bl->head;
 
   // There should now be one item in the list
-  ck_assert_ptr_ne(cur, (void *)0);
+  ck_assert_ptr_ne(cur, NULL);
   ck_assert_str_eq(cur->user, b1.user);
   ck_assert_str_eq(cur->content, b1.content);
-  ck_assert_ptr_eq(cur->prev, (void *)0);
-  ck_assert_ptr_eq(cur->next, (void *)0);
+  ck_assert_ptr_eq(cur->prev, NULL);
+  ck_assert_ptr_eq(cur->next, NULL);
 
   // Insert result set 2
   conch_blastlist_insert(bl, &rs2);
@@ -128,12 +128,12 @@ START_TEST(test_blastlist_insert) {
   prev = NULL;
   cur = bl->head;
 
-  ck_assert_ptr_ne(cur, (void *)0);
+  ck_assert_ptr_ne(cur, NULL);
   ck_assert(cur->id == b2.id);
   ck_assert_str_eq(cur->user, b2.user);
   ck_assert_str_eq(cur->content, b2.content);
   ck_assert_ptr_eq(cur->prev, prev);
-  ck_assert_ptr_ne(cur->next, (void *)0);
+  ck_assert_ptr_ne(cur->next, NULL);
 
   prev = cur;
   cur = cur->next;
@@ -142,7 +142,7 @@ START_TEST(test_blastlist_insert) {
   ck_assert_str_eq(cur->user, b1.user);
   ck_assert_str_eq(cur->content, b1.content);
   ck_assert_ptr_eq(cur->prev, prev);
-  ck_assert_ptr_eq(cur->next, (void *)0);
+  ck_assert_ptr_eq(cur->next, NULL);
 
   conch_blastlist_free(bl);
 }
