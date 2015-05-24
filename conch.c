@@ -5,6 +5,7 @@
 #include <time.h>
 
 #include "blastlist.h"
+#include "conchbackend.h"
 
 typedef struct window_chrome_s {
   int border_width;
@@ -148,34 +149,29 @@ WINDOW *init_screen() {
   return window;
 }
 
+blastlist *init_blasts() {
+  settings config = {
+    .page_size = 42,
+  };
+
+  mouthpiece *conn = conch_connect(config);
+
+  result_set *result = conch_recent_blasts(conn);
+
+  return conch_blastlist_new(result);
+}
+
 int main(int argc, char **argv) {
   WINDOW *main_window = init_screen();
   nodelay(main_window, 1);
 
-  blastlist_item b1 = {
-    .id = 1, .user = "fort", .content = "AAA",
-  };
-  blastlist_item b2 = {
-    .id = 2, .user = "fort", .content = "BBB",
-  };
-  blastlist_item b3 = {
-    .id = 3, .user = "fort", .content = "CCC",
-  };
-
-  b1.prev = 0;
-  b2.prev = &b1;
-  b3.prev = &b2;
-
-  b1.next = &b2;
-  b2.next = &b3;
-  b3.next = 0;
+  blastlist *blasts = init_blasts();
 
   screen_state_s screen = {
-    .current_blast = &b3, .blast_offset = 0,
+    .current_blast = blasts->head, .blast_offset = 0,
   };
 
   while(1) {
-    // get_updates(blasts);
     render(main_window, &screen);
     respond_to_keypresses(main_window, &screen);
   }

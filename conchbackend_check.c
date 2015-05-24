@@ -3,7 +3,7 @@
 #include "conchbackend.h"
 
 START_TEST(test_can_connect_and_disconnect) {
-  settings settings = { .page_size = 10 };
+  settings settings = {.page_size = 10 };
   mouthpiece *mp = conch_connect(settings);
   ck_assert_ptr_ne(mp, (void *)0);
   conch_disconnect(mp);
@@ -11,7 +11,7 @@ START_TEST(test_can_connect_and_disconnect) {
 END_TEST
 
 START_TEST(test_can_retrieve_most_recent) {
-  settings settings = { .page_size = 10 };
+  settings settings = {.page_size = 10 };
   mouthpiece *mp = conch_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
   ck_assert_int_eq(recent->error, 0);
@@ -25,7 +25,7 @@ START_TEST(test_can_retrieve_most_recent) {
 END_TEST
 
 START_TEST(test_can_page_backwards) {
-  settings settings = { .page_size = 2 };
+  settings settings = {.page_size = 2 };
   mouthpiece *mp = conch_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
   ck_assert_int_eq(recent->error, 0);

@@ -22,6 +22,8 @@ LDFLAGS_TEST+=$(shell pkg-config --libs $(LIBS_TEST))
 
 all: $(BINS)
 
+conch: blastlist.o conchbackend.o
+
 blastlist_check: blastlist.o conchbackend.o
 conchbackend_check: conchbackend.o
 
