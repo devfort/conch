@@ -14,7 +14,7 @@
 // Maximum time to wait for a keypress (tenths of a second)
 #define KEY_DELAY 5
 
-void handle_keypress(const int key, listview *lv) {
+static void handle_keypress(const int key, listview *lv) {
   switch (key) {
   case '0':
     conch_listview_jump_to_top(lv);
