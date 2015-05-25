@@ -49,17 +49,25 @@ void render_clock(WINDOW *window) {
             time_str);
 }
 
+void render_help(WINDOW *window) {
+  int max_y = getmaxy(window);
+  mvwaddstr(window, max_y - 1, chrome.padding_x + chrome.border_width,
+            "j: down  k: up  q: quit");
+}
+
 void render_chrome(WINDOW *window) {
   box(window, 0, 0);
   mvwaddstr(window, 0, 3, " conch <@ ");
 
   render_clock(window);
+  render_help(window);
 }
 
 int render_blast(WINDOW *window, int y, int x, blastlist *blast,
                  chtype highlight) {
 
-  int width = getmaxx(window) - ((chrome.border_width + chrome.padding_x) * 2) - 2;
+  int width =
+      getmaxx(window) - ((chrome.border_width + chrome.padding_x) * 2) - 2;
 
   mvwvline(window, y, x, highlight, 2);
 
