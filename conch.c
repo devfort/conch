@@ -59,7 +59,8 @@ void render_chrome(WINDOW *window) {
   render_clock(window);
 }
 
-int render_blast(WINDOW *window, int y, int x, blastlist *blast, chtype highlight) {
+int render_blast(WINDOW *window, int y, int x, blastlist *blast,
+                 chtype highlight) {
   int max_x = getmaxx(window);
 
   mvwvline(window, y, x, highlight, 2);
@@ -72,10 +73,11 @@ int render_blast(WINDOW *window, int y, int x, blastlist *blast, chtype highligh
   char *content = malloc(blast_len + 1);
   strncpy(content, blast->content, blast_len + 1);
 
-  for(char *token = strtok(content, " "); token != NULL; token = strtok(NULL, " ")) {
+  for(char *token = strtok(content, " "); token != NULL;
+      token = strtok(NULL, " ")) {
     const int tok_len = strlen(token);
 
-    if (tok_len + cur_x >= wrap_at) {
+    if(tok_len + cur_x >= wrap_at) {
       cur_x = x + 2;
       line += 1;
     }
@@ -134,8 +136,8 @@ void render(WINDOW *window, screen_state_s *screen) {
 
   int blast_y = first_blast_y;
   for(int i = 0; i < max_blasts && available_y > 0; ++i) {
-    int blast_height =
-        render_blast(window, blast_y, blast_x, blast, blast_highlight(blast, screen));
+    int blast_height = render_blast(window, blast_y, blast_x, blast,
+                                    blast_highlight(blast, screen));
 
     blast_y += chrome.blast_padding + blast_height;
     available_y -= blast_height;
@@ -237,11 +239,10 @@ int main(int argc, char **argv) {
   };
   do {
     conn = conch_connect(config);
-  } while (conn == NULL);
+  } while(conn == NULL);
 
   screen_state_s screen = {
-    .head = init_blasts(conn),
-    .blast_offset = 0,
+    .head = init_blasts(conn), .blast_offset = 0,
   };
   screen.current_blast = screen.head;
 

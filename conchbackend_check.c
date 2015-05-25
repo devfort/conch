@@ -3,7 +3,7 @@
 #include "conchbackend-internal.h"
 
 START_TEST(test_can_connect_and_disconnect) {
-  settings settings = { .page_size = 10 };
+  settings settings = {.page_size = 10 };
   mouthpiece *mp = conch_test_connect(settings);
   ck_assert_ptr_ne(mp, (void *)0);
   conch_disconnect(mp);
@@ -11,7 +11,7 @@ START_TEST(test_can_connect_and_disconnect) {
 END_TEST
 
 START_TEST(test_can_connect_and_disconnect_production) {
-  settings settings = { .page_size = 10 };
+  settings settings = {.page_size = 10 };
   mouthpiece *mp = conch_connect(settings);
   ck_assert_ptr_ne(mp, NULL);
   conch_disconnect(mp);
@@ -19,7 +19,7 @@ START_TEST(test_can_connect_and_disconnect_production) {
 END_TEST
 
 START_TEST(test_can_retrieve_most_recent) {
-  settings settings = { .page_size = 10 };
+  settings settings = {.page_size = 10 };
   mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
   ck_assert_int_eq(recent->error, 0);
@@ -33,7 +33,7 @@ START_TEST(test_can_retrieve_most_recent) {
 END_TEST
 
 START_TEST(test_can_page_backwards) {
-  settings settings = { .page_size = 2 };
+  settings settings = {.page_size = 2 };
   mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
   ck_assert_int_eq(recent->error, 0);
@@ -54,7 +54,7 @@ START_TEST(test_can_page_backwards) {
 END_TEST
 
 START_TEST(test_can_page_forwards) {
-  settings settings = { .page_size = 2 };
+  settings settings = {.page_size = 2 };
   mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
   result_set *past = conch_blasts_before(mp, recent->before_token);
@@ -73,7 +73,7 @@ START_TEST(test_can_page_forwards) {
 END_TEST
 
 START_TEST(test_can_page_forward_one_page) {
-  settings settings = { .page_size = 2 };
+  settings settings = {.page_size = 2 };
   mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
 
@@ -94,7 +94,7 @@ START_TEST(test_can_page_forward_one_page) {
 END_TEST
 
 START_TEST(test_can_silence_everything) {
-  settings settings = { .page_size = 10 };
+  settings settings = {.page_size = 10 };
   mouthpiece *mp = conch_test_connect(settings);
   ck_assert_ptr_ne(mp, NULL);
   conch_let_silence_fall(mp);
@@ -105,7 +105,7 @@ START_TEST(test_can_silence_everything) {
 END_TEST
 
 START_TEST(test_rolls_back_tests_on_close) {
-  settings settings = { .page_size = 10 };
+  settings settings = {.page_size = 10 };
   mouthpiece *mp = conch_test_connect(settings);
   conch_let_silence_fall(mp);
   conch_disconnect(mp);
