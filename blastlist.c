@@ -16,6 +16,7 @@ static void item_copy(blastlist *bl, blast *b) {
 static void item_free(blastlist *bl) {
   free(bl->user);
   free(bl->content);
+  free(bl->posted_at);
   free(bl);
 }
 
