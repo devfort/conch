@@ -108,7 +108,8 @@ int main(int argc, char **argv) {
   blastlist *bl = init_blasts(conn);
 
   while (1) {
-    conch_listview_update(lv, update_blasts(conn, bl));
+    bl = update_blasts(conn, bl);
+    conch_listview_update(lv, bl);
 
     int at_top = (lv->head == lv->current_blast);
     if (at_top && lv->stick_to_top) {
