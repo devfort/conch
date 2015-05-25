@@ -37,13 +37,9 @@ START_TEST(test_wordwrap) {
 END_TEST
 
 Suite *wordwrap_suite(void) {
-  Suite *s;
-  TCase *tc_core;
+  Suite *s = suite_create("wordwrap");
 
-  s = suite_create("wordwrap");
-  tc_core = tcase_create("create");
-  tcase_add_test(tc_core, test_wordwrap);
-  suite_add_tcase(s, tc_core);
+  add_test_case(s, "create", test_wordwrap);
 
   return s;
 }

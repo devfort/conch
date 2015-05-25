@@ -24,6 +24,12 @@ int conch_check_runsuite(Suite *s) {
   return (number_failed == 0) ? 0 : 1;
 }
 
+void add_test_case(Suite *s, char *name, void (*test_case)(int)) {
+  TCase *tc = tcase_create(name);
+  tcase_add_test(tc, test_case);
+  suite_add_tcase(s, tc);
+}
+
 #define CONCH_CHECK_MAIN(suite)                                                \
   int main(void) { return conch_check_runsuite(suite()); }
 

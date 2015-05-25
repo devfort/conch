@@ -124,31 +124,17 @@ START_TEST(test_free_null_result_set) {
 END_TEST
 
 Suite *conchbackend_suite(void) {
-  TCase *tc_core = tcase_create("connection");
-  tcase_add_test(tc_core, test_can_connect_and_disconnect);
-  tcase_add_test(tc_core, test_can_connect_and_disconnect_production);
-  TCase *tc_recent = tcase_create("recent");
-  tcase_add_test(tc_recent, test_can_retrieve_most_recent);
-  TCase *tc_backwards = tcase_create("backwards");
-  tcase_add_test(tc_recent, test_can_page_backwards);
-  TCase *tc_forwards = tcase_create("forwards");
-  tcase_add_test(tc_recent, test_can_page_forwards);
-  TCase *tc_forward_one_page = tcase_create("forward_one_page");
-  tcase_add_test(tc_recent, test_can_page_forward_one_page);
-  TCase *tc_silence = tcase_create("silence");
-  tcase_add_test(tc_silence, test_can_silence_everything);
-  tcase_add_test(tc_silence, test_rolls_back_tests_on_close);
-  TCase *tc_result_set = tcase_create("result_set");
-  tcase_add_test(tc_result_set, test_free_null_result_set);
-
   Suite *s = suite_create("backend");
-  suite_add_tcase(s, tc_core);
-  suite_add_tcase(s, tc_recent);
-  suite_add_tcase(s, tc_backwards);
-  suite_add_tcase(s, tc_forwards);
-  suite_add_tcase(s, tc_forward_one_page);
-  suite_add_tcase(s, tc_silence);
-  suite_add_tcase(s, tc_result_set);
+
+  add_test_case(s, "connection", test_can_connect_and_disconnect);
+  add_test_case(s, "connection_production", test_can_connect_and_disconnect_production);
+  add_test_case(s, "recent", test_can_retrieve_most_recent);
+  add_test_case(s, "backwards", test_can_page_backwards);
+  add_test_case(s, "forwards", test_can_page_forwards);
+  add_test_case(s, "forward_one_page", test_can_page_forward_one_page);
+  add_test_case(s, "silence_everything", test_can_silence_everything);
+  add_test_case(s, "rolls_back", test_rolls_back_tests_on_close);
+  add_test_case(s, "result_set", test_free_null_result_set);
 
   return s;
 }

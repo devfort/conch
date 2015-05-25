@@ -163,20 +163,16 @@ START_TEST(test_blastlist_join) {
 END_TEST
 
 Suite *blastlist_suite(void) {
-  Suite *s;
-  TCase *tc_core;
+  Suite *s = suite_create("blastlist");
 
-  s = suite_create("blastlist");
-  tc_core = tcase_create("create");
-  tcase_add_test(tc_core, test_blastlist_null_resultset);
-  tcase_add_test(tc_core, test_blastlist_empty);
-  tcase_add_test(tc_core, test_blastlist_single);
-  tcase_add_test(tc_core, test_blastlist_multiple);
-  tcase_add_test(tc_core, test_blastlist_join_null);
-  tcase_add_test(tc_core, test_blastlist_join_rhs_only);
-  tcase_add_test(tc_core, test_blastlist_join_lhs_only);
-  tcase_add_test(tc_core, test_blastlist_join);
-  suite_add_tcase(s, tc_core);
+  add_test_case(s, "null", test_blastlist_null_resultset);
+  add_test_case(s, "empty", test_blastlist_empty);
+  add_test_case(s, "single", test_blastlist_single);
+  add_test_case(s, "multiple", test_blastlist_multiple);
+  add_test_case(s, "join_null", test_blastlist_join_null);
+  add_test_case(s, "join_rhs_only", test_blastlist_join_rhs_only);
+  add_test_case(s, "join_lhs_only", test_blastlist_join_lhs_only);
+  add_test_case(s, "join", test_blastlist_join);
 
   return s;
 }
