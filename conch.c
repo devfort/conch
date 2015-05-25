@@ -255,22 +255,21 @@ int main(int argc, char **argv) {
     conn = conch_connect(config);
   } while(conn == NULL);
 
-  screen_state_s screen = {
-    .head = init_blasts(conn), .blast_offset = 0,
-  };
-  screen.current_blast = screen.head;
+  blastlist *bl = init_blasts(conn);
+  screen_state_s *screen = conch_listview_new(bl);
 
   while(1) {
-    int at_top = (screen.head == screen.current_blast);
-    screen.head = update_blasts(conn, screen.head);
+    int at_top = (screen->head == screen->current_blast);
+    screen->head = update_blasts(conn, screen->head);
 
-    if(at_top && screen.stick_to_top) {
-      screen.current_blast = screen.head;
-      screen.blast_offset = 0;
+    if(at_top && screen->stick_to_top) {
+      screen->current_blast = screen->head;
+      screen->blast_offset = 0;
     }
-    render(main_window, &screen);
-    respond_to_keypresses(main_window, &screen);
+    render(main_window, screen);
+    respond_to_keypresses(main_window, screen);
   }
 
   endwin();
+  conch_listview_free(screen);
 }
