@@ -61,13 +61,13 @@ check: $(BINS_TEST)
 
 PG_BIN_DIR=$(shell pg_config --bindir)
 
-.testdb: schema.sql data.sql
+.testdb: rsrc/schema.sql rsrc/data.sql
 	$(PG_BIN_DIR)/dropdb -h localhost bugle_test 2>/dev/null || true
 	$(PG_BIN_DIR)/dropuser -h localhost bugle 2>/dev/null || true
 	$(PG_BIN_DIR)/createuser -h localhost -SDR bugle
 	$(PG_BIN_DIR)/createdb -h localhost bugle_test --owner=bugle
-	psql -h localhost bugle_test < schema.sql
-	psql -h localhost bugle_test < data.sql
+	psql -h localhost bugle_test < rsrc/schema.sql
+	psql -h localhost bugle_test < rsrc/data.sql
 	touch .testdb
 
 clean:

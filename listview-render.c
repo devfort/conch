@@ -33,10 +33,9 @@ void render_conch(WINDOW *window) {
   int lines = getmaxy(window) - 4;
   int cols = getmaxx(window) - 4;
 
-  struct image *i = load_image("CONCH.png");
+  struct image *i = load_image("rsrc/conch.png");
   if (i == NULL) {
-    // Don't try and render the image if the CONCH
-    // doesn't load
+    // Don't try and render the image if the conch doesn't load.
     return;
   }
 
