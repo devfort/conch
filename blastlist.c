@@ -32,6 +32,7 @@ static blastlist *item_new(blast *b) {
   bl->id = b->id;
   bl->user = strclone(b->user);
   bl->content = strclone(b->content);
+  bl->posted_at = strclone(b->posted_at);
 
   return bl;
 }

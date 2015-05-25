@@ -9,6 +9,7 @@ struct blastlist {
   id id;
   char *user;
   char *content;
+  char *posted_at;
 
   blastlist *prev;
   blastlist *next;
