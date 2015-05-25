@@ -3,22 +3,20 @@
 
 #include "conchbackend.h"
 
-typedef struct blastlist_item blastlist_item;
+typedef struct blastlist blastlist;
 
-struct blastlist_item {
+struct blastlist {
   id id;
   char *user;
   char *content;
 
-  blastlist_item *prev;
-  blastlist_item *next;
+  blastlist *prev;
+  blastlist *next;
 };
 
-typedef struct { blastlist_item *head; } blastlist;
-
 blastlist *conch_blastlist_new(result_set *rs);
+blastlist *conch_blastlist_join(blastlist *lhs, blastlist *rhs);
 
-void conch_blastlist_insert(blastlist *bs, result_set *rs);
-void conch_blastlist_free(blastlist *bs);
+void conch_blastlist_free(blastlist *bl);
 
 #endif
