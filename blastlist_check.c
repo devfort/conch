@@ -6,9 +6,9 @@
 #define ASSERT_PTR_NULL(ptr) ck_assert_ptr_eq(ptr, NULL)
 #define ASSERT_PTR_NOT_NULL(ptr) ck_assert_ptr_ne(ptr, NULL)
 
-START_TEST(test_blastlist_null_resultset) {
+START_TEST(test_blastlist_from_result_set_null) {
   result_set *rs = NULL;
-  blastlist *bl = conch_blastlist_new(rs);
+  blastlist *bl = conch_blastlist_from_result_set(rs);
 
   ASSERT_PTR_NULL(bl);
 
@@ -16,9 +16,9 @@ START_TEST(test_blastlist_null_resultset) {
 }
 END_TEST
 
-START_TEST(test_blastlist_empty) {
+START_TEST(test_blastlist_from_result_set_empty) {
   result_set rs = { 0 };
-  blastlist *bl = conch_blastlist_new(&rs);
+  blastlist *bl = conch_blastlist_from_result_set(&rs);
 
   ASSERT_PTR_NULL(bl);
 
@@ -26,14 +26,14 @@ START_TEST(test_blastlist_empty) {
 }
 END_TEST
 
-START_TEST(test_blastlist_single) {
+START_TEST(test_blastlist_from_result_set_single) {
   blast b = {
     .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
   };
   result_set rs = {
     .count = 1, .blasts = &b,
   };
-  blastlist *bl = conch_blastlist_new(&rs);
+  blastlist *bl = conch_blastlist_from_result_set(&rs);
 
   // List should exist and have head
   ASSERT_PTR_NOT_NULL(bl);
@@ -51,7 +51,7 @@ START_TEST(test_blastlist_single) {
 }
 END_TEST
 
-START_TEST(test_blastlist_multiple) {
+START_TEST(test_blastlist_from_result_set_multiple) {
   blast b1 = {
     .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
   };
@@ -64,7 +64,7 @@ START_TEST(test_blastlist_multiple) {
   result_set rs = {
     .count = 3, .blasts = (blast[]){ b1, b2, b3 },
   };
-  blastlist *bl = conch_blastlist_new(&rs);
+  blastlist *bl = conch_blastlist_from_result_set(&rs);
 
   // List should exist
   ASSERT_PTR_NOT_NULL(bl);
@@ -115,7 +115,7 @@ START_TEST(test_blastlist_join_rhs_only) {
   result_set rs1 = {
     .count = 1, .blasts = &b1,
   };
-  blastlist *rhs = conch_blastlist_new(&rs1);
+  blastlist *rhs = conch_blastlist_from_result_set(&rs1);
 
   blastlist *bl = conch_blastlist_join(NULL, rhs);
 
@@ -130,7 +130,7 @@ START_TEST(test_blastlist_join_lhs_only) {
   result_set rs1 = {
     .count = 1, .blasts = &b1,
   };
-  blastlist *lhs = conch_blastlist_new(&rs1);
+  blastlist *lhs = conch_blastlist_from_result_set(&rs1);
 
   blastlist *bl = conch_blastlist_join(lhs, NULL);
 
@@ -151,8 +151,8 @@ START_TEST(test_blastlist_join) {
   result_set rs2 = {
     .count = 1, .blasts = &b2,
   };
-  blastlist *lhs = conch_blastlist_new(&rs1);
-  blastlist *rhs = conch_blastlist_new(&rs2);
+  blastlist *lhs = conch_blastlist_from_result_set(&rs1);
+  blastlist *rhs = conch_blastlist_from_result_set(&rs2);
 
   blastlist *bl = conch_blastlist_join(lhs, rhs);
 
@@ -165,10 +165,11 @@ END_TEST
 Suite *blastlist_suite(void) {
   Suite *s = suite_create("blastlist");
 
-  add_test_case(s, "null", test_blastlist_null_resultset);
-  add_test_case(s, "empty", test_blastlist_empty);
-  add_test_case(s, "single", test_blastlist_single);
-  add_test_case(s, "multiple", test_blastlist_multiple);
+  add_test_case(s, "result_set_null", test_blastlist_from_result_set_null);
+  add_test_case(s, "result_set_empty", test_blastlist_from_result_set_empty);
+  add_test_case(s, "result_set_single", test_blastlist_from_result_set_single);
+  add_test_case(s, "result_set_multiple",
+                test_blastlist_from_result_set_multiple);
   add_test_case(s, "join_null", test_blastlist_join_null);
   add_test_case(s, "join_rhs_only", test_blastlist_join_rhs_only);
   add_test_case(s, "join_lhs_only", test_blastlist_join_lhs_only);

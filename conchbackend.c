@@ -129,7 +129,8 @@ static result_set *pg_result_to_result_set(mouthpiece *mp,
       blast->id = id;
       blast->user = strclone(PQgetvalue(query_result, i, name_column));
       blast->content = strclone(PQgetvalue(query_result, i, message_column));
-      blast->posted_at = strclone(PQgetvalue(query_result, i, posted_at_column));
+      blast->posted_at =
+          strclone(PQgetvalue(query_result, i, posted_at_column));
     }
   }
 

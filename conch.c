@@ -83,7 +83,8 @@ int render_blast(WINDOW *window, int y, int x, blastlist *blast,
                token->length);
   }
 
-  mvwprintw(window, y + line + 1, x + 2, "--%s at %s", blast->user, blast->posted_at);
+  mvwprintw(window, y + line + 1, x + 2, "--%s at %s", blast->user,
+            blast->posted_at);
 
   return line + 2;
 }
@@ -232,14 +233,14 @@ WINDOW *init_screen() {
 
 blastlist *init_blasts(mouthpiece *conn) {
   result_set *result = conch_recent_blasts(conn);
-  blastlist *blasts = conch_blastlist_new(result);
+  blastlist *blasts = conch_blastlist_from_result_set(result);
   conch_free_result_set(result);
   return blasts;
 }
 
 blastlist *update_blasts(mouthpiece *conn, blastlist *blasts) {
   result_set *result = conch_blasts_after(conn, blasts->id);
-  blastlist *newblasts = conch_blastlist_new(result);
+  blastlist *newblasts = conch_blastlist_from_result_set(result);
   conch_free_result_set(result);
 
   return conch_blastlist_join(newblasts, blasts);

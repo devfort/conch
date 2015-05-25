@@ -43,7 +43,7 @@ static void item_free(blastlist *bl) {
   free(bl);
 }
 
-blastlist *conch_blastlist_new(result_set *rs) {
+blastlist *conch_blastlist_from_result_set(result_set *rs) {
   // If there are no items out of which to make a blastlist, return NULL
   if (rs == NULL || rs->count == 0) {
     return NULL;
