@@ -1,5 +1,6 @@
 #include <ctype.h>
 #include <string.h>
+
 #include "wordwrap.h"
 
 void init_wordwrap(wordwrap_s *wrap, char *content, int width) {

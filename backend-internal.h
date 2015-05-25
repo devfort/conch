@@ -1,9 +1,10 @@
 #ifndef _BACKEND_INTERNAL_H
 #define _BACKEND_INTERNAL_H
 
-#include "backend.h"
 #include <libpq-fe.h>
 #include <stdbool.h>
+
+#include "backend.h"
 
 struct mouthpiece {
   PGconn *connection;

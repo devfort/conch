@@ -1,7 +1,8 @@
-#include <stdlib.h>
-#include <stdio.h>
-#include <string.h>
 #include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "strutils.h"
 
 char *strclone(char *c) {

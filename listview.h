@@ -2,6 +2,7 @@
 #define _LISTVIEW_H
 
 #include <stdbool.h>
+
 #include "blastlist.h"
 
 typedef struct listview {

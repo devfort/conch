@@ -6,9 +6,9 @@
 #include <stdlib.h>
 #include <time.h>
 
+#include "backend.h"
 #include "blastlist.h"
 #include "colors.h"
-#include "backend.h"
 #include "listview.h"
 #include "listview_render.h"
 

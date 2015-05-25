@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "checkrunner.h"
 
 #include "wordwrap.h"

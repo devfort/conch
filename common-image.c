@@ -10,11 +10,10 @@
  *  http://sam.zoy.org/wtfpl/COPYING for more details.
  */
 
-#include <string.h>
-#include <stdlib.h>
-
 #include <Imlib2.h>
 #include <caca.h>
+#include <stdlib.h>
+#include <string.h>
 
 #include "common-image.h"
 
