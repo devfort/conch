@@ -30,9 +30,7 @@ mouthpiece *conch_connect(settings settings) {
 mouthpiece *conch_test_connect(settings settings) {
   mouthpiece *mp = conch_connect_internal(
       settings, "host=localhost dbname=bugle_test user=bugle");
-  if(mp == NULL) {
-    return NULL;
-  }
+  assert(mp != NULL);
   mp->is_test = true;
 
   PGresult *res = PQexec(mp->connection, "BEGIN");
