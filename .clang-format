@@ -8,5 +8,4 @@ Language: Cpp
 AllowAllParametersOfDeclarationOnNextLine: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 IndentCaseLabels: false
-PointerAlignment: Right
 ...
