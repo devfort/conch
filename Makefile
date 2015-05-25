@@ -11,7 +11,6 @@ BINS_TEST=$(patsubst %.c,%,$(wildcard *_check.c))
 LIBS=libpq caca imlib2
 LIBS_TEST=check
 
-
 ifndef verbose
   SILENT = @
 endif
@@ -60,8 +59,6 @@ check: $(BINS_TEST)
 		./$$t | ./greenify; \
 		echo ----; \
 	done
-check_%: %_check
-	$(SILENT)./$<
 
 PG_BIN_DIR=$(shell pg_config --bindir)
 
@@ -88,7 +85,6 @@ reformat: *.c *.h
 %_check: %_check.o
 	@echo "LD  $@"
 	$(SILENT)$(CC) -o $@ $(filter %.o,$^) $(LDFLAGS_TEST)
-
 
 %.o: %.c
 	@mkdir -p $(DEPS)
