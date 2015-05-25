@@ -18,7 +18,7 @@ LDFLAGS+=$(shell pkg-config --libs $(LIBS))
 
 # ncurses doesn't seem to ship with .pc files on all platforms, but it does
 # seems to be available in system include directories.
-LDFLAGS+=-lncurses
+LDFLAGS+=$(shell pkg-config --libs ncursesw || pkg-config --libs ncurses || echo -lncursesw)
 
 CFLAGS_TEST=$(CFLAGS)
 CFLAGS_TEST+=$(shell pkg-config --cflags $(LIBS_TEST))
