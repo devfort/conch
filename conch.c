@@ -176,19 +176,15 @@ int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
     break;
 
   case 'j':
-    if (screen->current_blast->next) {
-      screen->current_blast = screen->current_blast->next;
-    }
+    conch_listview_select_next_blast(screen);
     break;
 
   case 'k':
-    if (screen->current_blast->prev) {
-      screen->current_blast = screen->current_blast->prev;
-    }
+    conch_listview_select_prev_blast(screen);
     break;
 
   case 's':
-    screen->stick_to_top ^= true;
+    conch_listview_toggle_stick_to_top(screen);
     break;
 
   case 'q':
