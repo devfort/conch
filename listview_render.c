@@ -1,4 +1,5 @@
 #include <curses.h>
+#include <string.h>
 #include <time.h>
 
 #include "blastlist.h"
@@ -8,6 +9,9 @@
 #include "listview.h"
 #include "listview_render.h"
 #include "wordwrap.h"
+
+// 64 characters provides space for a 14-character status with the clock
+#define MIN_WIDTH_FOR_CLOCK 64
 
 typedef struct window_chrome_s {
   int border_width;
@@ -68,7 +72,9 @@ static void render_chrome(WINDOW *window) {
   box(window, 0, 0);
   mvwaddstr(window, 0, 3, " conch <@ ");
 
-  render_clock(window);
+  if (MIN_WIDTH_FOR_CLOCK <= getmaxx(window)) {
+    render_clock(window);
+  }
   render_help(window);
 }
 
@@ -131,6 +137,12 @@ void conch_listview_render(WINDOW *window, listview *lv) {
   werase(window);
 
   render_chrome(window);
+
+  if (conch_listview_has_unread_blasts(lv)) {
+    const char *unread_status = " unread blasts ";
+    int center_offset = (getmaxx(window) - strlen(unread_status)) / 2;
+    mvwaddstr(window, 0, center_offset, " unread blasts ");
+  }
 
   mvwvline(window, chrome.border_width, blast_x,
            ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR),
