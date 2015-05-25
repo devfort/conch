@@ -7,7 +7,7 @@
 #include "colors.h"
 #include "common-image.h"
 #include "listview.h"
-#include "listview_render.h"
+#include "listview-render.h"
 #include "wordwrap.h"
 
 // 64 characters provides space for a 14-character status with the clock

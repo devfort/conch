@@ -6,7 +6,7 @@ DEPS=.deps
 CFLAGS+=$(CDEBUG) --std=c99 -Wall -Wformat -Werror --pedantic
 
 BINS=conch
-BINS_TEST=$(patsubst %.c,%,$(wildcard *_check.c))
+BINS_TEST=$(patsubst %.c,%,$(wildcard *-check.c))
 
 LIBS=libpq caca imlib2
 LIBS_TEST=check
@@ -44,16 +44,15 @@ conch: \
   common-image.o \
   backend.o \
   listview.o \
-  listview_render.o \
+  listview-render.o \
   strutils.o \
   wordwrap.o
 
-blastlist_check: blastlist.o backend.o strutils.o
-backend_check: backend.o strutils.o .testdb
-wordwrap_check: wordwrap.o
-listview_check: listview.o blastlist.o strutils.o
+blastlist-check: blastlist.o backend.o strutils.o
+backend-check: backend.o strutils.o .testdb
+wordwrap-check: wordwrap.o
+listview-check: listview.o blastlist.o strutils.o
 
-CHECKTASKS=$(patsubst %_check,check_%,$(BINS_TEST))
 check: $(BINS_TEST)
 	$(SILENT)set -e && for t in $^; do \
 		./$$t | ./greenify; \
@@ -77,12 +76,12 @@ clean:
 reformat: *.c *.h
 	clang-format -i *.h *.c
 
-%_check.o: %_check.c
+%-check.o: %-check.c
 	@mkdir -p $(DEPS)
 	@echo "CC  $@"
 	$(SILENT)$(CC) -o $@ -c $< $(CFLAGS_TEST) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<))
 
-%_check: %_check.o
+%-check: %-check.o
 	@echo "LD  $@"
 	$(SILENT)$(CC) -o $@ $(filter %.o,$^) $(LDFLAGS_TEST)
 

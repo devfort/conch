@@ -10,7 +10,7 @@
 #include "blastlist.h"
 #include "colors.h"
 #include "listview.h"
-#include "listview_render.h"
+#include "listview-render.h"
 
 // Approximate time to wait between requests to the database (seconds)
 #define DB_POLL_INTERVAL 10

@@ -1,6 +1,6 @@
 *.a
 *.o
-/*_check
+/*-check
 /.deps
 /conch
 .testdb
