@@ -2,6 +2,22 @@
 
 #include "conchbackend-internal.h"
 
+void assert_valid_result_set(mouthpiece *mp, result_set *rs) {
+  ck_assert_ptr_ne(mp, NULL);
+  ck_assert_ptr_ne(rs, NULL);
+  ck_assert_int_eq(rs->error, 0);
+  ck_assert_int_ne(rs->count, 0);
+  ck_assert_int_le(rs->count, mp->settings.page_size);
+  ck_assert_int_ne(rs->before_token, 0);
+  ck_assert_int_ne(rs->after_token, 0);
+  for(int i=0; i<rs->count; i++) {
+    blast blast = rs->blasts[i];
+    ck_assert_ptr_ne(blast.user, NULL);
+    ck_assert_ptr_ne(blast.content, NULL);
+    ck_assert_int_ne(blast.id, 0);
+  }
+}
+
 START_TEST(test_can_connect_and_disconnect) {
   settings settings = {.page_size = 10 };
   mouthpiece *mp = conch_test_connect(settings);
@@ -22,11 +38,7 @@ START_TEST(test_can_retrieve_most_recent) {
   settings settings = {.page_size = 10 };
   mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
-  ck_assert_int_eq(recent->error, 0);
-  ck_assert_int_ne(recent->count, 0);
-  ck_assert_int_le(recent->count, settings.page_size);
-  ck_assert_int_ne(recent->before_token, 0);
-  ck_assert_int_ne(recent->after_token, 0);
+  assert_valid_result_set(mp, recent);
   conch_free_result_set(recent);
   conch_disconnect(mp);
 }
@@ -36,16 +48,10 @@ START_TEST(test_can_page_backwards) {
   settings settings = {.page_size = 2 };
   mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
-  ck_assert_int_eq(recent->error, 0);
-  ck_assert_int_eq(recent->count, 2);
-  ck_assert_int_ne(recent->before_token, 0);
-  ck_assert_int_ne(recent->after_token, 0);
+  assert_valid_result_set(mp, recent);
 
   result_set *past = conch_blasts_before(mp, recent->before_token);
-  ck_assert_int_eq(past->error, 0);
-  ck_assert_int_eq(past->count, 2);
-  ck_assert_int_ne(past->before_token, 0);
-  ck_assert_int_ne(past->after_token, 0);
+  assert_valid_result_set(mp, past);
 
   conch_free_result_set(recent);
   conch_free_result_set(past);
@@ -60,10 +66,7 @@ START_TEST(test_can_page_forwards) {
   result_set *past = conch_blasts_before(mp, recent->before_token);
 
   result_set *back_to_the_future = conch_blasts_after(mp, past->after_token);
-  ck_assert_int_eq(back_to_the_future->error, 0);
-  ck_assert_int_eq(back_to_the_future->count, 2);
-  ck_assert_int_eq(back_to_the_future->before_token, recent->before_token);
-  ck_assert_int_eq(back_to_the_future->after_token, recent->after_token);
+  assert_valid_result_set(mp, back_to_the_future);
 
   conch_free_result_set(recent);
   conch_free_result_set(past);
@@ -81,10 +84,7 @@ START_TEST(test_can_page_forward_one_page) {
   result_set *paster = conch_blasts_before(mp, past->before_token);
 
   result_set *back_to_the_future = conch_blasts_after(mp, paster->after_token);
-  ck_assert_int_eq(back_to_the_future->error, 0);
-  ck_assert_int_eq(back_to_the_future->count, 2);
-  ck_assert_int_eq(back_to_the_future->before_token, past->before_token);
-  ck_assert_int_eq(back_to_the_future->after_token, past->after_token);
+  assert_valid_result_set(mp, back_to_the_future);
 
   conch_free_result_set(recent);
   conch_free_result_set(past);
@@ -111,8 +111,7 @@ START_TEST(test_rolls_back_tests_on_close) {
   conch_disconnect(mp);
   mp = conch_test_connect(settings);
   result_set *results = conch_recent_blasts(mp);
-  ck_assert_int_eq(results->error, 0);
-  ck_assert_int_eq(results->count, 10);
+  assert_valid_result_set(mp, results);
   conch_free_result_set(results);
   conch_disconnect(mp);
 }
