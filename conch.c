@@ -1,6 +1,7 @@
 #include <curses.h>
 #include <getopt.h>
 #include <locale.h>
+#include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -187,7 +188,7 @@ int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
     break;
 
   case 's':
-    screen->stick_to_top ^= TRUE;
+    screen->stick_to_top ^= true;
     break;
 
   case 'q':
@@ -247,7 +248,8 @@ blastlist *update_blasts(mouthpiece *conn, blastlist *blasts) {
 }
 
 int main(int argc, char **argv) {
-  int stick_to_top, opt;
+  bool stick_to_top;
+  int opt;
   static struct option longopts[] = {
     { "stick-to-top", no_argument, NULL, 's' }, { NULL, 0, NULL, 0 },
   };
@@ -255,7 +257,7 @@ int main(int argc, char **argv) {
   while ((opt = getopt_long(argc, argv, "s", longopts, NULL)) != -1) {
     switch (opt) {
     case 's':
-      stick_to_top = TRUE;
+      stick_to_top = true;
       break;
     }
   }
