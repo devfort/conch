@@ -35,7 +35,7 @@ listview_check: listview.o blastlist.o
 CHECKTASKS=$(patsubst %_check,check_%,$(BINS_TEST))
 check: $(BINS_TEST)
 	@set -e && for t in $^; do \
-		./$$t; \
+		./$$t | ./greenify; \
 		echo ----; \
 	done
 check_%: %_check
