@@ -1,6 +1,9 @@
-CFLAGS?=--std=c99 -Wall -Wformat -Werror --pedantic -g
+CDEBUG?=-g
+CFLAGS?=
 LDFLAGS?=
-DEPS?=.deps
+DEPS=.deps
+
+CFLAGS+=$(CDEBUG) --std=c99 -Wall -Wformat -Werror --pedantic
 
 BINS=conch
 BINS_TEST=$(patsubst %.c,%,$(wildcard *_check.c))
