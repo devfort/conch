@@ -12,6 +12,7 @@ static mouthpiece *conch_connect_internal(settings settings,
                                           char *connection_string) {
   PGconn *connection = PQconnectdb(connection_string);
   if(PQstatus(connection) == CONNECTION_BAD) {
+    fprintf(stderr, "%s", PQerrorMessage(connection));
     return NULL;
   }
   mouthpiece *mp = malloc(sizeof(mouthpiece));
