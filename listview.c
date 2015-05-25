@@ -19,6 +19,11 @@ void conch_listview_toggle_stick_to_top(screen_state_s *lv) {
   lv->stick_to_top ^= true;
 }
 
+void conch_listview_jump_to_top(screen_state_s *lv) {
+  lv->current_blast = lv->head;
+  lv->blast_offset = 0;
+}
+
 void conch_listview_select_next_blast(screen_state_s *lv) {
   if (lv->current_blast->next) {
     lv->current_blast = lv->current_blast->next;

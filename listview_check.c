@@ -113,6 +113,23 @@ START_TEST(test_listview_cursor_movement) {
 }
 END_TEST
 
+START_TEST(test_listview_jump_to_top) {
+  blastlist *bl = conch_blastlist_new();
+  bl = conch_blastlist_join(conch_blastlist_new(), bl);
+  bl = conch_blastlist_join(conch_blastlist_new(), bl);
+  screen_state_s *lv = conch_listview_new(true);
+  conch_listview_update(lv, bl);
+
+  conch_listview_select_next_blast(lv);
+  conch_listview_select_next_blast(lv);
+
+  ck_assert_ptr_ne(lv->head, lv->current_blast);
+  conch_listview_jump_to_top(lv);
+  ck_assert_ptr_eq(lv->head, lv->current_blast);
+  ck_assert_int_eq(lv->blast_offset, 0);
+}
+END_TEST
+
 Suite *listview_suite(void) {
   Suite *s = suite_create("listview");
 
@@ -123,6 +140,7 @@ Suite *listview_suite(void) {
   ADD_TEST_CASE(s, test_listview_update_does_not_set_current_otherwise);
   ADD_TEST_CASE(s, test_listview_toggle_stick_to_top);
   ADD_TEST_CASE(s, test_listview_cursor_movement);
+  ADD_TEST_CASE(s, test_listview_jump_to_top);
 
   return s;
 }

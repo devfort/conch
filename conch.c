@@ -162,17 +162,12 @@ void render(WINDOW *window, screen_state_s *screen) {
   wrefresh(window);
 }
 
-void listview_jumptop(screen_state_s *screen) {
-  screen->current_blast = screen->head;
-  screen->blast_offset = 0;
-}
-
 int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
   const int input = wgetch(window);
 
   switch (input) {
   case '0':
-    listview_jumptop(screen);
+    conch_listview_jump_to_top(screen);
     break;
 
   case 'j':
@@ -278,7 +273,7 @@ int main(int argc, char **argv) {
 
     int at_top = (screen->head == screen->current_blast);
     if (at_top && screen->stick_to_top) {
-      listview_jumptop(screen);
+      conch_listview_jump_to_top(screen);
     }
     render(main_window, screen);
     respond_to_keypresses(main_window, screen);
