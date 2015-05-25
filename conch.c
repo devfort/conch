@@ -137,6 +137,7 @@ int main(int argc, char **argv) {
   };
   do {
     conn = conch_connect(config);
+    sleep(1);
   } while (conn == NULL);
 
   blastlist *bl = init_blasts(conn);
