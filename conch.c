@@ -1,5 +1,5 @@
-#include <locale.h>
 #include <curses.h>
+#include <locale.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
