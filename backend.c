@@ -110,7 +110,7 @@ static resultset *pg_result_to_resultset(mouthpiece *mp,
     int n = PQntuples(query_result);
 
     if (n == 0) {
-      conch_free_resultset(result);
+      conch_resultset_free(result);
       return NULL;
     }
 
@@ -221,7 +221,7 @@ resultset *conch_blasts_after(mouthpiece *mp, id after_token) {
   return pg_result_to_resultset(mp, query_result);
 }
 
-void conch_free_resultset(resultset *result) {
+void conch_resultset_free(resultset *result) {
   if (result == NULL) {
     return;
   }

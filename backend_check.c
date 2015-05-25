@@ -40,7 +40,7 @@ START_TEST(test_can_retrieve_most_recent) {
   mouthpiece *mp = conch_test_connect(settings);
   resultset *recent = conch_recent_blasts(mp);
   assert_valid_resultset(mp, recent);
-  conch_free_resultset(recent);
+  conch_resultset_free(recent);
   conch_disconnect(mp);
 }
 END_TEST
@@ -54,8 +54,8 @@ START_TEST(test_can_page_backwards) {
   resultset *past = conch_blasts_before(mp, recent->before_token);
   assert_valid_resultset(mp, past);
 
-  conch_free_resultset(recent);
-  conch_free_resultset(past);
+  conch_resultset_free(recent);
+  conch_resultset_free(past);
   conch_disconnect(mp);
 }
 END_TEST
@@ -85,9 +85,9 @@ START_TEST(test_can_page_forwards) {
   resultset *back_to_the_future = conch_blasts_after(mp, past->after_token);
   assert_valid_resultset(mp, back_to_the_future);
 
-  conch_free_resultset(recent);
-  conch_free_resultset(past);
-  conch_free_resultset(back_to_the_future);
+  conch_resultset_free(recent);
+  conch_resultset_free(past);
+  conch_resultset_free(back_to_the_future);
   conch_disconnect(mp);
 }
 END_TEST
@@ -103,9 +103,9 @@ START_TEST(test_can_page_forward_one_page) {
   resultset *back_to_the_future = conch_blasts_after(mp, paster->after_token);
   assert_valid_resultset(mp, back_to_the_future);
 
-  conch_free_resultset(recent);
-  conch_free_resultset(past);
-  conch_free_resultset(back_to_the_future);
+  conch_resultset_free(recent);
+  conch_resultset_free(past);
+  conch_resultset_free(back_to_the_future);
   conch_disconnect(mp);
 }
 END_TEST
@@ -129,14 +129,14 @@ START_TEST(test_rolls_back_tests_on_close) {
   mp = conch_test_connect(settings);
   resultset *results = conch_recent_blasts(mp);
   assert_valid_resultset(mp, results);
-  conch_free_resultset(results);
+  conch_resultset_free(results);
   conch_disconnect(mp);
 }
 END_TEST
 
 START_TEST(test_free_null_resultset) {
   resultset *results = NULL;
-  conch_free_resultset(results);
+  conch_resultset_free(results);
 }
 END_TEST
 

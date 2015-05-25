@@ -42,6 +42,6 @@ resultset *conch_recent_blasts(mouthpiece *mp);
 resultset *conch_blasts_before(mouthpiece *mp, id before_token);
 resultset *conch_blasts_after(mouthpiece *mp, id after_token);
 
-void conch_free_resultset(resultset *results);
+void conch_resultset_free(resultset *results);
 
 #endif /* _BACKEND_H */
