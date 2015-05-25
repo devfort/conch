@@ -30,12 +30,14 @@ enum conch_color {
   NEW_COLOR = 2,
   SELECTED_COLOR = 3,
   TIMELINE_COLOR = 4,
+  STUCK_COLOR = 5,
 };
 
 typedef struct screen_state_s {
   blastlist *head;
   blastlist *current_blast;
   int blast_offset;
+  int stick_to_top;
 } screen_state_s;
 
 void render_clock(WINDOW *window) {
@@ -139,6 +141,9 @@ void render(WINDOW *window, screen_state_s *screen) {
   if(blast->prev) {
     mvwvline(window, chrome.border_width, blast_x,
              ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
+  } else if (screen->stick_to_top) {
+    mvwvline(window, chrome.border_width, blast_x,
+             ACS_VLINE | COLOR_PAIR(STUCK_COLOR), 1);
   }
 
   int blast_y = first_blast_y;
@@ -165,6 +170,7 @@ void render(WINDOW *window, screen_state_s *screen) {
 
 void listview_jumptop(screen_state_s *screen) {
   screen->current_blast = screen->head;
+  screen->blast_offset = 0;
 }
 
 int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
@@ -187,6 +193,10 @@ int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
     }
     break;
 
+  case 's':
+    screen->stick_to_top ^= TRUE;
+    break;
+
   case 'q':
     endwin();
     exit(0);
@@ -205,6 +215,7 @@ void init_colors() {
   init_pair(NEW_COLOR, COLOR_BLUE, COLOR_BLUE);
   init_pair(SELECTED_COLOR, COLOR_WHITE, COLOR_RED);
   init_pair(TIMELINE_COLOR, 100, -1);
+  init_pair(STUCK_COLOR, COLOR_GREEN, COLOR_GREEN);
 }
 
 WINDOW *init_screen() {
@@ -259,7 +270,13 @@ int main(int argc, char **argv) {
   screen.current_blast = screen.head;
 
   while(1) {
+    int at_top = (screen.head == screen.current_blast);
     screen.head = update_blasts(conn, screen.head);
+
+    if (at_top && screen.stick_to_top) {
+      screen.current_blast = screen.head;
+      screen.blast_offset = 0;
+    }
     render(main_window, &screen);
     respond_to_keypresses(main_window, &screen);
   }
