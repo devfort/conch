@@ -6,13 +6,13 @@
 #include "blastlist.h"
 
 static char *strclone(char *c) {
-  if(c == NULL) {
+  if (c == NULL) {
     return NULL;
   }
 
   char *target = malloc(strlen(c) + 1);
 
-  if(target == NULL) {
+  if (target == NULL) {
     fprintf(stderr, "strclone: could not alloc\n");
     abort();
   }
@@ -24,7 +24,7 @@ static char *strclone(char *c) {
 static blastlist *item_new(blast *b) {
   blastlist *bl = (blastlist *)calloc(1, sizeof(blastlist));
 
-  if(bl == NULL) {
+  if (bl == NULL) {
     fprintf(stderr, "item_new: could not alloc\n");
     abort();
   }
@@ -44,14 +44,14 @@ static void item_free(blastlist *bl) {
 
 blastlist *conch_blastlist_new(result_set *rs) {
   // If there are no items out of which to make a blastlist, return NULL
-  if(rs == NULL || rs->count == 0) {
+  if (rs == NULL || rs->count == 0) {
     return NULL;
   }
 
   blastlist *head = item_new(rs->blasts);
   blastlist *cur = head;
 
-  for(uint64_t i = 1; i < rs->count; ++i) {
+  for (uint64_t i = 1; i < rs->count; ++i) {
     cur->next = item_new(rs->blasts + i);
     cur->next->prev = cur;
     cur = cur->next;
@@ -61,17 +61,17 @@ blastlist *conch_blastlist_new(result_set *rs) {
 }
 
 blastlist *conch_blastlist_join(blastlist *lhs, blastlist *rhs) {
-  if(lhs == NULL) {
+  if (lhs == NULL) {
     return rhs;
   }
-  if(rhs == NULL) {
+  if (rhs == NULL) {
     return lhs;
   }
 
   // Otherwise both lists are non-null, so we find the tail of the lhs:
   blastlist *cur = lhs;
-  while(1) {
-    if(cur->next == NULL) {
+  while (1) {
+    if (cur->next == NULL) {
       break;
     }
     cur = cur->next;
@@ -88,14 +88,14 @@ void conch_blastlist_free(blastlist *bl) {
   blastlist *cur;
   blastlist *next = bl;
 
-  if(bl == NULL) {
+  if (bl == NULL) {
     return;
   }
 
   // We should have received the head of a list, or I'm going to explode.
   assert(next->prev == NULL);
 
-  while(next != NULL) {
+  while (next != NULL) {
     cur = next;
     next = cur->next;
     item_free(cur);

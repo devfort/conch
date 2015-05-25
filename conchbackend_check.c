@@ -10,7 +10,7 @@ void assert_valid_result_set(mouthpiece *mp, result_set *rs) {
   ck_assert_int_le(rs->count, mp->settings.page_size);
   ck_assert_int_ne(rs->before_token, 0);
   ck_assert_int_ne(rs->after_token, 0);
-  for(int i = 0; i < rs->count; i++) {
+  for (int i = 0; i < rs->count; i++) {
     blast blast = rs->blasts[i];
     ck_assert_ptr_ne(blast.user, NULL);
     ck_assert_ptr_ne(blast.content, NULL);

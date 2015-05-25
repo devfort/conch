@@ -11,7 +11,7 @@
 static mouthpiece *conch_connect_internal(settings settings,
                                           char *connection_string) {
   PGconn *connection = PQconnectdb(connection_string);
-  if(PQstatus(connection) == CONNECTION_BAD) {
+  if (PQstatus(connection) == CONNECTION_BAD) {
     fprintf(stderr, "%s", PQerrorMessage(connection));
     return NULL;
   }
@@ -34,7 +34,7 @@ mouthpiece *conch_test_connect(settings settings) {
   mp->is_test = true;
 
   PGresult *res = PQexec(mp->connection, "BEGIN");
-  if(PQresultStatus(res) != PGRES_COMMAND_OK) {
+  if (PQresultStatus(res) != PGRES_COMMAND_OK) {
     fprintf(stderr, "Could not start test transaction: %s",
             PQerrorMessage(mp->connection));
     conch_disconnect(mp);
@@ -44,9 +44,9 @@ mouthpiece *conch_test_connect(settings settings) {
 }
 
 void conch_disconnect(mouthpiece *mp) {
-  if(mp->is_test) {
+  if (mp->is_test) {
     PGresult *res = PQexec(mp->connection, "ROLLBACK");
-    if(PQresultStatus(res) != PGRES_COMMAND_OK) {
+    if (PQresultStatus(res) != PGRES_COMMAND_OK) {
       fprintf(stderr, "Error when rolling back test transaction: %s",
               PQerrorMessage(mp->connection));
     }
@@ -64,7 +64,7 @@ void conch_let_silence_fall(mouthpiece *mp) {
   assert(mp->is_test);
   PQsetNoticeProcessor(mp->connection, silentNoticeProcessor, NULL);
   PGresult *res = PQexec(mp->connection, "truncate table bugle_blast cascade");
-  if(PQresultStatus(res) != PGRES_COMMAND_OK) {
+  if (PQresultStatus(res) != PGRES_COMMAND_OK) {
     fprintf(stderr, "Error when truncating test blasts: %s",
             PQerrorMessage(mp->connection));
     abort();
@@ -86,7 +86,7 @@ static result_set *pg_result_to_result_set(mouthpiece *mp,
 
   ExecStatusType query_result_status = PQresultStatus(query_result);
 
-  if(query_result_status != PGRES_TUPLES_OK) {
+  if (query_result_status != PGRES_TUPLES_OK) {
     fprintf(stderr, "Error from DB: %s, %s\n, ", PQerrorMessage(mp->connection),
             PQresStatus(query_result_status));
     result->error = 1;
@@ -104,7 +104,7 @@ static result_set *pg_result_to_result_set(mouthpiece *mp,
 
     int n = PQntuples(query_result);
 
-    if(n == 0) {
+    if (n == 0) {
       conch_free_result_set(result);
       return NULL;
     }
@@ -114,7 +114,7 @@ static result_set *pg_result_to_result_set(mouthpiece *mp,
     result->before_token =
         pg_char_to_int(PQgetvalue(query_result, n - 1, id_column));
 
-    for(int i = 0; i < n; i++) {
+    for (int i = 0; i < n; i++) {
       int len = PQgetlength(query_result, i, id_column);
       assert(len == 4);
       uint32_t id = pg_char_to_int(PQgetvalue(query_result, i, id_column));
@@ -205,10 +205,10 @@ result_set *conch_blasts_after(mouthpiece *mp, id after_token) {
 }
 
 void conch_free_result_set(result_set *result) {
-  if(result == NULL) {
+  if (result == NULL) {
     return;
   }
-  for(int i = 0; i < result->count; i++) {
+  for (int i = 0; i < result->count; i++) {
     free(result->blasts[i].content);
     free(result->blasts[i].user);
   }

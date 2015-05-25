@@ -21,7 +21,7 @@ START_TEST(test_wordwrap) {
                          {.y = 2, .x = 0, .length = 6, .word = "bigger" },
                          {.y = 2, .x = 7, .length = 4, .word = "boat" } };
 
-  for(int i = 0; i < sizeof(expected) / sizeof(token_s); ++i) {
+  for (int i = 0; i < sizeof(expected) / sizeof(token_s); ++i) {
     token_s *word = wordwrap(&wrap);
     token_s *expect = &expected[i];
 

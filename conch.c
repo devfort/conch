@@ -76,8 +76,8 @@ int render_blast(WINDOW *window, int y, int x, blastlist *blast,
   init_wordwrap(&wrap, blast->content, width);
 
   int line = 0;
-  for(token_s *token = wordwrap(&wrap); token != NULL;
-      token = wordwrap(&wrap)) {
+  for (token_s *token = wordwrap(&wrap); token != NULL;
+       token = wordwrap(&wrap)) {
     line = token->y;
     mvwaddnstr(window, y + token->y, x + token->x + 2, token->word,
                token->length);
@@ -89,7 +89,7 @@ int render_blast(WINDOW *window, int y, int x, blastlist *blast,
 }
 
 int blast_highlight(blastlist *blast, screen_state_s *screen) {
-  if(blast == screen->current_blast) {
+  if (blast == screen->current_blast) {
     return ' ' | COLOR_PAIR(SELECTED_COLOR);
   } else {
     return ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR);
@@ -108,7 +108,7 @@ void render(WINDOW *window, screen_state_s *screen) {
   int available_y = usable_lines;
 
   int max_blasts;
-  if(usable_lines == chrome.blast_height) {
+  if (usable_lines == chrome.blast_height) {
     max_blasts = 1;
   } else {
     max_blasts = usable_lines / (chrome.blast_padding + chrome.blast_height);
@@ -122,7 +122,7 @@ void render(WINDOW *window, screen_state_s *screen) {
            ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR),
            max_y - (chrome.border_width * 2));
 
-  if(0 == max_blasts) {
+  if (0 == max_blasts) {
     mvwaddstr(window, first_blast_y, blast_x + 1,
               "You're gonna need a bigger boat! (Or window.)");
   }
@@ -130,16 +130,16 @@ void render(WINDOW *window, screen_state_s *screen) {
   blastlist *blast = screen->current_blast;
 
   // Indicate that prior blasts are available
-  if(blast->prev) {
+  if (blast->prev) {
     mvwvline(window, chrome.border_width, blast_x,
              ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
-  } else if(screen->stick_to_top) {
+  } else if (screen->stick_to_top) {
     mvwvline(window, chrome.border_width, blast_x,
              ACS_VLINE | COLOR_PAIR(STUCK_COLOR), 1);
   }
 
   int blast_y = first_blast_y;
-  for(int i = 0; i < max_blasts && available_y > 0; ++i) {
+  for (int i = 0; i < max_blasts && available_y > 0; ++i) {
     int blast_height = render_blast(window, blast_y, blast_x, blast,
                                     blast_highlight(blast, screen));
 
@@ -147,13 +147,13 @@ void render(WINDOW *window, screen_state_s *screen) {
     available_y -= blast_height;
 
     blast = blast->next;
-    if(!blast) {
+    if (!blast) {
       break;
     }
   }
 
   // Indicate that more blasts are available
-  if(blast) {
+  if (blast) {
     mvwvline(window, max_y - (2 * chrome.border_width), blast_x,
              ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
   }
@@ -168,19 +168,19 @@ void listview_jumptop(screen_state_s *screen) {
 int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
   const int input = wgetch(window);
 
-  switch(input) {
+  switch (input) {
   case '0':
     listview_jumptop(screen);
     break;
 
   case 'j':
-    if(screen->current_blast->next) {
+    if (screen->current_blast->next) {
       screen->current_blast = screen->current_blast->next;
     }
     break;
 
   case 'k':
-    if(screen->current_blast->prev) {
+    if (screen->current_blast->prev) {
       screen->current_blast = screen->current_blast->prev;
     }
     break;
@@ -217,7 +217,7 @@ WINDOW *init_screen() {
   noecho();
   refresh();
 
-  if(has_colors())
+  if (has_colors())
     init_colors();
 
   // get initial screen setup while we wait for connections
@@ -251,8 +251,8 @@ int main(int argc, char **argv) {
     { "stick-to-top", no_argument, NULL, 's' }, { NULL, 0, NULL, 0 },
   };
 
-  while((opt = getopt_long(argc, argv, "s", longopts, NULL)) != -1) {
-    switch(opt) {
+  while ((opt = getopt_long(argc, argv, "s", longopts, NULL)) != -1) {
+    switch (opt) {
     case 's':
       stick_to_top = TRUE;
       break;
@@ -269,17 +269,17 @@ int main(int argc, char **argv) {
   };
   do {
     conn = conch_connect(config);
-  } while(conn == NULL);
+  } while (conn == NULL);
 
   blastlist *bl = init_blasts(conn);
   screen_state_s *screen = conch_listview_new(bl);
   screen->stick_to_top = stick_to_top;
 
-  while(1) {
+  while (1) {
     int at_top = (screen->head == screen->current_blast);
     screen->head = update_blasts(conn, screen->head);
 
-    if(at_top && screen->stick_to_top) {
+    if (at_top && screen->stick_to_top) {
       screen->current_blast = screen->head;
       screen->blast_offset = 0;
     }

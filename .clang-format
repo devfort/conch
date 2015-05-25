@@ -9,5 +9,4 @@ AllowAllParametersOfDeclarationOnNextLine: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 IndentCaseLabels: false
 PointerAlignment: Right
-SpaceBeforeParens: false
 ...

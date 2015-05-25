@@ -18,25 +18,25 @@ token_s *wordwrap(wordwrap_s *wrap) {
   char *start = wrap->_token.word + wrap->_token.length;
   char *p, *token_start;
 
-  if(start >= content_end) {
+  if (start >= content_end) {
     return NULL;
   }
 
   wrap->_token.x += wrap->_token.length;
 
   // skip leading spaces
-  for(p = start; p < content_end && isspace(*p); ++p)
+  for (p = start; p < content_end && isspace(*p); ++p)
     ;
 
   wrap->_token.x += (p - start);
 
   // find next token
-  for(token_start = p; p < content_end && !isspace(*p); ++p)
+  for (token_start = p; p < content_end && !isspace(*p); ++p)
     ;
 
   size_t token_length = p - token_start;
 
-  if(wrap->_token.x + token_length >= wrap->width) {
+  if (wrap->_token.x + token_length >= wrap->width) {
     wrap->_token.x = 0;
     wrap->_token.y += 1;
   }
