@@ -1,6 +1,8 @@
 #ifndef _COLORS_H
 #define _COLORS_H
 
+extern int curses_colors[];
+
 enum conch_color {
   NORMAL_COLOR = 0,
   NEW_COLOR = 2,
