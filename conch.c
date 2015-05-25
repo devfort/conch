@@ -9,6 +9,7 @@
 #include <time.h>
 
 #include "blastlist.h"
+#include "colors.h"
 #include "conchbackend.h"
 #include "wordwrap.h"
 #include "listview.h"
@@ -27,14 +28,6 @@ window_chrome_s chrome = {
   .padding_x = 1,
   .blast_padding = 1,
   .blast_height = 2,
-};
-
-enum conch_color {
-  NORMAL_COLOR = 0,
-  NEW_COLOR = 2,
-  SELECTED_COLOR = 3,
-  TIMELINE_COLOR = 4,
-  STUCK_COLOR = 5,
 };
 
 void render_clock(WINDOW *window) {
@@ -190,18 +183,6 @@ int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
   return input == ERR;
 }
 
-void init_colors() {
-  start_color();
-  use_default_colors();
-
-  init_color(100, 333, 333, 333);
-
-  init_pair(NORMAL_COLOR, COLOR_WHITE, COLOR_BLACK);
-  init_pair(NEW_COLOR, COLOR_BLUE, COLOR_BLUE);
-  init_pair(SELECTED_COLOR, COLOR_WHITE, COLOR_RED);
-  init_pair(TIMELINE_COLOR, 100, -1);
-  init_pair(STUCK_COLOR, COLOR_GREEN, COLOR_GREEN);
-}
 
 WINDOW *init_screen() {
   setlocale(LC_ALL, "");
@@ -211,7 +192,7 @@ WINDOW *init_screen() {
   refresh();
 
   if (has_colors())
-    init_colors();
+    conch_init_colors();
 
   // get initial screen setup while we wait for connections
   WINDOW *window = newwin(0, 0, 0, 0);
