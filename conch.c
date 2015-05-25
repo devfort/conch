@@ -33,6 +33,7 @@ enum conch_color {
 };
 
 typedef struct screen_state_s {
+  blastlist *head;
   blastlist *current_blast;
   int blast_offset;
 } screen_state_s;
@@ -147,10 +148,18 @@ void render(WINDOW *window, screen_state_s *screen) {
   wrefresh(window);
 }
 
+void listview_jumptop(screen_state_s *screen) {
+  screen->current_blast = screen->head;
+}
+
 int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
   const int input = wgetch(window);
 
   switch(input) {
+  case '0':
+    listview_jumptop(screen);
+    break;
+
   case 'j':
     if(screen->current_blast->next) {
       screen->current_blast = screen->current_blast->next;
@@ -229,13 +238,14 @@ int main(int argc, char **argv) {
     conn = conch_connect(config);
   } while (conn == NULL);
 
-  blastlist *blasts = init_blasts(conn);
   screen_state_s screen = {
-    .current_blast = blasts, .blast_offset = 0,
+    .head = init_blasts(conn),
+    .blast_offset = 0,
   };
+  screen.current_blast = screen.head;
 
   while(1) {
-    blasts = update_blasts(conn, blasts);
+    screen.head = update_blasts(conn, screen.head);
     render(main_window, &screen);
     respond_to_keypresses(main_window, &screen);
   }
