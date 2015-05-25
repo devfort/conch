@@ -25,7 +25,7 @@ all: $(BINS)
 conch: blastlist.o conchbackend.o
 
 blastlist_check: blastlist.o conchbackend.o
-conchbackend_check: conchbackend.o
+conchbackend_check: conchbackend.o .testdb
 
 CHECKTASKS=$(patsubst %_check,check_%,$(BINS_TEST))
 check: $(BINS_TEST)
@@ -69,7 +69,7 @@ $(BINS): %: %.o
 
 %_check: %_check.o
 	@echo "LD  $@"
-	@$(CC) -o $@ $^ $(LDFLAGS_TEST)
+	@$(CC) -o $@ $(filter %.o,$^) $(LDFLAGS_TEST)
 
 -include .deps/*.d
 
