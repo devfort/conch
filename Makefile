@@ -1,4 +1,4 @@
-CFLAGS?=--std=c99 -Wall -Wformat -Werror --pedantic
+CFLAGS?=--std=c99 -Wall -Wformat -Werror --pedantic -g
 LDFLAGS?=
 DEPS?=.deps
 
