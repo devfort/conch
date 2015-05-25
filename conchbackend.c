@@ -207,6 +207,9 @@ result_set *conch_blasts_after(mouthpiece *mp, id after_token) {
 }
 
 void conch_free_result_set(result_set *result) {
+  if(result == NULL) {
+    return;
+  }
   for(int i = 0; i < result->count; i++) {
     free(result->blasts[i].content);
     free(result->blasts[i].user);

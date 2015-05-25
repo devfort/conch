@@ -118,6 +118,12 @@ START_TEST(test_rolls_back_tests_on_close) {
 }
 END_TEST
 
+START_TEST(test_free_null_result_set) {
+  result_set *results = NULL;
+  conch_free_result_set(results);
+}
+END_TEST
+
 Suite *conchbackend_suite(void) {
   TCase *tc_core = tcase_create("connection");
   tcase_add_test(tc_core, test_can_connect_and_disconnect);
@@ -133,6 +139,8 @@ Suite *conchbackend_suite(void) {
   TCase *tc_silence = tcase_create("silence");
   tcase_add_test(tc_silence, test_can_silence_everything);
   tcase_add_test(tc_silence, test_rolls_back_tests_on_close);
+  TCase *tc_result_set = tcase_create("result_set");
+  tcase_add_test(tc_result_set, test_free_null_result_set);
 
   Suite *s = suite_create("backend");
   suite_add_tcase(s, tc_core);
@@ -141,6 +149,7 @@ Suite *conchbackend_suite(void) {
   suite_add_tcase(s, tc_forwards);
   suite_add_tcase(s, tc_forward_one_page);
   suite_add_tcase(s, tc_silence);
+  suite_add_tcase(s, tc_result_set);
 
   return s;
 }
