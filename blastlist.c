@@ -21,20 +21,11 @@ static char *strclone(char *c) {
   return target;
 }
 
-static blastlist *item_new(blast *b) {
-  blastlist *bl = (blastlist *)calloc(1, sizeof(blastlist));
-
-  if (bl == NULL) {
-    fprintf(stderr, "item_new: could not alloc\n");
-    abort();
-  }
-
+static void item_copy(blastlist *bl, blast *b) {
   bl->id = b->id;
   bl->user = strclone(b->user);
   bl->content = strclone(b->content);
   bl->posted_at = strclone(b->posted_at);
-
-  return bl;
 }
 
 static void item_free(blastlist *bl) {
@@ -43,19 +34,30 @@ static void item_free(blastlist *bl) {
   free(bl);
 }
 
+blastlist *conch_blastlist_new() {
+  blastlist *bl = (blastlist *)calloc(1, sizeof(blastlist));
+
+  if (bl == NULL) {
+    fprintf(stderr, "conch_blastlist_new: could not alloc\n");
+    abort();
+  }
+
+  return bl;
+}
+
 blastlist *conch_blastlist_from_result_set(result_set *rs) {
   // If there are no items out of which to make a blastlist, return NULL
   if (rs == NULL || rs->count == 0) {
     return NULL;
   }
 
-  blastlist *head = item_new(rs->blasts);
-  blastlist *cur = head;
+  blastlist *head = conch_blastlist_new();
+  item_copy(head, rs->blasts);
 
   for (uint64_t i = 1; i < rs->count; ++i) {
-    cur->next = item_new(rs->blasts + i);
-    cur->next->prev = cur;
-    cur = cur->next;
+    blastlist *next = conch_blastlist_new();
+    item_copy(next, rs->blasts + i);
+    head = conch_blastlist_join(head, next);
   }
 
   return head;

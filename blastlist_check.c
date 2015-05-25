@@ -6,6 +6,17 @@
 #define ASSERT_PTR_NULL(ptr) ck_assert_ptr_eq(ptr, NULL)
 #define ASSERT_PTR_NOT_NULL(ptr) ck_assert_ptr_ne(ptr, NULL)
 
+START_TEST(test_blastlist_new) {
+  blastlist *bl = conch_blastlist_new();
+
+  ASSERT_PTR_NOT_NULL(bl);
+  ASSERT_PTR_NULL(bl->prev);
+  ASSERT_PTR_NULL(bl->next);
+
+  conch_blastlist_free(bl);
+}
+END_TEST
+
 START_TEST(test_blastlist_from_result_set_null) {
   result_set *rs = NULL;
   blastlist *bl = conch_blastlist_from_result_set(rs);
@@ -165,6 +176,7 @@ END_TEST
 Suite *blastlist_suite(void) {
   Suite *s = suite_create("blastlist");
 
+  add_test_case(s, "new", test_blastlist_new);
   add_test_case(s, "result_set_null", test_blastlist_from_result_set_null);
   add_test_case(s, "result_set_empty", test_blastlist_from_result_set_empty);
   add_test_case(s, "result_set_single", test_blastlist_from_result_set_single);
