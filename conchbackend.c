@@ -8,6 +8,8 @@
 #include <stdbool.h>
 #include <inttypes.h>
 
+#include "strutils.h"
+
 #define POSTED_DATEFORMAT "'YYYY-MM-DD HH24:MI:SS tz'"
 
 static mouthpiece *conch_connect_internal(settings settings,
@@ -72,12 +74,6 @@ void conch_let_silence_fall(mouthpiece *mp) {
     abort();
   }
   PQsetNoticeProcessor(mp->connection, defaultNoticeProcessor, NULL);
-}
-
-static char *strclone(char *c) {
-  char *target = malloc(strlen(c) + 1);
-  strcpy(target, c);
-  return target;
 }
 
 static uint32_t pg_char_to_int(char *s) { return ntohl(*((int32_t *)s)); }

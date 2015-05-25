@@ -30,12 +30,12 @@ all: $(BINS)
 release_the_kraken: conch check
 	./conch
 
-conch: blastlist.o colors.o conchbackend.o listview.o listview_render.o wordwrap.o
+conch: blastlist.o colors.o conchbackend.o listview.o listview_render.o wordwrap.o strutils.o
 
-blastlist_check: blastlist.o conchbackend.o
-conchbackend_check: conchbackend.o .testdb
+blastlist_check: blastlist.o conchbackend.o strutils.o
+conchbackend_check: conchbackend.o strutils.o .testdb
 wordwrap_check: wordwrap.o
-listview_check: listview.o blastlist.o
+listview_check: listview.o blastlist.o strutils.o
 
 CHECKTASKS=$(patsubst %_check,check_%,$(BINS_TEST))
 check: $(BINS_TEST)

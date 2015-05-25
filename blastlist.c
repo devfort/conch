@@ -4,22 +4,7 @@
 #include <string.h>
 
 #include "blastlist.h"
-
-static char *strclone(char *c) {
-  if (c == NULL) {
-    return NULL;
-  }
-
-  char *target = malloc(strlen(c) + 1);
-
-  if (target == NULL) {
-    fprintf(stderr, "strclone: could not alloc\n");
-    abort();
-  }
-
-  strcpy(target, c);
-  return target;
-}
+#include "strutils.h"
 
 static void item_copy(blastlist *bl, blast *b) {
   bl->id = b->id;
