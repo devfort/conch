@@ -91,6 +91,11 @@ static int render_blast(WINDOW *window, int y, int x, blastlist *blast,
                token->length);
   }
 
+  if(blast->attachment != NULL){
+    mvwprintw(window, y + line + 1, x + 2, "%s", blast->attachment);
+    line++;
+  }
+
   mvwprintw(window, y + line + 1, x + 2, "—%s at %s", blast->user,
             blast->posted_at);
 

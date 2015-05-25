@@ -11,12 +11,14 @@ static void item_copy(blastlist *bl, blast *b) {
   bl->user = strclone(b->user);
   bl->content = strclone(b->content);
   bl->posted_at = strclone(b->posted_at);
+  bl->attachment = strclone(b->attachment);
 }
 
 static void item_free(blastlist *bl) {
   free(bl->user);
   free(bl->content);
   free(bl->posted_at);
+  free(bl->attachment);
   free(bl);
 }
 

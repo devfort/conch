@@ -20,7 +20,7 @@ void assert_valid_result_set(mouthpiece *mp, result_set *rs) {
 }
 
 START_TEST(test_can_connect_and_disconnect) {
-  settings settings = {.page_size = 10 };
+  settings settings = { .page_size = 10 };
   mouthpiece *mp = conch_test_connect(settings);
   ck_assert_ptr_ne(mp, (void *)0);
   conch_disconnect(mp);
@@ -28,7 +28,7 @@ START_TEST(test_can_connect_and_disconnect) {
 END_TEST
 
 START_TEST(test_can_connect_and_disconnect_production) {
-  settings settings = {.page_size = 10 };
+  settings settings = { .page_size = 10 };
   mouthpiece *mp = conch_connect(settings);
   ck_assert_ptr_ne(mp, NULL);
   conch_disconnect(mp);
@@ -36,7 +36,7 @@ START_TEST(test_can_connect_and_disconnect_production) {
 END_TEST
 
 START_TEST(test_can_retrieve_most_recent) {
-  settings settings = {.page_size = 10 };
+  settings settings = { .page_size = 10 };
   mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
   assert_valid_result_set(mp, recent);
@@ -46,7 +46,7 @@ START_TEST(test_can_retrieve_most_recent) {
 END_TEST
 
 START_TEST(test_can_page_backwards) {
-  settings settings = {.page_size = 2 };
+  settings settings = { .page_size = 2 };
   mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
   assert_valid_result_set(mp, recent);
@@ -60,8 +60,24 @@ START_TEST(test_can_page_backwards) {
 }
 END_TEST
 
+START_TEST(test_has_at_least_one_attachment) {
+  settings settings = { .page_size = 100 };
+  mouthpiece *mp = conch_test_connect(settings);
+  result_set *recent = conch_recent_blasts(mp);
+  assert_valid_result_set(mp, recent);
+  bool found = false;
+  for (int i = 0; i < recent->count; i++) {
+    if (recent->blasts[i].attachment != NULL) {
+      found = true;
+      break;
+    }
+  }
+  ck_assert(found);
+}
+END_TEST
+
 START_TEST(test_can_page_forwards) {
-  settings settings = {.page_size = 2 };
+  settings settings = { .page_size = 2 };
   mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
   result_set *past = conch_blasts_before(mp, recent->before_token);
@@ -77,7 +93,7 @@ START_TEST(test_can_page_forwards) {
 END_TEST
 
 START_TEST(test_can_page_forward_one_page) {
-  settings settings = {.page_size = 2 };
+  settings settings = { .page_size = 2 };
   mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
 
@@ -95,7 +111,7 @@ START_TEST(test_can_page_forward_one_page) {
 END_TEST
 
 START_TEST(test_can_silence_everything) {
-  settings settings = {.page_size = 10 };
+  settings settings = { .page_size = 10 };
   mouthpiece *mp = conch_test_connect(settings);
   ck_assert_ptr_ne(mp, NULL);
   conch_let_silence_fall(mp);
@@ -106,7 +122,7 @@ START_TEST(test_can_silence_everything) {
 END_TEST
 
 START_TEST(test_rolls_back_tests_on_close) {
-  settings settings = {.page_size = 10 };
+  settings settings = { .page_size = 10 };
   mouthpiece *mp = conch_test_connect(settings);
   conch_let_silence_fall(mp);
   conch_disconnect(mp);
@@ -136,6 +152,7 @@ Suite *conchbackend_suite(void) {
   ADD_TEST_CASE(s, test_can_silence_everything);
   ADD_TEST_CASE(s, test_rolls_back_tests_on_close);
   ADD_TEST_CASE(s, test_free_null_result_set);
+  ADD_TEST_CASE(s, test_has_at_least_one_attachment);
 
   return s;
 }

@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 #include "strutils.h"
 
 char *strclone(char *c) {
@@ -17,4 +18,15 @@ char *strclone(char *c) {
 
   strcpy(target, c);
   return target;
+}
+
+char *strcopycat(char *c, char *d){
+	assert(c != NULL);
+	assert(d != NULL);
+
+	int n = strlen(c);
+	char *target = malloc(n + strlen(d) + 1);
+	strcpy(target, c);
+	strcpy(target + n, d);
+	return target;
 }

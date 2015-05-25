@@ -92,7 +92,7 @@ static result_set *pg_result_to_result_set(mouthpiece *mp,
     result->before_token = 0;
     result->after_token = 0;
   } else {
-    assert(PQnfields(query_result) == 4);
+    assert(PQnfields(query_result) == 5);
     result->error = 0;
     int id_column = PQfnumber(query_result, "id");
     assert(id_column >= 0);
@@ -102,6 +102,8 @@ static result_set *pg_result_to_result_set(mouthpiece *mp,
     assert(message_column >= 0);
     int posted_at_column = PQfnumber(query_result, "posted_at");
     assert(posted_at_column >= 0);
+    int attachment_column = PQfnumber(query_result, "attachment");
+    assert(attachment_column >= 0);
     result->count = PQntuples(query_result);
     result->blasts = malloc(sizeof(blast) * result->count);
 
@@ -127,6 +129,13 @@ static result_set *pg_result_to_result_set(mouthpiece *mp,
       blast->content = strclone(PQgetvalue(query_result, i, message_column));
       blast->posted_at =
           strclone(PQgetvalue(query_result, i, posted_at_column));
+      if (!PQgetlength(query_result, i, attachment_column)) {
+        blast->attachment = NULL;
+      } else {
+        blast->attachment = strcopycat(
+            "http://bugle.fort/uploads/",
+            strclone(PQgetvalue(query_result, i, attachment_column)));
+      }
     }
   }
 
@@ -145,7 +154,7 @@ result_set *conch_recent_blasts(mouthpiece *mp) {
 
   PGresult *query_result = PQexecParams(
       mp->connection,
-      "select id, message, "
+      "select id, message, attachment, "
       "to_char(created, " POSTED_DATEFORMAT ") as posted_at, "
       "(select username from auth_user where auth_user.id = user_id) as name "
       "from bugle_blast order by id desc limit $1::integer;",
@@ -169,7 +178,7 @@ result_set *conch_blasts_before(mouthpiece *mp, id before_token) {
 
   PGresult *query_result = PQexecParams(
       mp->connection,
-      "select id, message, "
+      "select id, message, attachment, "
       "to_char(created, " POSTED_DATEFORMAT ") as posted_at, "
       "(select username from auth_user where auth_user.id = user_id) as name "
       "from bugle_blast "
@@ -197,7 +206,7 @@ result_set *conch_blasts_after(mouthpiece *mp, id after_token) {
   PGresult *query_result = PQexecParams(
       mp->connection,
       "select * from ("
-      "select id, message, "
+      "select id, message, attachment, "
       "to_char(created, " POSTED_DATEFORMAT ") as posted_at, "
       "(select username from auth_user where auth_user.id = user_id) as name "
       "from bugle_blast "
