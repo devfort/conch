@@ -30,7 +30,7 @@ all: $(BINS)
 release_the_kraken: conch check
 	./conch
 
-conch: blastlist.o colors.o conchbackend.o listview.o wordwrap.o
+conch: blastlist.o colors.o conchbackend.o listview.o listview_render.o wordwrap.o
 
 blastlist_check: blastlist.o conchbackend.o
 conchbackend_check: conchbackend.o .testdb
