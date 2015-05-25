@@ -91,7 +91,7 @@ static int render_blast(WINDOW *window, int y, int x, blastlist *blast,
                token->length);
   }
 
-  mvwprintw(window, y + line + 1, x + 2, "--%s at %s", blast->user,
+  mvwprintw(window, y + line + 1, x + 2, "—%s at %s", blast->user,
             blast->posted_at);
 
   return line + 2;
