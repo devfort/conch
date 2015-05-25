@@ -14,6 +14,7 @@ void assert_valid_result_set(mouthpiece *mp, result_set *rs) {
     blast blast = rs->blasts[i];
     ck_assert_ptr_ne(blast.user, NULL);
     ck_assert_ptr_ne(blast.content, NULL);
+    ck_assert_ptr_ne(blast.posted_at, NULL);
     ck_assert_int_ne(blast.id, 0);
   }
 }
