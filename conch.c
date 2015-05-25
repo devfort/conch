@@ -65,12 +65,20 @@ blastlist *init_blasts(mouthpiece *conn) {
   return blasts;
 }
 
-blastlist *update_blasts(mouthpiece *conn, blastlist *blasts) {
-  result_set *result = conch_blasts_after(conn, blasts->id);
-  blastlist *newblasts = conch_blastlist_from_result_set(result);
+blastlist *update_new_blasts(mouthpiece *conn, blastlist *blast) {
+  result_set *result = conch_blasts_after(conn, blast->id);
+  blastlist *more_blasts = conch_blastlist_from_result_set(result);
   conch_free_result_set(result);
 
-  return conch_blastlist_join(newblasts, blasts);
+  return conch_blastlist_join(more_blasts, blast);
+}
+
+blastlist *update_old_blasts(mouthpiece *conn, blastlist *blast) {
+  result_set *result = conch_blasts_before(conn, blast->id);
+  blastlist *more_blasts = conch_blastlist_from_result_set(result);
+  conch_free_result_set(result);
+
+  return conch_blastlist_join(blast, more_blasts);
 }
 
 int main(int argc, char **argv) {
@@ -108,10 +116,14 @@ int main(int argc, char **argv) {
   blastlist *bl = init_blasts(conn);
 
   while (1) {
-    bl = update_blasts(conn, bl);
+    bl = update_new_blasts(conn, bl);
     conch_listview_update(lv, bl);
     conch_listview_render(main_window, lv);
     respond_to_keypresses(main_window, lv);
+
+    if (lv->current_blast->next == NULL) {
+      update_old_blasts(conn, lv->current_blast);
+    }
   }
 
   endwin();
