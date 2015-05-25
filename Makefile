@@ -25,10 +25,11 @@ all: $(BINS)
 release_the_kraken: conch check
 	./conch
 
-conch: blastlist.o conchbackend.o
+conch: blastlist.o conchbackend.o wordwrap.o
 
 blastlist_check: blastlist.o conchbackend.o
 conchbackend_check: conchbackend.o .testdb
+wordwrap_check: wordwrap.o
 
 CHECKTASKS=$(patsubst %_check,check_%,$(BINS_TEST))
 check: $(BINS_TEST)
