@@ -134,6 +134,12 @@ void render(WINDOW *window, screen_state_s *screen) {
 
   blastlist *blast = screen->current_blast;
 
+  // Indicate that prior blasts are available
+  if(blast->prev) {
+    mvwvline(window, chrome.border_width, blast_x,
+             ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
+  }
+
   int blast_y = first_blast_y;
   for(int i = 0; i < max_blasts && available_y > 0; ++i) {
     int blast_height = render_blast(window, blast_y, blast_x, blast,
@@ -142,11 +148,16 @@ void render(WINDOW *window, screen_state_s *screen) {
     blast_y += chrome.blast_padding + blast_height;
     available_y -= blast_height;
 
-    if(blast->next) {
-      blast = blast->next;
-    } else {
+    blast = blast->next;
+    if(!blast) {
       break;
     }
+  }
+
+  // Indicate that more blasts are available
+  if(blast) {
+    mvwvline(window, max_y - (2 * chrome.border_width), blast_x,
+             ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
   }
   wrefresh(window);
 }
