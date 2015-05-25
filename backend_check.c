@@ -1,6 +1,6 @@
 #include "checkrunner.h"
 
-#include "conchbackend-internal.h"
+#include "backend-internal.h"
 
 void assert_valid_result_set(mouthpiece *mp, result_set *rs) {
   ck_assert_ptr_ne(mp, NULL);
@@ -140,7 +140,7 @@ START_TEST(test_free_null_result_set) {
 }
 END_TEST
 
-Suite *conchbackend_suite(void) {
+Suite *backend_suite(void) {
   Suite *s = suite_create("backend");
 
   ADD_TEST_CASE(s, test_can_connect_and_disconnect);
@@ -157,4 +157,4 @@ Suite *conchbackend_suite(void) {
   return s;
 }
 
-CONCH_CHECK_MAIN(conchbackend_suite)
+CONCH_CHECK_MAIN(backend_suite)

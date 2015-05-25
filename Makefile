@@ -42,14 +42,14 @@ conch: \
   caca-driver.o \
   colors.o \
   common-image.o \
-  conchbackend.o \
+  backend.o \
   listview.o \
   listview_render.o \
   strutils.o \
   wordwrap.o
 
-blastlist_check: blastlist.o conchbackend.o strutils.o
-conchbackend_check: conchbackend.o strutils.o .testdb
+blastlist_check: blastlist.o backend.o strutils.o
+backend_check: backend.o strutils.o .testdb
 wordwrap_check: wordwrap.o
 listview_check: listview.o blastlist.o strutils.o
 

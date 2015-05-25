@@ -1,7 +1,7 @@
 #include "checkrunner.h"
 
 #include "blastlist.h"
-#include "conchbackend.h"
+#include "backend.h"
 
 #define ASSERT_PTR_NULL(ptr) ck_assert_ptr_eq(ptr, NULL)
 #define ASSERT_PTR_NOT_NULL(ptr) ck_assert_ptr_ne(ptr, NULL)

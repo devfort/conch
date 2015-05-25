@@ -1,5 +1,5 @@
-#ifndef _CONCHBACKEND_H
-#define _CONCHBACKEND_H
+#ifndef _BACKEND_H
+#define _BACKEND_H
 
 #include <stdint.h>
 
@@ -44,4 +44,4 @@ result_set *conch_blasts_after(mouthpiece *mp, id after_token);
 
 void conch_free_result_set(result_set *results);
 
-#endif /* _CONCHBACKEND_H */
+#endif /* _BACKEND_H */

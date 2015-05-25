@@ -1,7 +1,7 @@
 #ifndef _BLASTLIST_H
 #define _BLASTLIST_H
 
-#include "conchbackend.h"
+#include "backend.h"
 
 typedef struct blastlist blastlist;
 

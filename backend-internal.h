@@ -1,7 +1,7 @@
-#ifndef _CONCHBACKEND_INTERNAL_H
-#define _CONCHBACKEND_INTERNAL_H
+#ifndef _BACKEND_INTERNAL_H
+#define _BACKEND_INTERNAL_H
 
-#include "conchbackend.h"
+#include "backend.h"
 #include <libpq-fe.h>
 #include <stdbool.h>
 
@@ -15,4 +15,4 @@ mouthpiece *conch_test_connect(settings settings);
 
 void conch_let_silence_fall(mouthpiece *mp);
 
-#endif /* _CONCHBACKEND_INTERNAL_H */
+#endif /* _BACKEND_INTERNAL_H */
