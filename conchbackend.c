@@ -11,7 +11,7 @@
 static mouthpiece *conch_connect_internal(settings settings,
                                           char *connection_string) {
   PGconn *connection = PQconnectdb(connection_string);
-  if (PQstatus(connection) == CONNECTION_BAD) {
+  if(PQstatus(connection) == CONNECTION_BAD) {
     return NULL;
   }
   mouthpiece *mp = malloc(sizeof(mouthpiece));
@@ -27,16 +27,17 @@ mouthpiece *conch_connect(settings settings) {
 }
 
 mouthpiece *conch_test_connect(settings settings) {
-  mouthpiece *mp = conch_connect_internal(settings,
-                                "host=localhost dbname=bugle_test user=bugle");
-  if(mp == NULL){
+  mouthpiece *mp = conch_connect_internal(
+      settings, "host=localhost dbname=bugle_test user=bugle");
+  if(mp == NULL) {
     return NULL;
   }
   mp->is_test = true;
 
   PGresult *res = PQexec(mp->connection, "BEGIN");
-  if (PQresultStatus(res) != PGRES_COMMAND_OK){
-    fprintf(stderr, "Could not start test transaction: %s", PQerrorMessage(mp->connection));
+  if(PQresultStatus(res) != PGRES_COMMAND_OK) {
+    fprintf(stderr, "Could not start test transaction: %s",
+            PQerrorMessage(mp->connection));
     conch_disconnect(mp);
     return NULL;
   }
@@ -44,27 +45,29 @@ mouthpiece *conch_test_connect(settings settings) {
 }
 
 void conch_disconnect(mouthpiece *mp) {
-  if(mp->is_test){
+  if(mp->is_test) {
     PGresult *res = PQexec(mp->connection, "ROLLBACK");
-    if (PQresultStatus(res) != PGRES_COMMAND_OK){
-      fprintf(stderr, "Error when rolling back test transaction: %s", PQerrorMessage(mp->connection));
+    if(PQresultStatus(res) != PGRES_COMMAND_OK) {
+      fprintf(stderr, "Error when rolling back test transaction: %s",
+              PQerrorMessage(mp->connection));
     }
   }
   PQfinish(mp->connection);
   free(mp);
 }
 
-static void silentNoticeProcessor(void *arg, const char *message){}
+static void silentNoticeProcessor(void *arg, const char *message) {}
 static void defaultNoticeProcessor(void *arg, const char *message) {
   fprintf(stderr, "%s", message);
 }
 
-void conch_let_silence_fall(mouthpiece *mp){
+void conch_let_silence_fall(mouthpiece *mp) {
   assert(mp->is_test);
   PQsetNoticeProcessor(mp->connection, silentNoticeProcessor, NULL);
   PGresult *res = PQexec(mp->connection, "truncate table bugle_blast cascade");
-  if (PQresultStatus(res) != PGRES_COMMAND_OK){
-    fprintf(stderr, "Error when truncating test blasts: %s", PQerrorMessage(mp->connection));
+  if(PQresultStatus(res) != PGRES_COMMAND_OK) {
+    fprintf(stderr, "Error when truncating test blasts: %s",
+            PQerrorMessage(mp->connection));
     abort();
   }
   PQsetNoticeProcessor(mp->connection, defaultNoticeProcessor, NULL);
@@ -102,7 +105,7 @@ static result_set *pg_result_to_result_set(mouthpiece *mp,
 
     int n = PQntuples(query_result);
 
-    if (n == 0) {
+    if(n == 0) {
       conch_free_result_set(result);
       return NULL;
     }

@@ -8,7 +8,7 @@
 struct mouthpiece {
   PGconn *connection;
   settings settings;
-	bool is_test;
+  bool is_test;
 };
 
 mouthpiece *conch_test_connect(settings settings);
