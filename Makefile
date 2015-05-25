@@ -13,7 +13,7 @@ ifndef verbose
   SILENT = @
 endif
 
-CFLAGS+=$(shell pkg-config --cflags $(LIBS))
+CFLAGS+=$(shell pkg-config --cflags $(LIBS)) -DX_DISPLAY_MISSING=1
 LDFLAGS+=$(shell pkg-config --libs $(LIBS))
 
 # ncurses doesn't seem to ship with .pc files on all platforms, but it does
