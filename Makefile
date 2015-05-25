@@ -22,6 +22,9 @@ LDFLAGS_TEST+=$(shell pkg-config --libs $(LIBS_TEST))
 
 all: $(BINS)
 
+release_the_kraken: conch check
+	./conch
+
 conch: blastlist.o conchbackend.o
 
 blastlist_check: blastlist.o conchbackend.o
