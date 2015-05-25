@@ -32,7 +32,7 @@ enum conch_color {
 };
 
 typedef struct screen_state_s {
-  blastlist_item *current_blast;
+  blastlist *current_blast;
   int blast_offset;
 } screen_state_s;
 
@@ -57,7 +57,7 @@ void render_chrome(WINDOW *window) {
   render_clock(window);
 }
 
-int render_blast(WINDOW *window, int y, int x, blastlist_item *blast, chtype highlight) {
+int render_blast(WINDOW *window, int y, int x, blastlist *blast, chtype highlight) {
   mvwvline(window, y, x, highlight, 2);
   mvwprintw(window, y, x + 2, blast->content);
   mvwprintw(window, y + 1, x + 2, "--%s at %d", blast->user, blast->id);
@@ -65,7 +65,7 @@ int render_blast(WINDOW *window, int y, int x, blastlist_item *blast, chtype hig
   return chrome.blast_height;
 }
 
-int blast_highlight(blastlist_item *blast, screen_state_s *screen) {
+int blast_highlight(blastlist *blast, screen_state_s *screen) {
   if(blast == screen->current_blast) {
     return ' ' | COLOR_PAIR(SELECTED_COLOR);
   } else {
@@ -103,7 +103,7 @@ void render(WINDOW *window, screen_state_s *screen) {
               "You're gonna need a bigger boat! (Or window.)");
   }
 
-  blastlist_item *blast = screen->current_blast;
+  blastlist *blast = screen->current_blast;
 
   int blast_y = first_blast_y;
   for(int i = 0; i < max_blasts; ++i) {
@@ -184,14 +184,12 @@ blastlist *init_blasts(mouthpiece *conn) {
   return blasts;
 }
 
-void update_blasts(mouthpiece *conn, blastlist *blasts) {
-  result_set *result = conch_blasts_after(conn, blasts->head->id);
-  if(!result) {
-    return;
-  }
-
-  conch_blastlist_insert(blasts, result);
+blastlist *update_blasts(mouthpiece *conn, blastlist *blasts) {
+  result_set *result = conch_blasts_after(conn, blasts->id);
+  blastlist *newblasts = conch_blastlist_new(result);
   conch_free_result_set(result);
+
+  return conch_blastlist_join(newblasts, blasts);
 }
 
 int main(int argc, char **argv) {
@@ -207,11 +205,11 @@ int main(int argc, char **argv) {
 
   blastlist *blasts = init_blasts(conn);
   screen_state_s screen = {
-    .current_blast = blasts->head, .blast_offset = 0,
+    .current_blast = blasts, .blast_offset = 0,
   };
 
   while(1) {
-    update_blasts(conn, blasts);
+    blasts = update_blasts(conn, blasts);
     render(main_window, &screen);
     respond_to_keypresses(main_window, &screen);
   }
