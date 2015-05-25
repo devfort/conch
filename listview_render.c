@@ -33,8 +33,14 @@ void render_conch(WINDOW *window) {
   int lines = getmaxy(window) - 4;
   int cols = getmaxx(window) - 4;
 
-  caca_canvas_t *cv = caca_create_canvas(0, 0);
   struct image *i = load_image("CONCH.png");
+  if (i == NULL) {
+    // Don't try and render the image if the CONCH
+    // doesn't load
+    return;
+  }
+
+  caca_canvas_t *cv = caca_create_canvas(0, 0);
   caca_add_dirty_rect(cv, 0, 0, cols, lines);
   caca_set_canvas_size(cv, cols, lines);
   caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
