@@ -36,6 +36,17 @@ check: $(BINS_TEST)
 check_%: %_check
 	@./$<
 
+PG_BIN_DIR=$(shell pg_config --bindir)
+
+.testdb: schema.sql data.sql
+	$(PG_BIN_DIR)/dropdb bugle_test 2>/dev/null || true
+	$(PG_BIN_DIR)/dropuser bugle 2>/dev/null || true
+	$(PG_BIN_DIR)/createuser -SDR bugle
+	$(PG_BIN_DIR)/createdb bugle_test --owner=bugle
+	psql bugle_test < schema.sql
+	psql bugle_test < data.sql
+	touch .testdb
+
 clean:
 	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST)
 

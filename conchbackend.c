@@ -14,8 +14,9 @@ struct mouthpiece {
   settings settings;
 };
 
-mouthpiece *conch_connect(settings settings) {
-  PGconn *connection = PQconnectdb("host=core.fort dbname=bugle user=bugle");
+static mouthpiece *conch_connect_internal(settings settings,
+                                          char *connection_string) {
+  PGconn *connection = PQconnectdb(connection_string);
   if (PQstatus(connection) == CONNECTION_BAD) {
     return NULL;
   }
@@ -23,6 +24,16 @@ mouthpiece *conch_connect(settings settings) {
   mp->settings = settings;
   mp->connection = connection;
   return mp;
+}
+
+mouthpiece *conch_connect(settings settings) {
+  return conch_connect_internal(settings,
+                                "host=core.fort dbname=bugle user=bugle");
+}
+
+mouthpiece *conch_test_connect(settings settings) {
+  return conch_connect_internal(settings,
+                                "host=localhost dbname=bugle_test user=bugle");
 }
 
 void conch_disconnect(mouthpiece *mp) {

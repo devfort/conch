@@ -17,6 +17,9 @@ typedef struct {
   // If != 0, the call has failed. When we know more there will be useful
   // error codes here...
   int error;
+  // String explanation of what went wrong.
+  // Invariant: (error == 0) == (error_message == NULL)
+  char *error_message;
   // Tokens to pass to paging.
   id before_token;
   id after_token;
@@ -31,6 +34,7 @@ typedef struct { uint16_t page_size; } settings;
 typedef struct mouthpiece mouthpiece;
 
 mouthpiece *conch_connect(settings settings);
+mouthpiece *conch_test_connect(settings settings);
 void conch_disconnect(mouthpiece *mp);
 
 result_set *conch_recent_blasts(mouthpiece *mp);
