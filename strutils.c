@@ -21,12 +21,12 @@ char *strclone(char *c) {
 }
 
 char *strcopycat(char *c, char *d){
-	assert(c != NULL);
-	assert(d != NULL);
+  assert(c != NULL);
+  assert(d != NULL);
 
-	int n = strlen(c);
-	char *target = malloc(n + strlen(d) + 1);
-	strcpy(target, c);
-	strcpy(target + n, d);
-	return target;
+  int n = strlen(c);
+  char *target = malloc(n + strlen(d) + 1);
+  strcpy(target, c);
+  strcpy(target + n, d);
+  return target;
 }

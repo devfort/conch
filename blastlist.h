@@ -10,7 +10,7 @@ struct blastlist {
   char *user;
   char *content;
   char *posted_at;
-	char *attachment;
+  char *attachment;
 
   blastlist *prev;
   blastlist *next;
