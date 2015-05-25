@@ -109,9 +109,9 @@ void render(WINDOW *window, screen_state_s *screen) {
 
   const int usable_lines =
       max_y - ((chrome.border_width * 2) + (chrome.padding_y * 2));
+  int available_y = usable_lines;
 
   int max_blasts;
-
   if(usable_lines == chrome.blast_height) {
     max_blasts = 1;
   } else {
@@ -133,11 +133,12 @@ void render(WINDOW *window, screen_state_s *screen) {
   blastlist *blast = screen->current_blast;
 
   int blast_y = first_blast_y;
-  for(int i = 0; i < max_blasts; ++i) {
+  for(int i = 0; i < max_blasts && available_y > 0; ++i) {
     int blast_height =
         render_blast(window, blast_y, blast_x, blast, blast_highlight(blast, screen));
 
     blast_y += chrome.blast_padding + blast_height;
+    available_y -= blast_height;
 
     if(blast->next) {
       blast = blast->next;
