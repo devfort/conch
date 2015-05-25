@@ -31,7 +31,7 @@ END_TEST
 
 START_TEST(test_listview_update_null_blastlist) {
   blastlist *bl = NULL;
-  screen_state_s *lv = conch_listview_new(1);
+  screen_state_s *lv = conch_listview_new(true);
 
   conch_listview_update(lv, bl);
 
