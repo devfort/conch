@@ -90,6 +90,12 @@ int main(int argc, char **argv) {
   argv += optind;
 
   WINDOW *main_window = init_screen();
+
+  // Create new list view and render blank screen
+  listview *lv = conch_listview_new(stick_to_top);
+  conch_listview_render(main_window, lv);
+
+  // Connect to postgres and fetch blasts
   mouthpiece *conn;
 
   settings config = {
@@ -100,7 +106,6 @@ int main(int argc, char **argv) {
   } while (conn == NULL);
 
   blastlist *bl = init_blasts(conn);
-  listview *lv = conch_listview_new(stick_to_top);
 
   while (1) {
     conch_listview_update(lv, update_blasts(conn, bl));

@@ -115,6 +115,12 @@ void conch_listview_render(WINDOW *window, listview *lv) {
               "You're gonna need a bigger boat! (Or window.)");
   }
 
+  // If we don't have any blasts yet, we return early.
+  if (lv->head == NULL || lv->current_blast == NULL) {
+    wrefresh(window);
+    return;
+  }
+
   blastlist *blast = lv->current_blast;
 
   // Indicate that prior blasts are available
