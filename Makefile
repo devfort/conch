@@ -38,7 +38,16 @@ all: $(BINS)
 release_the_kraken: conch check
 	./conch
 
-conch: blastlist.o colors.o conchbackend.o listview.o listview_render.o wordwrap.o strutils.o common-image.o caca-driver.o
+conch: \
+  blastlist.o \
+  caca-driver.o \
+  colors.o \
+  common-image.o \
+  conchbackend.o \
+  listview.o \
+  listview_render.o \
+  strutils.o \
+  wordwrap.o
 
 blastlist_check: blastlist.o conchbackend.o strutils.o
 conchbackend_check: conchbackend.o strutils.o .testdb
