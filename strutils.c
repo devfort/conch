@@ -20,7 +20,7 @@ char *strclone(char *c) {
   return target;
 }
 
-char *strcopycat(char *c, char *d){
+char *strcopycat(char *c, char *d) {
   assert(c != NULL);
   assert(d != NULL);
 
