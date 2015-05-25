@@ -4,10 +4,14 @@ BEGIN {
     RED = "\033[31m"
     YELLOW = "\033[33m"
     RESET = "\033[m"
+    ERROR_RE = "(Errors|Failures): [^0]\d*"
 }
 
 /Passed/i { sub("Passed", GREEN "Passed" RESET) }
 /Assertion/i { sub("Assertion", RED "Assertion" ); sub("$", RESET) }
 /Aborted/i { sub("Aborted", RED "Aborted" RESET) }
+/Received signal/i { sub("Received signal", RED "Received signal"); sub("$", RESET) }
+
+$0 ~ ERROR_RE { sub(ERROR_RE, RED "&" RESET) }
 
 { print($0) }
