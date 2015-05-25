@@ -45,9 +45,11 @@ void ncurses_caca_attrs(int *attr) {
     }
 }
 
-void ncurses_display(WINDOW *window, caca_canvas_t *canvas) {
+void mvw_ncurses_display(WINDOW *window, int y, int x, caca_canvas_t *canvas) {
   int attr[16 * 16];
-  int x, y, i;
+  int i;
+  int cy;
+  int cx;
 
   ncurses_caca_attrs(&attr[0]);
 
@@ -62,9 +64,10 @@ void ncurses_display(WINDOW *window, caca_canvas_t *canvas) {
     cvattrs =
         caca_get_canvas_attrs(canvas) + dx + dy * caca_get_canvas_width(canvas);
 
-    for (y = dy; y < dy + dh; y++) {
-      wmove(window, y, dx);
-      for (x = dx; x < dx + dw; x++) {
+    for (cy = dy; cy < dy + dh; cy++) {
+      wmove(window, y + cy, x + dx);
+
+      for (cx = dx; cx < dx + dw; cx++) {
         (void)attrset(attr[caca_attr_to_ansi(*cvattrs++)]);
         ncurses_write_utf32(window, *cvchars++);
       }

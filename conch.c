@@ -5,13 +5,11 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "caca-driver.h"
 #include "blastlist.h"
 #include "colors.h"
 #include "conchbackend.h"
 #include "listview.h"
 #include "listview_render.h"
-#include "common-image.h"
 
 int respond_to_keypresses(WINDOW *window, listview *lv) {
   const int input = wgetch(window);
@@ -39,30 +37,6 @@ int respond_to_keypresses(WINDOW *window, listview *lv) {
   }
 
   return input == ERR;
-}
-
-void render_conch(WINDOW *window) {
-  int lines = getmaxy(window);
-  int cols = getmaxx(window);
-  WINDOW *cwin = newwin(lines - 1, cols - 1, 1, 1);
-  lines = getmaxy(cwin);
-  cols = getmaxx(cwin);
-
-  caca_canvas_t *cv = caca_create_canvas(0, 0);
-  struct image *i = load_image("CONCH.png");
-  caca_add_dirty_rect(cv, 0, 0, cols, lines);
-  caca_set_canvas_size(cv, cols - 2, lines - 2);
-  caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
-  caca_clear_canvas(cv);
-  caca_set_dither_algorithm(i->dither, "none");
-  caca_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
-
-  ncurses_display(cwin, cv);
-  wrefresh(cwin);
-
-  unload_image(i);
-  caca_free_canvas(cv);
-  delwin(cwin);
 }
 
 WINDOW *init_screen() {
