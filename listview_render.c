@@ -78,6 +78,7 @@ static void render_help(WINDOW *window) {
 static void render_chrome(WINDOW *window) {
   box(window, 0, 0);
   mvwaddstr(window, 0, 3, " conch <@ ");
+  curs_set(0);
 
   if (MIN_WIDTH_FOR_CLOCK <= getmaxx(window)) {
     render_clock(window);
