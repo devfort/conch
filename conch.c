@@ -272,12 +272,16 @@ int main(int argc, char **argv) {
   } while (conn == NULL);
 
   blastlist *bl = init_blasts(conn);
-  screen_state_s *screen = conch_listview_new(bl, stick_to_top);
+  screen_state_s *screen = conch_listview_new(stick_to_top);
+
+  // Do initial update of listview and set current blast to first blast:
+  conch_listview_update(screen, bl);
+  screen->current_blast = bl;
 
   while (1) {
-    int at_top = (screen->head == screen->current_blast);
-    screen->head = update_blasts(conn, screen->head);
+    conch_listview_update(screen, update_blasts(conn, bl));
 
+    int at_top = (screen->head == screen->current_blast);
     if (at_top && screen->stick_to_top) {
       listview_jumptop(screen);
     }

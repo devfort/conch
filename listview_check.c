@@ -6,9 +6,8 @@
 #define ASSERT_PTR_NULL(ptr) ck_assert_ptr_eq(ptr, NULL)
 #define ASSERT_PTR_NOT_NULL(ptr) ck_assert_ptr_ne(ptr, NULL)
 
-START_TEST(test_listview_new_null) {
-  blastlist *bl = NULL;
-  screen_state_s *lv = conch_listview_new(bl);
+START_TEST(test_listview_new) {
+  screen_state_s *lv = conch_listview_new(1);
 
   ASSERT_PTR_NOT_NULL(lv);
   ASSERT_PTR_NULL(lv->head);
@@ -19,14 +18,24 @@ START_TEST(test_listview_new_null) {
 }
 END_TEST
 
-Suite *listview_suite(void) {
-  Suite *s;
-  TCase *tc_core;
+START_TEST(test_listview_update_null_blastlist) {
+  blastlist *bl = NULL;
+  screen_state_s *lv = conch_listview_new(1);
 
-  s = suite_create("listview");
-  tc_core = tcase_create("create");
-  tcase_add_test(tc_core, test_listview_new_null);
-  suite_add_tcase(s, tc_core);
+  conch_listview_update(lv, bl);
+
+  ASSERT_PTR_NULL(lv->head);
+  ASSERT_PTR_NULL(lv->current_blast);
+
+  conch_listview_free(lv);
+}
+END_TEST
+
+Suite *listview_suite(void) {
+  Suite *s = suite_create("listview");
+
+  add_test_case(s, "create", test_listview_new);
+  add_test_case(s, "update", test_listview_update_null_blastlist);
 
   return s;
 }
