@@ -5,7 +5,7 @@ DEPS?=.deps
 BINS=conch
 BINS_TEST=$(patsubst %.c,%,$(wildcard *_check.c))
 
-LIBS=libpq
+LIBS=libpq caca imlib2
 LIBS_TEST=check
 
 
@@ -30,7 +30,7 @@ all: $(BINS)
 release_the_kraken: conch check
 	./conch
 
-conch: blastlist.o colors.o conchbackend.o listview.o listview_render.o wordwrap.o strutils.o
+conch: blastlist.o colors.o conchbackend.o listview.o listview_render.o wordwrap.o strutils.o common-image.o
 
 blastlist_check: blastlist.o conchbackend.o strutils.o
 conchbackend_check: conchbackend.o strutils.o .testdb
