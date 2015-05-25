@@ -1,5 +1,5 @@
-#ifndef WORDWRAP_H
-#define WORDWRAP_H
+#ifndef _WORDWRAP_H
+#define _WORDWRAP_H
 
 typedef struct token_s {
   int y;
@@ -17,4 +17,5 @@ typedef struct wordwrap_s {
 
 void init_wordwrap(wordwrap_s *, char *, int);
 token_s *wordwrap(wordwrap_s *);
-#endif
+
+#endif /* _WORDWRAP_H */

@@ -19,4 +19,4 @@ blastlist *conch_blastlist_join(blastlist *lhs, blastlist *rhs);
 
 void conch_blastlist_free(blastlist *bl);
 
-#endif
+#endif /* _BLASTLIST_H */

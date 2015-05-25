@@ -33,4 +33,4 @@ void add_test_case(Suite *s, char *name, void (*test_case)(int)) {
 #define CONCH_CHECK_MAIN(suite)                                                \
   int main(void) { return conch_check_runsuite(suite()); }
 
-#endif
+#endif /* _CHECKRUNNER_H */
