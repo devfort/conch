@@ -55,7 +55,7 @@ listview-check: listview.o blastlist.o strutils.o
 
 check: $(BINS_TEST)
 	$(SILENT)set -e && for t in $^; do \
-		./$$t | ./greenify; \
+		./$$t | ./tools/greenify; \
 		echo ----; \
 	done
 
