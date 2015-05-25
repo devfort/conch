@@ -127,16 +127,15 @@ END_TEST
 Suite *conchbackend_suite(void) {
   Suite *s = suite_create("backend");
 
-  add_test_case(s, "connection", test_can_connect_and_disconnect);
-  add_test_case(s, "connection_production",
-                test_can_connect_and_disconnect_production);
-  add_test_case(s, "recent", test_can_retrieve_most_recent);
-  add_test_case(s, "backwards", test_can_page_backwards);
-  add_test_case(s, "forwards", test_can_page_forwards);
-  add_test_case(s, "forward_one_page", test_can_page_forward_one_page);
-  add_test_case(s, "silence_everything", test_can_silence_everything);
-  add_test_case(s, "rolls_back", test_rolls_back_tests_on_close);
-  add_test_case(s, "result_set", test_free_null_result_set);
+  ADD_TEST_CASE(s, test_can_connect_and_disconnect);
+  ADD_TEST_CASE(s, test_can_connect_and_disconnect_production);
+  ADD_TEST_CASE(s, test_can_retrieve_most_recent);
+  ADD_TEST_CASE(s, test_can_page_backwards);
+  ADD_TEST_CASE(s, test_can_page_forwards);
+  ADD_TEST_CASE(s, test_can_page_forward_one_page);
+  ADD_TEST_CASE(s, test_can_silence_everything);
+  ADD_TEST_CASE(s, test_rolls_back_tests_on_close);
+  ADD_TEST_CASE(s, test_free_null_result_set);
 
   return s;
 }

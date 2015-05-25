@@ -29,6 +29,7 @@ void add_test_case(Suite *s, char *name, void (*test_case)(int)) {
   tcase_add_test(tc, test_case);
   suite_add_tcase(s, tc);
 }
+#define ADD_TEST_CASE(s, tc) add_test_case(s, #tc, tc)
 
 #define CONCH_CHECK_MAIN(suite)                                                \
   int main(void) { return conch_check_runsuite(suite()); }

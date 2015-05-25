@@ -41,7 +41,7 @@ END_TEST
 Suite *wordwrap_suite(void) {
   Suite *s = suite_create("wordwrap");
 
-  add_test_case(s, "create", test_wordwrap);
+  ADD_TEST_CASE(s, test_wordwrap);
 
   return s;
 }

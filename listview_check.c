@@ -116,15 +116,13 @@ END_TEST
 Suite *listview_suite(void) {
   Suite *s = suite_create("listview");
 
-  add_test_case(s, "create", test_listview_new);
-  add_test_case(s, "create_with_stick_to_top",
-                test_listview_new_with_stick_to_top);
-  add_test_case(s, "update", test_listview_update_null_blastlist);
-  add_test_case(s, "update_current", test_listview_update_sets_current_if_null);
-  add_test_case(s, "update_current_notnull",
-                test_listview_update_does_not_set_current_otherwise);
-  add_test_case(s, "toggle_stick_to_top", test_listview_toggle_stick_to_top);
-  add_test_case(s, "cursor_movement", test_listview_cursor_movement);
+  ADD_TEST_CASE(s, test_listview_new);
+  ADD_TEST_CASE(s, test_listview_new_with_stick_to_top);
+  ADD_TEST_CASE(s, test_listview_update_null_blastlist);
+  ADD_TEST_CASE(s, test_listview_update_sets_current_if_null);
+  ADD_TEST_CASE(s, test_listview_update_does_not_set_current_otherwise);
+  ADD_TEST_CASE(s, test_listview_toggle_stick_to_top);
+  ADD_TEST_CASE(s, test_listview_cursor_movement);
 
   return s;
 }
