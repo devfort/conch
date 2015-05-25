@@ -8,6 +8,11 @@ BINS_TEST=$(patsubst %.c,%,$(wildcard *_check.c))
 LIBS=libpq
 LIBS_TEST=check
 
+
+ifndef verbose
+  SILENT = @
+endif
+
 CFLAGS+=$(shell pkg-config --cflags $(LIBS))
 LDFLAGS+=$(shell pkg-config --libs $(LIBS))
 
@@ -34,12 +39,12 @@ listview_check: listview.o blastlist.o
 
 CHECKTASKS=$(patsubst %_check,check_%,$(BINS_TEST))
 check: $(BINS_TEST)
-	@set -e && for t in $^; do \
+	$(SILENT)set -e && for t in $^; do \
 		./$$t | ./greenify; \
 		echo ----; \
 	done
 check_%: %_check
-	@./$<
+	$(SILENT)./$<
 
 PG_BIN_DIR=$(shell pg_config --bindir)
 
@@ -60,21 +65,21 @@ reformat: *.c *.h
 
 $(BINS): %: %.o
 	@echo "LD  $@"
-	@$(CC) -o $@ $^ $(LDFLAGS)
+	$(SILENT)$(CC) -o $@ $^ $(LDFLAGS)
 
 %.o: %.c
 	@mkdir -p $(DEPS)
 	@echo "CC  $@"
-	@$(CC) -o $@ -c $< $(CFLAGS) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<))
+	$(SILENT)$(CC) -o $@ -c $< $(CFLAGS) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<))
 
 %_check.o: %_check.c
 	@mkdir -p $(DEPS)
 	@echo "CC  $@"
-	@$(CC) -o $@ -c $< $(CFLAGS_TEST) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<))
+	$(SILENT)$(CC) -o $@ -c $< $(CFLAGS_TEST) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<))
 
 %_check: %_check.o
 	@echo "LD  $@"
-	@$(CC) -o $@ $(filter %.o,$^) $(LDFLAGS_TEST)
+	$(SILENT)$(CC) -o $@ $(filter %.o,$^) $(LDFLAGS_TEST)
 
 -include .deps/*.d
 
