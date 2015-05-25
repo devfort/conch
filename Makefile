@@ -65,15 +65,6 @@ clean:
 reformat: *.c *.h
 	clang-format -i *.h *.c
 
-$(BINS): %: %.o
-	@echo "LD  $@"
-	$(SILENT)$(CC) -o $@ $^ $(LDFLAGS)
-
-%.o: %.c
-	@mkdir -p $(DEPS)
-	@echo "CC  $@"
-	$(SILENT)$(CC) -o $@ -c $< $(CFLAGS) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<))
-
 %_check.o: %_check.c
 	@mkdir -p $(DEPS)
 	@echo "CC  $@"
@@ -82,6 +73,16 @@ $(BINS): %: %.o
 %_check: %_check.o
 	@echo "LD  $@"
 	$(SILENT)$(CC) -o $@ $(filter %.o,$^) $(LDFLAGS_TEST)
+
+
+%.o: %.c
+	@mkdir -p $(DEPS)
+	@echo "CC  $@"
+	$(SILENT)$(CC) -o $@ -c $< $(CFLAGS) -MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<))
+
+$(BINS): %: %.o
+	@echo "LD  $@"
+	$(SILENT)$(CC) -o $@ $^ $(LDFLAGS)
 
 -include .deps/*.d
 
