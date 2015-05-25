@@ -17,7 +17,7 @@ struct blastlist {
 };
 
 blastlist *conch_blastlist_new();
-blastlist *conch_blastlist_from_result_set(result_set *rs);
+blastlist *conch_blastlist_from_resultset(resultset *rs);
 blastlist *conch_blastlist_join(blastlist *lhs, blastlist *rhs);
 
 void conch_blastlist_free(blastlist *bl);

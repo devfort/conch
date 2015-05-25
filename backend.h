@@ -29,7 +29,7 @@ typedef struct {
   // Invariant: If count == 0 then blasts == NULL
   uint64_t count;
   blast *blasts;
-} result_set;
+} resultset;
 
 typedef struct { uint16_t page_size; } settings;
 
@@ -38,10 +38,10 @@ typedef struct mouthpiece mouthpiece;
 mouthpiece *conch_connect(settings settings);
 void conch_disconnect(mouthpiece *mp);
 
-result_set *conch_recent_blasts(mouthpiece *mp);
-result_set *conch_blasts_before(mouthpiece *mp, id before_token);
-result_set *conch_blasts_after(mouthpiece *mp, id after_token);
+resultset *conch_recent_blasts(mouthpiece *mp);
+resultset *conch_blasts_before(mouthpiece *mp, id before_token);
+resultset *conch_blasts_after(mouthpiece *mp, id after_token);
 
-void conch_free_result_set(result_set *results);
+void conch_free_resultset(resultset *results);
 
 #endif /* _BACKEND_H */

@@ -17,9 +17,9 @@ START_TEST(test_blastlist_new) {
 }
 END_TEST
 
-START_TEST(test_blastlist_from_result_set_null) {
-  result_set *rs = NULL;
-  blastlist *bl = conch_blastlist_from_result_set(rs);
+START_TEST(test_blastlist_from_resultset_null) {
+  resultset *rs = NULL;
+  blastlist *bl = conch_blastlist_from_resultset(rs);
 
   ASSERT_PTR_NULL(bl);
 
@@ -27,9 +27,9 @@ START_TEST(test_blastlist_from_result_set_null) {
 }
 END_TEST
 
-START_TEST(test_blastlist_from_result_set_empty) {
-  result_set rs = { 0 };
-  blastlist *bl = conch_blastlist_from_result_set(&rs);
+START_TEST(test_blastlist_from_resultset_empty) {
+  resultset rs = { 0 };
+  blastlist *bl = conch_blastlist_from_resultset(&rs);
 
   ASSERT_PTR_NULL(bl);
 
@@ -37,14 +37,14 @@ START_TEST(test_blastlist_from_result_set_empty) {
 }
 END_TEST
 
-START_TEST(test_blastlist_from_result_set_single) {
+START_TEST(test_blastlist_from_resultset_single) {
   blast b = {
     .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
   };
-  result_set rs = {
+  resultset rs = {
     .count = 1, .blasts = &b,
   };
-  blastlist *bl = conch_blastlist_from_result_set(&rs);
+  blastlist *bl = conch_blastlist_from_resultset(&rs);
 
   // List should exist and have head
   ASSERT_PTR_NOT_NULL(bl);
@@ -62,7 +62,7 @@ START_TEST(test_blastlist_from_result_set_single) {
 }
 END_TEST
 
-START_TEST(test_blastlist_from_result_set_multiple) {
+START_TEST(test_blastlist_from_resultset_multiple) {
   blast b1 = {
     .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
   };
@@ -72,10 +72,10 @@ START_TEST(test_blastlist_from_result_set_multiple) {
   blast b3 = {
     .id = 3, .user = "hippo", .content = "Mud, glorious mud!",
   };
-  result_set rs = {
+  resultset rs = {
     .count = 3, .blasts = (blast[]){ b1, b2, b3 },
   };
-  blastlist *bl = conch_blastlist_from_result_set(&rs);
+  blastlist *bl = conch_blastlist_from_resultset(&rs);
 
   // List should exist
   ASSERT_PTR_NOT_NULL(bl);
@@ -123,10 +123,10 @@ START_TEST(test_blastlist_join_rhs_only) {
   blast b1 = {
     .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
   };
-  result_set rs1 = {
+  resultset rs1 = {
     .count = 1, .blasts = &b1,
   };
-  blastlist *rhs = conch_blastlist_from_result_set(&rs1);
+  blastlist *rhs = conch_blastlist_from_resultset(&rs1);
 
   blastlist *bl = conch_blastlist_join(NULL, rhs);
 
@@ -138,10 +138,10 @@ START_TEST(test_blastlist_join_lhs_only) {
   blast b1 = {
     .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
   };
-  result_set rs1 = {
+  resultset rs1 = {
     .count = 1, .blasts = &b1,
   };
-  blastlist *lhs = conch_blastlist_from_result_set(&rs1);
+  blastlist *lhs = conch_blastlist_from_resultset(&rs1);
 
   blastlist *bl = conch_blastlist_join(lhs, NULL);
 
@@ -156,14 +156,14 @@ START_TEST(test_blastlist_join) {
   blast b2 = {
     .id = 2, .user = "elephant", .content = "Splashy splashy water.",
   };
-  result_set rs1 = {
+  resultset rs1 = {
     .count = 1, .blasts = &b1,
   };
-  result_set rs2 = {
+  resultset rs2 = {
     .count = 1, .blasts = &b2,
   };
-  blastlist *lhs = conch_blastlist_from_result_set(&rs1);
-  blastlist *rhs = conch_blastlist_from_result_set(&rs2);
+  blastlist *lhs = conch_blastlist_from_resultset(&rs1);
+  blastlist *rhs = conch_blastlist_from_resultset(&rs2);
 
   blastlist *bl = conch_blastlist_join(lhs, rhs);
 
@@ -177,10 +177,10 @@ Suite *blastlist_suite(void) {
   Suite *s = suite_create("blastlist");
 
   ADD_TEST_CASE(s, test_blastlist_new);
-  ADD_TEST_CASE(s, test_blastlist_from_result_set_null);
-  ADD_TEST_CASE(s, test_blastlist_from_result_set_empty);
-  ADD_TEST_CASE(s, test_blastlist_from_result_set_single);
-  ADD_TEST_CASE(s, test_blastlist_from_result_set_multiple);
+  ADD_TEST_CASE(s, test_blastlist_from_resultset_null);
+  ADD_TEST_CASE(s, test_blastlist_from_resultset_empty);
+  ADD_TEST_CASE(s, test_blastlist_from_resultset_single);
+  ADD_TEST_CASE(s, test_blastlist_from_resultset_multiple);
   ADD_TEST_CASE(s, test_blastlist_join_null);
   ADD_TEST_CASE(s, test_blastlist_join_rhs_only);
   ADD_TEST_CASE(s, test_blastlist_join_lhs_only);

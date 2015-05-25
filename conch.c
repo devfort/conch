@@ -82,24 +82,24 @@ WINDOW *init_screen() {
 }
 
 blastlist *init_blasts(mouthpiece *conn) {
-  result_set *result = conch_recent_blasts(conn);
-  blastlist *blasts = conch_blastlist_from_result_set(result);
-  conch_free_result_set(result);
+  resultset *result = conch_recent_blasts(conn);
+  blastlist *blasts = conch_blastlist_from_resultset(result);
+  conch_free_resultset(result);
   return blasts;
 }
 
 blastlist *update_new_blasts(mouthpiece *conn, blastlist *blast) {
-  result_set *result = conch_blasts_after(conn, blast->id);
-  blastlist *more_blasts = conch_blastlist_from_result_set(result);
-  conch_free_result_set(result);
+  resultset *result = conch_blasts_after(conn, blast->id);
+  blastlist *more_blasts = conch_blastlist_from_resultset(result);
+  conch_free_resultset(result);
 
   return conch_blastlist_join(more_blasts, blast);
 }
 
 blastlist *update_old_blasts(mouthpiece *conn, blastlist *blast) {
-  result_set *result = conch_blasts_before(conn, blast->id);
-  blastlist *more_blasts = conch_blastlist_from_result_set(result);
-  conch_free_result_set(result);
+  resultset *result = conch_blasts_before(conn, blast->id);
+  blastlist *more_blasts = conch_blastlist_from_resultset(result);
+  conch_free_resultset(result);
 
   return conch_blastlist_join(blast, more_blasts);
 }

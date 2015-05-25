@@ -78,9 +78,9 @@ void conch_let_silence_fall(mouthpiece *mp) {
 
 static uint32_t pg_char_to_int(char *s) { return ntohl(*((int32_t *)s)); }
 
-static result_set *pg_result_to_result_set(mouthpiece *mp,
-                                           PGresult *query_result) {
-  result_set *result = malloc(sizeof(result_set));
+static resultset *pg_result_to_resultset(mouthpiece *mp,
+                                         PGresult *query_result) {
+  resultset *result = malloc(sizeof(resultset));
 
   ExecStatusType query_result_status = PQresultStatus(query_result);
 
@@ -110,7 +110,7 @@ static result_set *pg_result_to_result_set(mouthpiece *mp,
     int n = PQntuples(query_result);
 
     if (n == 0) {
-      conch_free_result_set(result);
+      conch_free_resultset(result);
       return NULL;
     }
 
@@ -144,7 +144,7 @@ static result_set *pg_result_to_result_set(mouthpiece *mp,
   return result;
 }
 
-result_set *conch_recent_blasts(mouthpiece *mp) {
+resultset *conch_recent_blasts(mouthpiece *mp) {
   char page_size_as_string[6];
   int written = snprintf(page_size_as_string, 6, "%d", mp->settings.page_size);
   assert(written <= 6);
@@ -162,10 +162,10 @@ result_set *conch_recent_blasts(mouthpiece *mp) {
       true // Ask for result set in binary format rather than text.
       );
 
-  return pg_result_to_result_set(mp, query_result);
+  return pg_result_to_resultset(mp, query_result);
 }
 
-result_set *conch_blasts_before(mouthpiece *mp, id before_token) {
+resultset *conch_blasts_before(mouthpiece *mp, id before_token) {
   char page_size_as_string[6];
   int written = snprintf(page_size_as_string, 6, "%d", mp->settings.page_size);
   assert(written <= 6);
@@ -189,10 +189,10 @@ result_set *conch_blasts_before(mouthpiece *mp, id before_token) {
       true // Ask for result set in binary format rather than text.
       );
 
-  return pg_result_to_result_set(mp, query_result);
+  return pg_result_to_resultset(mp, query_result);
 }
 
-result_set *conch_blasts_after(mouthpiece *mp, id after_token) {
+resultset *conch_blasts_after(mouthpiece *mp, id after_token) {
   char page_size_as_string[6];
   int written = snprintf(page_size_as_string, 6, "%d", mp->settings.page_size);
   assert(written <= 6);
@@ -218,10 +218,10 @@ result_set *conch_blasts_after(mouthpiece *mp, id after_token) {
       true // Ask for result set in binary format rather than text.
       );
 
-  return pg_result_to_result_set(mp, query_result);
+  return pg_result_to_resultset(mp, query_result);
 }
 
-void conch_free_result_set(result_set *result) {
+void conch_free_resultset(resultset *result) {
   if (result == NULL) {
     return;
   }
