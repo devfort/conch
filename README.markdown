@@ -4,6 +4,16 @@ Conch is a C client for Bugle.
 
 Be very afraid.
 
+## Installing
+
+On Linux you'll need to install
+
+  sudo apt-get install libimlib2-dev libcaca-dev libncurses5
+
+On OS X you'll need to install
+
+  echo Ask Ash what the Homebrew packages are.
+
 ## Testing
 
 To run the tests: `make check`. If they are timing out, you can use the
