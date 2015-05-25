@@ -272,8 +272,7 @@ int main(int argc, char **argv) {
   } while (conn == NULL);
 
   blastlist *bl = init_blasts(conn);
-  screen_state_s *screen = conch_listview_new(bl);
-  screen->stick_to_top = stick_to_top;
+  screen_state_s *screen = conch_listview_new(bl, stick_to_top);
 
   while (1) {
     int at_top = (screen->head == screen->current_blast);

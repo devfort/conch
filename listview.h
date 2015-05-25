@@ -10,7 +10,7 @@ typedef struct screen_state_s {
   int stick_to_top;
 } screen_state_s;
 
-screen_state_s *conch_listview_new(blastlist *bl);
+screen_state_s *conch_listview_new(blastlist *bl, int stick_to_top);
 void conch_listview_free(screen_state_s *lv);
 
 #endif /* _LISTVIEW_H */
