@@ -39,12 +39,12 @@ check_%: %_check
 PG_BIN_DIR=$(shell pg_config --bindir)
 
 .testdb: schema.sql data.sql
-	$(PG_BIN_DIR)/dropdb bugle_test 2>/dev/null || true
-	$(PG_BIN_DIR)/dropuser bugle 2>/dev/null || true
-	$(PG_BIN_DIR)/createuser -SDR bugle
-	$(PG_BIN_DIR)/createdb bugle_test --owner=bugle
-	psql bugle_test < schema.sql
-	psql bugle_test < data.sql
+	$(PG_BIN_DIR)/dropdb -h localhost bugle_test 2>/dev/null || true
+	$(PG_BIN_DIR)/dropuser -h localhost bugle 2>/dev/null || true
+	$(PG_BIN_DIR)/createuser -h localhost -SDR bugle
+	$(PG_BIN_DIR)/createdb -h localhost bugle_test --owner=bugle
+	psql -h localhost bugle_test < schema.sql
+	psql -h localhost bugle_test < data.sql
 	touch .testdb
 
 clean:
