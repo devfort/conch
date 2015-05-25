@@ -24,6 +24,11 @@ static void handle_keypress(const int key, listview *lv) {
     conch_listview_jump_to_top(lv);
     break;
 
+  case '.':
+  case '\t':
+    conch_listview_jump_to_next_unread(lv);
+    break;
+
   case 'j':
     conch_listview_select_next_blast(lv);
     break;

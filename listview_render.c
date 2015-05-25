@@ -70,8 +70,9 @@ static void render_clock(WINDOW *window) {
 
 static void render_help(WINDOW *window) {
   int max_y = getmaxy(window);
-  mvwaddstr(window, max_y - 1, chrome.padding_x + chrome.border_width,
-            " j: down  k: up  s: stick to top  0: jump to top  q: quit ");
+  mvwaddstr(
+      window, max_y - 1, chrome.padding_x + chrome.border_width,
+      " j: down  k: up  s: stick to top  0: to top  TAB: to unread  q: quit ");
 }
 
 static void render_chrome(WINDOW *window) {

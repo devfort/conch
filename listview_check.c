@@ -231,6 +231,28 @@ START_TEST(test_listview_has_unread_blasts) {
 }
 END_TEST
 
+START_TEST(test_listview_jump_to_next_unread) {
+  blastlist *bl = conch_blastlist_new();
+  listview *lv = conch_listview_new(false);
+
+  conch_listview_jump_to_next_unread(lv);
+
+  conch_listview_update(lv, bl);
+
+  blastlist *bl1 = conch_blastlist_join(conch_blastlist_new(), bl);
+  blastlist *bl2 = conch_blastlist_join(conch_blastlist_new(), bl1);
+  conch_listview_update(lv, bl2);
+
+  conch_listview_jump_to_next_unread(lv);
+  ck_assert_ptr_eq(lv->latest_read, bl1);
+  ck_assert_int_eq(conch_listview_has_unread_blasts(lv), true);
+
+  conch_listview_jump_to_next_unread(lv);
+  ck_assert_ptr_eq(lv->latest_read, bl2);
+  ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
+}
+END_TEST
+
 Suite *listview_suite(void) {
   Suite *s = suite_create("listview");
 
@@ -246,6 +268,7 @@ Suite *listview_suite(void) {
   ADD_TEST_CASE(s, test_listview_update_jumps_to_top_if_sticky);
   ADD_TEST_CASE(s, test_listview_jump_to_top_updates_latest_read);
   ADD_TEST_CASE(s, test_listview_has_unread_blasts);
+  ADD_TEST_CASE(s, test_listview_jump_to_next_unread);
 
   return s;
 }
