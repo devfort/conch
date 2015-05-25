@@ -1,7 +1,10 @@
 #ifndef _CHECKRUNNER_H
 #define _CHECKRUNNER_H
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 #include <check.h>
+#pragma GCC diagnostic pop
 
 /*
  * Run a check suite. Example:
