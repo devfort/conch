@@ -75,9 +75,11 @@ int render_blast(WINDOW *window, int y, int x, blastlist *blast,
   init_wordwrap(&wrap, blast->content, width);
 
   int line = 0;
-  for(token_s *token = wordwrap(&wrap); token != NULL; token = wordwrap(&wrap)) {
+  for(token_s *token = wordwrap(&wrap); token != NULL;
+      token = wordwrap(&wrap)) {
     line = token->y;
-    mvwaddnstr(window, y + token->y, x + token->x + 2, token->word, token->length);
+    mvwaddnstr(window, y + token->y, x + token->x + 2, token->word,
+               token->length);
   }
 
   mvwprintw(window, y + line + 1, x + 2, "--%s at %d", blast->user, blast->id);
@@ -130,7 +132,7 @@ void render(WINDOW *window, screen_state_s *screen) {
   if(blast->prev) {
     mvwvline(window, chrome.border_width, blast_x,
              ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
-  } else if (screen->stick_to_top) {
+  } else if(screen->stick_to_top) {
     mvwvline(window, chrome.border_width, blast_x,
              ACS_VLINE | COLOR_PAIR(STUCK_COLOR), 1);
   }
@@ -262,7 +264,7 @@ int main(int argc, char **argv) {
     int at_top = (screen.head == screen.current_blast);
     screen.head = update_blasts(conn, screen.head);
 
-    if (at_top && screen.stick_to_top) {
+    if(at_top && screen.stick_to_top) {
       screen.current_blast = screen.head;
       screen.blast_offset = 0;
     }

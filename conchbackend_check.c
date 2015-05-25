@@ -10,7 +10,7 @@ void assert_valid_result_set(mouthpiece *mp, result_set *rs) {
   ck_assert_int_le(rs->count, mp->settings.page_size);
   ck_assert_int_ne(rs->before_token, 0);
   ck_assert_int_ne(rs->after_token, 0);
-  for(int i=0; i<rs->count; i++) {
+  for(int i = 0; i < rs->count; i++) {
     blast blast = rs->blasts[i];
     ck_assert_ptr_ne(blast.user, NULL);
     ck_assert_ptr_ne(blast.content, NULL);
@@ -127,7 +127,8 @@ Suite *conchbackend_suite(void) {
   Suite *s = suite_create("backend");
 
   add_test_case(s, "connection", test_can_connect_and_disconnect);
-  add_test_case(s, "connection_production", test_can_connect_and_disconnect_production);
+  add_test_case(s, "connection_production",
+                test_can_connect_and_disconnect_production);
   add_test_case(s, "recent", test_can_retrieve_most_recent);
   add_test_case(s, "backwards", test_can_page_backwards);
   add_test_case(s, "forwards", test_can_page_forwards);
