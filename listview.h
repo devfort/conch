@@ -7,6 +7,7 @@
 typedef struct listview {
   blastlist *head;
   blastlist *current_blast;
+  blastlist *latest_read;
   int blast_offset;
   bool stick_to_top;
 } listview;
