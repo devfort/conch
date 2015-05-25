@@ -1,6 +1,6 @@
 #include "checkrunner.h"
 
-#include "conchbackend.h"
+#include "conchbackend-internal.h"
 
 START_TEST(test_can_connect_and_disconnect) {
   settings settings = {.page_size = 10 };
@@ -55,7 +55,7 @@ END_TEST
 
 START_TEST(test_can_page_forwards) {
   settings settings = {.page_size = 2 };
-  mouthpiece *mp = conch_connect(settings);
+  mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
   result_set *past = conch_blasts_before(mp, recent->before_token);
 
@@ -72,9 +72,9 @@ START_TEST(test_can_page_forwards) {
 }
 END_TEST
 
-START_TEST(test_can_page_forward_one_page) {
+START_TEST(test_can_page_forward_one_page)
   settings settings = {.page_size = 2 };
-  mouthpiece *mp = conch_connect(settings);
+  mouthpiece *mp = conch_test_connect(settings);
   result_set *recent = conch_recent_blasts(mp);
 
   result_set *past = conch_blasts_before(mp, recent->before_token);
@@ -89,6 +89,30 @@ START_TEST(test_can_page_forward_one_page) {
   conch_free_result_set(recent);
   conch_free_result_set(past);
   conch_free_result_set(back_to_the_future);
+  conch_disconnect(mp);
+END_TEST
+
+START_TEST(test_can_silence_everything) {
+  settings settings = {.page_size = 10 };
+  mouthpiece *mp = conch_test_connect(settings);
+  ck_assert_ptr_ne(mp, NULL);
+  conch_let_silence_fall(mp);
+  result_set *results = conch_recent_blasts(mp);
+  ck_assert_ptr_eq(results, NULL);
+  conch_disconnect(mp);
+}
+END_TEST
+
+START_TEST(test_rolls_back_tests_on_close) {
+  settings settings = {.page_size = 10 };
+  mouthpiece *mp = conch_test_connect(settings);
+  conch_let_silence_fall(mp);
+  conch_disconnect(mp);
+  mp = conch_test_connect(settings);
+  result_set *results = conch_recent_blasts(mp);
+  ck_assert_int_eq(results->error, 0);
+  ck_assert_int_eq(results->count, 10);
+  conch_free_result_set(results);
   conch_disconnect(mp);
 }
 END_TEST
@@ -105,6 +129,9 @@ Suite *conchbackend_suite(void) {
   tcase_add_test(tc_recent, test_can_page_forwards);
   TCase *tc_forward_one_page = tcase_create("forward_one_page");
   tcase_add_test(tc_recent, test_can_page_forward_one_page);
+  TCase *tc_silence = tcase_create("silence");
+  tcase_add_test(tc_silence, test_can_silence_everything);
+  tcase_add_test(tc_silence, test_rolls_back_tests_on_close);
 
   Suite *s = suite_create("backend");
   suite_add_tcase(s, tc_core);
@@ -112,6 +139,7 @@ Suite *conchbackend_suite(void) {
   suite_add_tcase(s, tc_backwards);
   suite_add_tcase(s, tc_forwards);
   suite_add_tcase(s, tc_forward_one_page);
+  suite_add_tcase(s, tc_silence);
 
   return s;
 }

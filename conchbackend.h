@@ -34,7 +34,6 @@ typedef struct { uint16_t page_size; } settings;
 typedef struct mouthpiece mouthpiece;
 
 mouthpiece *conch_connect(settings settings);
-mouthpiece *conch_test_connect(settings settings);
 void conch_disconnect(mouthpiece *mp);
 
 result_set *conch_recent_blasts(mouthpiece *mp);

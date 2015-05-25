@@ -1,4 +1,4 @@
-#include "conchbackend.h"
+#include "conchbackend-internal.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -7,12 +7,6 @@
 #include <string.h>
 #include <stdbool.h>
 #include <inttypes.h>
-#include <libpq-fe.h>
-
-struct mouthpiece {
-  PGconn *connection;
-  settings settings;
-};
 
 static mouthpiece *conch_connect_internal(settings settings,
                                           char *connection_string) {
@@ -23,6 +17,7 @@ static mouthpiece *conch_connect_internal(settings settings,
   mouthpiece *mp = malloc(sizeof(mouthpiece));
   mp->settings = settings;
   mp->connection = connection;
+  mp->is_test = false;
   return mp;
 }
 
@@ -32,13 +27,47 @@ mouthpiece *conch_connect(settings settings) {
 }
 
 mouthpiece *conch_test_connect(settings settings) {
-  return conch_connect_internal(settings,
+  mouthpiece *mp = conch_connect_internal(settings,
                                 "host=localhost dbname=bugle_test user=bugle");
+  if(mp == NULL){
+    return NULL;
+  }
+  mp->is_test = true;
+
+  PGresult *res = PQexec(mp->connection, "BEGIN");
+  if (PQresultStatus(res) != PGRES_COMMAND_OK){
+    fprintf(stderr, "Could not start test transaction: %s", PQerrorMessage(mp->connection));
+    conch_disconnect(mp);
+    return NULL;
+  }
+  return mp;
 }
 
 void conch_disconnect(mouthpiece *mp) {
+  if(mp->is_test){
+    PGresult *res = PQexec(mp->connection, "ROLLBACK");
+    if (PQresultStatus(res) != PGRES_COMMAND_OK){
+      fprintf(stderr, "Error when rolling back test transaction: %s", PQerrorMessage(mp->connection));
+    }
+  }
   PQfinish(mp->connection);
   free(mp);
+}
+
+static void silentNoticeProcessor(void *arg, const char *message){}
+static void defaultNoticeProcessor(void *arg, const char *message) {
+  fprintf(stderr, "%s", message);
+}
+
+void conch_let_silence_fall(mouthpiece *mp){
+  assert(mp->is_test);
+  PQsetNoticeProcessor(mp->connection, silentNoticeProcessor, NULL);
+  PGresult *res = PQexec(mp->connection, "truncate table bugle_blast cascade");
+  if (PQresultStatus(res) != PGRES_COMMAND_OK){
+    fprintf(stderr, "Error when truncating test blasts: %s", PQerrorMessage(mp->connection));
+    abort();
+  }
+  PQsetNoticeProcessor(mp->connection, defaultNoticeProcessor, NULL);
 }
 
 static char *strclone(char *c) {
