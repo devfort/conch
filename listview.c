@@ -47,4 +47,8 @@ void conch_listview_select_prev_blast(listview *lv) {
   }
 }
 
+bool conch_listview_has_unread_blasts(listview *lv) {
+  return (lv->latest_read != NULL && lv->latest_read->prev != NULL);
+}
+
 void conch_listview_free(listview *lv) { free(lv); }
