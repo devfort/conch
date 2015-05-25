@@ -280,8 +280,7 @@ int main(int argc, char **argv) {
     screen->head = update_blasts(conn, screen->head);
 
     if (at_top && screen->stick_to_top) {
-      screen->current_blast = screen->head;
-      screen->blast_offset = 0;
+      listview_jumptop(screen);
     }
     render(main_window, screen);
     respond_to_keypresses(main_window, screen);
