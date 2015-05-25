@@ -277,10 +277,6 @@ int main(int argc, char **argv) {
   blastlist *bl = init_blasts(conn);
   screen_state_s *screen = conch_listview_new(stick_to_top);
 
-  // Do initial update of listview and set current blast to first blast:
-  conch_listview_update(screen, bl);
-  screen->current_blast = bl;
-
   while (1) {
     conch_listview_update(screen, update_blasts(conn, bl));
 
