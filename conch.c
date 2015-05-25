@@ -46,14 +46,14 @@ void render_clock(WINDOW *window) {
 
   int max_x = getmaxx(window);
 
-  mvwprintw(window, 0,
+  mvwaddstr(window, 0,
             max_x - time_len - chrome.border_width - chrome.padding_x,
             time_str);
 }
 
 void render_chrome(WINDOW *window) {
   box(window, 0, 0);
-  mvwprintw(window, 0, 3, " conch <@ ");
+  mvwaddstr(window, 0, 3, " conch <@ ");
 
   render_clock(window);
 }
@@ -79,7 +79,7 @@ int render_blast(WINDOW *window, int y, int x, blastlist *blast, chtype highligh
       line += 1;
     }
 
-    mvwprintw(window, y + line, cur_x, token);
+    mvwaddstr(window, y + line, cur_x, token);
 
     cur_x += tok_len + 1;
   }
@@ -125,7 +125,7 @@ void render(WINDOW *window, screen_state_s *screen) {
            max_y - (chrome.border_width * 2));
 
   if(0 == max_blasts) {
-    mvwprintw(window, first_blast_y, blast_x + 1,
+    mvwaddstr(window, first_blast_y, blast_x + 1,
               "You're gonna need a bigger boat! (Or window.)");
   }
 
