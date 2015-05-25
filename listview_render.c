@@ -76,15 +76,15 @@ static int render_blast(WINDOW *window, int y, int x, blastlist *blast,
   return line + 2;
 }
 
-static int blast_highlight(blastlist *blast, screen_state_s *screen) {
-  if (blast == screen->current_blast) {
+static int blast_highlight(blastlist *blast, listview *lv) {
+  if (blast == lv->current_blast) {
     return ' ' | COLOR_PAIR(SELECTED_COLOR);
   } else {
     return ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR);
   }
 }
 
-void conch_listview_render(WINDOW *window, screen_state_s *screen) {
+void conch_listview_render(WINDOW *window, listview *lv) {
 
   int max_y = getmaxy(window);
 
@@ -115,13 +115,13 @@ void conch_listview_render(WINDOW *window, screen_state_s *screen) {
               "You're gonna need a bigger boat! (Or window.)");
   }
 
-  blastlist *blast = screen->current_blast;
+  blastlist *blast = lv->current_blast;
 
   // Indicate that prior blasts are available
   if (blast->prev) {
     mvwvline(window, chrome.border_width, blast_x,
              ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
-  } else if (screen->stick_to_top) {
+  } else if (lv->stick_to_top) {
     mvwvline(window, chrome.border_width, blast_x,
              ACS_VLINE | COLOR_PAIR(STUCK_COLOR), 1);
   }
@@ -129,7 +129,7 @@ void conch_listview_render(WINDOW *window, screen_state_s *screen) {
   int blast_y = first_blast_y;
   for (int i = 0; i < max_blasts && available_y > 0; ++i) {
     int blast_height = render_blast(window, blast_y, blast_x, blast,
-                                    blast_highlight(blast, screen));
+                                    blast_highlight(blast, lv));
 
     blast_y += chrome.blast_padding + blast_height;
     available_y -= blast_height;

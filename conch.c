@@ -10,24 +10,24 @@
 #include "listview.h"
 #include "listview_render.h"
 
-int respond_to_keypresses(WINDOW *window, screen_state_s *screen) {
+int respond_to_keypresses(WINDOW *window, listview *lv) {
   const int input = wgetch(window);
 
   switch (input) {
   case '0':
-    conch_listview_jump_to_top(screen);
+    conch_listview_jump_to_top(lv);
     break;
 
   case 'j':
-    conch_listview_select_next_blast(screen);
+    conch_listview_select_next_blast(lv);
     break;
 
   case 'k':
-    conch_listview_select_prev_blast(screen);
+    conch_listview_select_prev_blast(lv);
     break;
 
   case 's':
-    conch_listview_toggle_stick_to_top(screen);
+    conch_listview_toggle_stick_to_top(lv);
     break;
 
   case 'q':
@@ -100,19 +100,19 @@ int main(int argc, char **argv) {
   } while (conn == NULL);
 
   blastlist *bl = init_blasts(conn);
-  screen_state_s *screen = conch_listview_new(stick_to_top);
+  listview *lv = conch_listview_new(stick_to_top);
 
   while (1) {
-    conch_listview_update(screen, update_blasts(conn, bl));
+    conch_listview_update(lv, update_blasts(conn, bl));
 
-    int at_top = (screen->head == screen->current_blast);
-    if (at_top && screen->stick_to_top) {
-      conch_listview_jump_to_top(screen);
+    int at_top = (lv->head == lv->current_blast);
+    if (at_top && lv->stick_to_top) {
+      conch_listview_jump_to_top(lv);
     }
-    conch_listview_render(main_window, screen);
-    respond_to_keypresses(main_window, screen);
+    conch_listview_render(main_window, lv);
+    respond_to_keypresses(main_window, lv);
   }
 
   endwin();
-  conch_listview_free(screen);
+  conch_listview_free(lv);
 }

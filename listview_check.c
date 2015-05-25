@@ -7,7 +7,7 @@
 #define ASSERT_PTR_NOT_NULL(ptr) ck_assert_ptr_ne(ptr, NULL)
 
 START_TEST(test_listview_new) {
-  screen_state_s *lv = conch_listview_new(false);
+  listview *lv = conch_listview_new(false);
 
   ASSERT_PTR_NOT_NULL(lv);
   ASSERT_PTR_NULL(lv->head);
@@ -20,7 +20,7 @@ START_TEST(test_listview_new) {
 END_TEST
 
 START_TEST(test_listview_new_with_stick_to_top) {
-  screen_state_s *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(true);
 
   ASSERT_PTR_NOT_NULL(lv);
   ck_assert_int_eq(lv->stick_to_top, true);
@@ -31,7 +31,7 @@ END_TEST
 
 START_TEST(test_listview_update_null_blastlist) {
   blastlist *bl = NULL;
-  screen_state_s *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(true);
 
   conch_listview_update(lv, bl);
 
@@ -44,7 +44,7 @@ END_TEST
 
 START_TEST(test_listview_update_sets_current_if_null) {
   blastlist *bl = conch_blastlist_new();
-  screen_state_s *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(true);
 
   conch_listview_update(lv, bl);
 
@@ -60,7 +60,7 @@ END_TEST
 START_TEST(test_listview_update_does_not_set_current_otherwise) {
   blastlist *bl1 = conch_blastlist_new();
   blastlist *bl2 = conch_blastlist_join(conch_blastlist_new(), bl1);
-  screen_state_s *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(true);
 
   // If update is called and current_blast is already set, it should not be
   // overridden.
@@ -75,7 +75,7 @@ START_TEST(test_listview_update_does_not_set_current_otherwise) {
 END_TEST
 
 START_TEST(test_listview_toggle_stick_to_top) {
-  screen_state_s *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(true);
 
   ASSERT_PTR_NOT_NULL(lv);
   ck_assert_int_eq(lv->stick_to_top, true);
@@ -91,7 +91,7 @@ END_TEST
 START_TEST(test_listview_cursor_movement) {
   blastlist *bl1 = conch_blastlist_new();
   blastlist *bl2 = conch_blastlist_join(conch_blastlist_new(), bl1);
-  screen_state_s *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(true);
   conch_listview_update(lv, bl2);
 
   // We can move forward
@@ -117,7 +117,7 @@ START_TEST(test_listview_jump_to_top) {
   blastlist *bl = conch_blastlist_new();
   bl = conch_blastlist_join(conch_blastlist_new(), bl);
   bl = conch_blastlist_join(conch_blastlist_new(), bl);
-  screen_state_s *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(true);
   conch_listview_update(lv, bl);
 
   conch_listview_select_next_blast(lv);
