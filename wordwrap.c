@@ -23,8 +23,12 @@ token_s *wordwrap(wordwrap_s * wrap) {
     return NULL;
   }
 
+  wrap->_token.x += wrap->_token.length;
+
   // skip leading spaces
   for(p = start; p < content_end && isspace(*p); ++p);
+
+  wrap->_token.x += (p - start);
 
   // find next token
   for(token_start = p; p < content_end && !isspace(*p); ++p);

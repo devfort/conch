@@ -13,13 +13,13 @@ START_TEST(test_wordwrap) {
 
   token_s expected[] = { {.y = 0, .x = 0, .length = 5, .word = "We're" },
                          {.y = 0, .x = 6, .length = 5, .word = "going" },
-                         {.y = 0, .x = 11, .length = 2, .word = "to" },
+                         {.y = 1, .x = 0, .length = 2, .word = "to" },
 
-                         {.y = 1, .x = 0, .length = 4, .word = "need" },
-                         {.y = 1, .x = 5, .length = 1, .word = "a" },
+                         {.y = 1, .x = 3, .length = 4, .word = "need" },
+                         {.y = 1, .x = 8, .length = 1, .word = "a" },
 
                          {.y = 2, .x = 0, .length = 6, .word = "bigger" },
-                         {.y = 2, .x = 3, .length = 4, .word = "boat" } };
+                         {.y = 2, .x = 7, .length = 4, .word = "boat" } };
 
   for(int i = 0; i < sizeof(expected) / sizeof(token_s); ++i) {
     token_s *word = wordwrap(&wrap);
@@ -27,6 +27,8 @@ START_TEST(test_wordwrap) {
 
     ASSERT_PTR_NOT_NULL(word);
     ASSERT_PTR_NOT_NULL(expect);
+    ck_assert_int_eq(expect->y, word->y);
+    ck_assert_int_eq(expect->x, word->x);
     ck_assert_uint_eq(expect->length, word->length);
     ASSERT_STRNCMP_EQUAL(word->word, expect->word, expect->length);
   }

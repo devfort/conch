@@ -8,6 +8,7 @@
 
 #include "blastlist.h"
 #include "conchbackend.h"
+#include "wordwrap.h"
 
 typedef struct window_chrome_s {
   int border_width;
@@ -63,35 +64,21 @@ void render_chrome(WINDOW *window) {
 
 int render_blast(WINDOW *window, int y, int x, blastlist *blast,
                  chtype highlight) {
-  int max_x = getmaxx(window);
+
+  int width = getmaxx(window) - ((chrome.border_width + chrome.padding_x) * 2) - 2;
 
   mvwvline(window, y, x, highlight, 2);
 
-  int cur_x = x + 2;
+  wordwrap_s wrap;
+  init_wordwrap(&wrap, blast->content, width);
+
   int line = 0;
-  int wrap_at = max_x - chrome.border_width;
-
-  size_t blast_len = strlen(blast->content);
-  char *content = malloc(blast_len + 1);
-  strncpy(content, blast->content, blast_len + 1);
-
-  for(char *token = strtok(content, " "); token != NULL;
-      token = strtok(NULL, " ")) {
-    const int tok_len = strlen(token);
-
-    if(tok_len + cur_x >= wrap_at) {
-      cur_x = x + 2;
-      line += 1;
-    }
-
-    mvwaddstr(window, y + line, cur_x, token);
-
-    cur_x += tok_len + 1;
+  for(token_s *token = wordwrap(&wrap); token != NULL; token = wordwrap(&wrap)) {
+    line = token->y;
+    mvwaddnstr(window, y + token->y, x + token->x + 2, token->word, token->length);
   }
 
   mvwprintw(window, y + line + 1, x + 2, "--%s at %d", blast->user, blast->id);
-
-  free(content);
 
   return line + 2;
 }
