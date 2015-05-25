@@ -13,7 +13,10 @@ ifndef verbose
   SILENT = @
 endif
 
-CFLAGS+=$(shell pkg-config --cflags $(LIBS)) -DX_DISPLAY_MISSING=1
+# imglib2 requires this define when compiled without X11 support
+CFLAGS+=-DX_DISPLAY_MISSING=1
+
+CFLAGS+=$(shell pkg-config --cflags $(LIBS))
 LDFLAGS+=$(shell pkg-config --libs $(LIBS))
 
 # ncurses doesn't seem to ship with .pc files on all platforms, but it does
