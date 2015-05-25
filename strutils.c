@@ -26,6 +26,12 @@ char *strcopycat(char *c, char *d) {
 
   int n = strlen(c);
   char *target = malloc(n + strlen(d) + 1);
+
+  if (target == NULL) {
+    fprintf(stderr, "strcopycat: could not alloc\n");
+    abort();
+  }
+
   strcpy(target, c);
   strcpy(target + n, d);
   return target;
