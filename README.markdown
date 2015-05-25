@@ -11,8 +11,9 @@ environment variable CK_DEFAULT_TIMEOUT with the make target. The default is 4
 seconds, I've found that my Vagrant VM requires 6 seconds, i.e. `make check
 CK_DEFAULT_TIMEOUT=6`.
 
-You will need postgres installed and running and to be able to create users and
-databases as your current user.
+You will need postgres installed and running and your current user will need to be a
+postgres superuser. Your pg\_hba.conf should be set up to allow passwordless local
+connections to the bugle\_test database as the bugle user.
 
 ## Making it work on your system
 
