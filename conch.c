@@ -11,10 +11,11 @@
 #include "listview.h"
 #include "listview_render.h"
 
-int respond_to_keypresses(WINDOW *window, listview *lv) {
-  const int input = wgetch(window);
+// Maximum time to wait for a keypress (tenths of a second)
+#define KEY_DELAY 5
 
-  switch (input) {
+void handle_keypress(const int key, listview *lv) {
+  switch (key) {
   case '0':
     conch_listview_jump_to_top(lv);
     break;
@@ -34,9 +35,12 @@ int respond_to_keypresses(WINDOW *window, listview *lv) {
   case 'q':
     endwin();
     exit(0);
-  }
+    break;
 
-  return input == ERR;
+  case ERR:
+  default:
+    break;
+  }
 }
 
 WINDOW *init_screen() {
@@ -52,7 +56,10 @@ WINDOW *init_screen() {
   // get initial screen setup while we wait for connections
   WINDOW *window = newwin(0, 0, 0, 0);
 
-  nodelay(window, 1);
+  // Turn on "half delay" mode, in which getch functions will block for up to n
+  // tenths of a second before returning ERR.
+  halfdelay(KEY_DELAY);
+
   wrefresh(window);
 
   return window;
@@ -84,6 +91,7 @@ blastlist *update_old_blasts(mouthpiece *conn, blastlist *blast) {
 int main(int argc, char **argv) {
   bool stick_to_top;
   int opt;
+  int key;
   static struct option longopts[] = {
     { "stick-to-top", no_argument, NULL, 's' }, { NULL, 0, NULL, 0 },
   };
@@ -119,11 +127,13 @@ int main(int argc, char **argv) {
     bl = update_new_blasts(conn, bl);
     conch_listview_update(lv, bl);
     conch_listview_render(main_window, lv);
-    respond_to_keypresses(main_window, lv);
 
     if (lv->current_blast->next == NULL) {
       update_old_blasts(conn, lv->current_blast);
     }
+
+    key = wgetch(main_window);
+    handle_keypress(key, lv);
   }
 
   endwin();
