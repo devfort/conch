@@ -124,7 +124,8 @@ void render(WINDOW *window, screen_state_s *screen) {
 
   render_chrome(window);
 
-  mvwvline(window, 1, blast_x, ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR),
+  mvwvline(window, chrome.border_width, blast_x,
+           ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR),
            max_y - (chrome.border_width * 2));
 
   if(0 == max_blasts) {
