@@ -31,7 +31,7 @@ END_TEST
 
 START_TEST(test_listview_update_null_blastlist) {
   blastlist *bl = NULL;
-  listview *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(false);
 
   conch_listview_update(lv, bl);
 
@@ -44,7 +44,7 @@ END_TEST
 
 START_TEST(test_listview_update_sets_current_if_null) {
   blastlist *bl = conch_blastlist_new();
-  listview *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(false);
 
   conch_listview_update(lv, bl);
 
@@ -60,7 +60,7 @@ END_TEST
 START_TEST(test_listview_update_does_not_set_current_otherwise) {
   blastlist *bl1 = conch_blastlist_new();
   blastlist *bl2 = conch_blastlist_join(conch_blastlist_new(), bl1);
-  listview *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(false);
 
   // If update is called and current_blast is already set, it should not be
   // overridden.
@@ -69,6 +69,19 @@ START_TEST(test_listview_update_does_not_set_current_otherwise) {
 
   ck_assert_ptr_eq(lv->head, bl2);
   ck_assert_ptr_eq(lv->current_blast, bl1);
+
+  conch_listview_free(lv);
+}
+END_TEST
+
+START_TEST(test_listview_update_jumps_to_top_if_sticky) {
+  blastlist *bl = conch_blastlist_new();
+  listview *lv = conch_listview_new(true);
+  conch_listview_update(lv, bl);
+
+  bl = conch_blastlist_join(conch_blastlist_new(), bl);
+  conch_listview_update(lv, bl);
+  ck_assert_ptr_eq(lv->current_blast, lv->head);
 
   conch_listview_free(lv);
 }
@@ -91,7 +104,7 @@ END_TEST
 START_TEST(test_listview_cursor_movement) {
   blastlist *bl1 = conch_blastlist_new();
   blastlist *bl2 = conch_blastlist_join(conch_blastlist_new(), bl1);
-  listview *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(false);
   conch_listview_update(lv, bl2);
 
   // We can move forward
@@ -117,7 +130,7 @@ START_TEST(test_listview_jump_to_top) {
   blastlist *bl = conch_blastlist_new();
   bl = conch_blastlist_join(conch_blastlist_new(), bl);
   bl = conch_blastlist_join(conch_blastlist_new(), bl);
-  listview *lv = conch_listview_new(true);
+  listview *lv = conch_listview_new(false);
   conch_listview_update(lv, bl);
 
   conch_listview_select_next_blast(lv);
@@ -141,6 +154,7 @@ Suite *listview_suite(void) {
   ADD_TEST_CASE(s, test_listview_toggle_stick_to_top);
   ADD_TEST_CASE(s, test_listview_cursor_movement);
   ADD_TEST_CASE(s, test_listview_jump_to_top);
+  ADD_TEST_CASE(s, test_listview_update_jumps_to_top_if_sticky);
 
   return s;
 }

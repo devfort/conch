@@ -9,9 +9,15 @@ listview *conch_listview_new(bool stick_to_top) {
 }
 
 void conch_listview_update(listview *lv, blastlist *bl) {
+  bool was_at_top = (lv->head == lv->current_blast);
+
   lv->head = bl;
   if (lv->current_blast == NULL) {
     lv->current_blast = bl;
+  }
+
+  if (was_at_top && lv->stick_to_top) {
+    conch_listview_jump_to_top(lv);
   }
 }
 

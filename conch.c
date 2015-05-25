@@ -110,11 +110,6 @@ int main(int argc, char **argv) {
   while (1) {
     bl = update_blasts(conn, bl);
     conch_listview_update(lv, bl);
-
-    int at_top = (lv->head == lv->current_blast);
-    if (at_top && lv->stick_to_top) {
-      conch_listview_jump_to_top(lv);
-    }
     conch_listview_render(main_window, lv);
     respond_to_keypresses(main_window, lv);
   }
