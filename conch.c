@@ -9,6 +9,7 @@
 #include "blastlist.h"
 #include "conchbackend.h"
 #include "wordwrap.h"
+#include "listview.h"
 
 typedef struct window_chrome_s {
   int border_width;
@@ -33,13 +34,6 @@ enum conch_color {
   TIMELINE_COLOR = 4,
   STUCK_COLOR = 5,
 };
-
-typedef struct screen_state_s {
-  blastlist *head;
-  blastlist *current_blast;
-  int blast_offset;
-  int stick_to_top;
-} screen_state_s;
 
 void render_clock(WINDOW *window) {
   char time_str[1024];
