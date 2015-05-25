@@ -3,6 +3,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
 #include "blastlist.h"
@@ -58,11 +59,36 @@ void render_chrome(WINDOW *window) {
 }
 
 int render_blast(WINDOW *window, int y, int x, blastlist *blast, chtype highlight) {
-  mvwvline(window, y, x, highlight, 2);
-  mvwprintw(window, y, x + 2, blast->content);
-  mvwprintw(window, y + 1, x + 2, "--%s at %d", blast->user, blast->id);
+  int max_x = getmaxx(window);
 
-  return chrome.blast_height;
+  mvwvline(window, y, x, highlight, 2);
+
+  int cur_x = x + 2;
+  int line = 0;
+  int wrap_at = max_x - chrome.border_width;
+
+  size_t blast_len = strlen(blast->content);
+  char *content = malloc(blast_len + 1);
+  strncpy(content, blast->content, blast_len + 1);
+
+  for(char *token = strtok(content, " "); token != NULL; token = strtok(NULL, " ")) {
+    const int tok_len = strlen(token);
+
+    if (tok_len + cur_x >= wrap_at) {
+      cur_x = x + 2;
+      line += 1;
+    }
+
+    mvwprintw(window, y + line, cur_x, token);
+
+    cur_x += tok_len + 1;
+  }
+
+  mvwprintw(window, y + line + 1, x + 2, "--%s at %d", blast->user, blast->id);
+
+  free(content);
+
+  return line + 2;
 }
 
 int blast_highlight(blastlist *blast, screen_state_s *screen) {
