@@ -4,12 +4,16 @@
 #include <locale.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "blastlist.h"
 #include "colors.h"
 #include "conchbackend.h"
 #include "listview.h"
 #include "listview_render.h"
+
+// Approximate time to wait between requests to the database (seconds)
+#define DB_POLL_INTERVAL 10
 
 // Maximum time to wait for a keypress (tenths of a second)
 #define KEY_DELAY 5
@@ -41,6 +45,13 @@ static void handle_keypress(const int key, listview *lv) {
   default:
     break;
   }
+}
+
+static bool update_timeout(time_t then, double timeout) {
+  time_t now = time(NULL);
+  double delta = difftime(now, then);
+
+  return (delta > timeout);
 }
 
 WINDOW *init_screen() {
@@ -92,6 +103,8 @@ int main(int argc, char **argv) {
   bool stick_to_top;
   int opt;
   int key;
+  time_t last_update;
+
   static struct option longopts[] = {
     { "stick-to-top", no_argument, NULL, 's' }, { NULL, 0, NULL, 0 },
   };
@@ -122,10 +135,16 @@ int main(int argc, char **argv) {
   } while (conn == NULL);
 
   blastlist *bl = init_blasts(conn);
+  conch_listview_update(lv, bl);
+  last_update = time(NULL);
 
   while (1) {
-    bl = update_new_blasts(conn, bl);
-    conch_listview_update(lv, bl);
+    if (update_timeout(last_update, DB_POLL_INTERVAL)) {
+      bl = update_new_blasts(conn, bl);
+      conch_listview_update(lv, bl);
+      last_update = time(NULL);
+    }
+
     conch_listview_render(main_window, lv);
 
     if (lv->current_blast->next == NULL) {
