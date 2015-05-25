@@ -1,4 +1,5 @@
 #include <curses.h>
+#include <getopt.h>
 #include <locale.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -245,6 +246,21 @@ blastlist *update_blasts(mouthpiece *conn, blastlist *blasts) {
 }
 
 int main(int argc, char **argv) {
+  int stick_to_top, opt;
+  static struct option longopts[] = {
+    { "stick-to-top", no_argument, NULL, 's' }, { NULL, 0, NULL, 0 },
+  };
+
+  while((opt = getopt_long(argc, argv, "s", longopts, NULL)) != -1) {
+    switch(opt) {
+    case 's':
+      stick_to_top = TRUE;
+      break;
+    }
+  }
+  argc -= optind;
+  argv += optind;
+
   WINDOW *main_window = init_screen();
   mouthpiece *conn;
 
@@ -257,6 +273,7 @@ int main(int argc, char **argv) {
 
   blastlist *bl = init_blasts(conn);
   screen_state_s *screen = conch_listview_new(bl);
+  screen->stick_to_top = stick_to_top;
 
   while(1) {
     int at_top = (screen->head == screen->current_blast);
