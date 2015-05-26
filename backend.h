@@ -12,6 +12,7 @@ typedef struct {
   char *content;
   char *posted_at;
   char *attachment;
+  char *extended;
 } blast;
 
 typedef struct {

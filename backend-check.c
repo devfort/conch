@@ -76,6 +76,22 @@ START_TEST(test_has_at_least_one_attachment) {
 }
 END_TEST
 
+START_TEST(test_has_at_least_one_extended) {
+  settings settings = {.page_size = 100 };
+  mouthpiece *mp = conch_test_connect(settings);
+  resultset *recent = conch_recent_blasts(mp);
+  assert_valid_resultset(mp, recent);
+  bool found = false;
+  for (int i = 0; i < recent->count; i++) {
+    if (recent->blasts[i].extended != NULL) {
+      found = true;
+      break;
+    }
+  }
+  ck_assert(found);
+}
+END_TEST
+
 START_TEST(test_can_page_forwards) {
   settings settings = {.page_size = 2 };
   mouthpiece *mp = conch_test_connect(settings);
@@ -153,6 +169,7 @@ Suite *backend_suite(void) {
   ADD_TEST_CASE(s, test_rolls_back_tests_on_close);
   ADD_TEST_CASE(s, test_free_null_resultset);
   ADD_TEST_CASE(s, test_has_at_least_one_attachment);
+  ADD_TEST_CASE(s, test_has_at_least_one_extended);
 
   return s;
 }
