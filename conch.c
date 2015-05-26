@@ -125,6 +125,16 @@ listview *conch_listview_new_from_args(int argc, char **argv) {
   return conch_listview_new(stick_to_top);
 }
 
+mouthpiece *wait_for_connection(settings *config) {
+  mouthpiece *conn;
+  do {
+    conn = conch_connect(*config);
+    sleep(1);
+  } while (conn == NULL);
+
+  return conn;
+}
+
 int main(int argc, char **argv) {
   time_t last_update;
   int key;
@@ -135,16 +145,13 @@ int main(int argc, char **argv) {
   listview *lv = conch_listview_new_from_args(argc, argv);
   conch_listview_render(main_window, lv);
 
-  // Connect to postgres and fetch blasts
-  mouthpiece *conn;
+  // Connect to postgres
   settings config = {
     .page_size = 42,
   };
-  do {
-    conn = conch_connect(config);
-    sleep(1);
-  } while (conn == NULL);
+  mouthpiece *conn = wait_for_connection(&config);
 
+  // Fetch some initial data
   blastlist *bl = init_blasts(conn);
   conch_listview_update(lv, bl);
   last_update = time(NULL);
