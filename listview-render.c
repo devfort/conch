@@ -35,17 +35,16 @@ window_chrome_s chrome = {
   .title_left_margin = 3,
 };
 
-static void render_clock(WINDOW *window) {
-  char time_str[1024];
+static void render_clock(WINDOW *window, char *clock_text) {
+  int max_x = getmaxx(window);
+  mvwaddstr(window, chrome.origin_y, max_x - strlen(clock_text) - chrome.padding_x,
+            clock_text);
+}
+
+static void generate_clock_text(WINDOW *window, int time_str_limit, char *time_str) {
   time_t now = time(NULL);
   struct tm *now_tm = localtime(&now);
-  size_t time_len =
-      strftime(time_str, sizeof(time_str), " %Y-%m-%d %H:%M:%S ", now_tm);
-
-  int max_x = getmaxx(window);
-
-  mvwaddstr(window, chrome.origin_y, max_x - time_len - chrome.padding_x,
-            time_str);
+  strftime(time_str, time_str_limit, " %Y-%m-%d %H:%M:%S ", now_tm);
 }
 
 static void render_help(WINDOW *window, char *help_text) {
@@ -136,7 +135,9 @@ void conch_listview_render(listview *lv, WINDOW *window) {
   render_chrome(window, " conch 🐚  ");
 
   if (MIN_WIDTH_FOR_CLOCK <= max_x) {
-    render_clock(window);
+    char clock_text[1024];
+    generate_clock_text(window, sizeof(clock_text), clock_text);
+    render_clock(window, clock_text);
   }
 
   render_help(
