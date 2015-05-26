@@ -4,7 +4,7 @@ BEGIN {
     RED = "\033[31m"
     YELLOW = "\033[33m"
     RESET = "\033[m"
-    ERROR_RE = "(Errors|Failures): [^0]\d*"
+    ERROR_RE = "(Errors|Failures): [^0]\\d*"
 }
 
 /Passed/i { sub("Passed", GREEN "Passed" RESET) }
