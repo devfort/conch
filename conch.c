@@ -105,30 +105,34 @@ blastlist *update_old_blasts(mouthpiece *conn, blastlist *blast) {
   return conch_blastlist_join(blast, more_blasts);
 }
 
-int main(int argc, char **argv) {
-  bool stick_to_top;
+listview *conch_listview_new_from_args(int argc, char **argv) {
+  bool stick_to_top = false;
   int opt;
-  int key;
-  time_t last_update;
-
   static struct option longopts[] = {
     { "stick-to-top", no_argument, NULL, 's' }, { NULL, 0, NULL, 0 },
   };
 
   while ((opt = getopt_long(argc, argv, "s", longopts, NULL)) != -1) {
     switch (opt) {
-    case 's':
-      stick_to_top = true;
-      break;
+      case 's':
+        stick_to_top = true;
+        break;
     }
   }
   argc -= optind;
   argv += optind;
 
+  return conch_listview_new(stick_to_top);
+}
+
+int main(int argc, char **argv) {
+  time_t last_update;
+  int key;
+
   WINDOW *main_window = init_screen();
 
   // Create new list view and render blank screen
-  listview *lv = conch_listview_new(stick_to_top);
+  listview *lv = conch_listview_new_from_args(argc, argv);
   conch_listview_render(main_window, lv);
 
   // Connect to postgres and fetch blasts
