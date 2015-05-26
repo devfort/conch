@@ -62,8 +62,8 @@ static void render_chrome(WINDOW *window, char *title_text) {
 
   mvwaddstr(window, chrome.origin_y, chrome.title_left_margin, title_text);
 
-  // turns cursor invisble
-  curs_set(0);
+  const int cursor_invisible = 0;
+  curs_set(cursor_invisible);
 }
 
 static int render_blast(WINDOW *window, int available_width, int y,
