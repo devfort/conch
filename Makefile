@@ -42,6 +42,7 @@ conch: \
   caca-driver.o \
   colors.o \
   common-image.o \
+  cli.o \
   backend.o \
   keys.o \
   listview.o \

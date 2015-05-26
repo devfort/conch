@@ -10,6 +10,7 @@
 #include "blastlist.h"
 #include "caca-driver.h"
 #include "colors.h"
+#include "cli.h"
 #include "keys.h"
 #include "listview.h"
 #include "listview-render.h"
@@ -20,8 +21,6 @@
 
 // Maximum time to wait for a keypress (tenths of a second)
 #define KEY_DELAY 5
-
-typedef struct cli_options { bool stick_to_top; } cli_options;
 
 WINDOW *init_screen() {
   setlocale(LC_ALL, "");
@@ -68,28 +67,6 @@ blastlist *update_old_blasts(mouthpiece *conn, blastlist *blast) {
   return conch_blastlist_join(blast, more_blasts);
 }
 
-cli_options conch_parse_command_line_args(int argc, char **argv) {
-  cli_options parsed_options = {
-    .stick_to_top = false,
-  };
-  int opt;
-  static struct option longopts[] = {
-    { "stick-to-top", no_argument, NULL, 's' }, { NULL, 0, NULL, 0 },
-  };
-
-  while ((opt = getopt_long(argc, argv, "s", longopts, NULL)) != -1) {
-    switch (opt) {
-    case 's':
-      parsed_options.stick_to_top = true;
-      break;
-    }
-  }
-  argc -= optind;
-  argv += optind;
-
-  return parsed_options;
-}
-
 mouthpiece *wait_for_connection(settings *config) {
   mouthpiece *conn;
   do {
@@ -101,14 +78,16 @@ mouthpiece *wait_for_connection(settings *config) {
 }
 
 int main(int argc, char **argv) {
+  conch_cli_options opts;
   keypress_result res;
   conch_timeout *poll = conch_timeout_new(DB_POLL_INTERVAL);
 
   WINDOW *win = init_screen();
 
+  opts = conch_parse_command_line_args(argc, argv);
+
   // Create new list view and render blank screen
-  cli_options options = conch_parse_command_line_args(argc, argv);
-  listview *lv = conch_listview_new(options.stick_to_top);
+  listview *lv = conch_listview_new(opts.stick_to_top);
   conch_listview_render(win, lv);
 
   // Connect to postgres
