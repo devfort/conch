@@ -17,4 +17,7 @@ int SELECTED_COLOR;
 int TIMELINE_COLOR;
 int STUCK_COLOR;
 
-void conch_init_colors() { start_color(); }
+void conch_init_colors() {
+  start_color();
+  use_default_colors();
+}

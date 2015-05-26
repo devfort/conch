@@ -34,10 +34,10 @@ void ncurses_init_caca_attrs(int *attr) {
   int max = COLORS >= 16 ? 16 : 8;
 
   color_map_s color_map[] = {
-    {.color = &NORMAL_COLOR, .fg = COLOR_WHITE, .bg = 0 },
+    {.color = &NORMAL_COLOR, .fg = COLOR_WHITE, .bg = COLOR_BLACK },
     {.color = &NEW_COLOR, .fg = COLOR_BLUE, .bg = COLOR_BLUE },
     {.color = &SELECTED_COLOR, .fg = COLOR_RED, .bg = COLOR_RED },
-    {.color = &TIMELINE_COLOR, .fg = COLOR_CYAN, .bg = 0 },
+    {.color = &TIMELINE_COLOR, .fg = COLOR_CYAN, .bg = COLOR_BLACK },
     {.color = &STUCK_COLOR, .fg = COLOR_GREEN, .bg = COLOR_GREEN },
   };
 
