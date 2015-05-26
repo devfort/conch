@@ -260,8 +260,9 @@ blastresult *conch_blast_post(mouthpiece *mp, char *user, char *content,
     result->post = 0;
     result->error_message = strcopycat("No user with name ", user);
   } else {
-    char *user_id_str;
-    asprintf(&user_id_str, "%" PRIid, user_id);
+    char user_id_str[20];
+
+    sprintf(user_id_str, "%" PRIid, user_id);
     const char *const params[] = { user_id_str, content, extended };
     PGresult *insert_result =
         PQexecParams(mp->connection, "insert into bugle_blast "
@@ -277,7 +278,6 @@ blastresult *conch_blast_post(mouthpiece *mp, char *user, char *content,
       result->post = pg_char_to_int(PQgetvalue(insert_result, 0, 0));
     }
     PQclear(insert_result);
-    free(user_id_str);
   }
   return result;
 }
