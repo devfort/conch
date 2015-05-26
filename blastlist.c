@@ -54,6 +54,7 @@ blastlist *conch_blastlist_from_resultset(resultset *rs) {
 
   bl->head = blast_new();
   bl->current = bl->head;
+  bl->tail = bl->head;
   blastdata_copy(bl->head, rs->blasts);
 
   blast *cur = bl->head;
@@ -62,6 +63,7 @@ blastlist *conch_blastlist_from_resultset(resultset *rs) {
     cur->next = blast_new();
     cur->next->prev = cur;
     blastdata_copy(cur->next, rs->blasts + i);
+    bl->tail = cur;
     cur = cur->next;
   }
 
@@ -88,6 +90,8 @@ blastlist *conch_blastlist_join(blastlist *lhs, blastlist *rhs) {
   // And point the tail of lhs at the head of rhs:
   cur->next = rhs->head;
   cur->next->prev = cur;
+
+  lhs->tail = rhs->tail;
 
   return lhs;
 }

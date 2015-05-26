@@ -12,6 +12,7 @@ START_TEST(test_blastlist_new) {
   ASSERT_PTR_NOT_NULL(bl);
   ASSERT_PTR_NULL(bl->head);
   ASSERT_PTR_NULL(bl->current);
+  ASSERT_PTR_NULL(bl->tail);
 
   conch_blastlist_free(bl);
 }
@@ -24,6 +25,7 @@ START_TEST(test_blastlist_from_resultset_null) {
   ASSERT_PTR_NOT_NULL(bl);
   ASSERT_PTR_NULL(bl->head);
   ASSERT_PTR_NULL(bl->current);
+  ASSERT_PTR_NULL(bl->tail);
 
   conch_blastlist_free(bl);
 }
@@ -36,6 +38,7 @@ START_TEST(test_blastlist_from_resultset_empty) {
   ASSERT_PTR_NOT_NULL(bl);
   ASSERT_PTR_NULL(bl->head);
   ASSERT_PTR_NULL(bl->current);
+  ASSERT_PTR_NULL(bl->tail);
 
   conch_blastlist_free(bl);
 }
@@ -54,8 +57,9 @@ START_TEST(test_blastlist_from_resultset_single) {
   ASSERT_PTR_NOT_NULL(bl);
   ASSERT_PTR_NOT_NULL(bl->head);
 
-  // Current should be head
+  // Current and tail should be head
   ck_assert_ptr_eq(bl->head, bl->current);
+  ck_assert_ptr_eq(bl->head, bl->tail);
 
   // Head should contain the correct content
   ck_assert(bl->head->id == b.id);
@@ -91,9 +95,13 @@ START_TEST(test_blastlist_from_resultset_multiple) {
   // List should exist and have head
   ASSERT_PTR_NOT_NULL(bl);
   ASSERT_PTR_NOT_NULL(bl->head);
+  ASSERT_PTR_NOT_NULL(bl->tail);
 
   // Current should be head
   ck_assert_ptr_eq(bl->head, bl->current);
+
+  // But tail should not
+  ck_assert_ptr_ne(bl->head, bl->tail);
 
   blast *prev = NULL;
   blast *cur = bl->head;
@@ -122,6 +130,9 @@ START_TEST(test_blastlist_from_resultset_multiple) {
   ck_assert_ptr_eq(cur->prev, prev);
   ASSERT_PTR_NULL(cur->next);
 
+  // Check tail points to correct blast
+  ck_assert_ptr_ne(cur, bl->tail);
+
   conch_blastlist_free(bl);
 }
 END_TEST
@@ -144,7 +155,15 @@ START_TEST(test_blastlist_join_rhs_only) {
 
   blastlist *bl = conch_blastlist_join(NULL, rhs);
 
+  ASSERT_PTR_NOT_NULL(bl);
+  ASSERT_PTR_NOT_NULL(bl->head);
+  ASSERT_PTR_NOT_NULL(bl->current);
+  ASSERT_PTR_NOT_NULL(bl->tail);
+
   ck_assert_ptr_eq(bl, rhs);
+  ck_assert_ptr_eq(bl->head, rhs->head);
+  ck_assert_ptr_eq(bl->current, rhs->current);
+  ck_assert_ptr_eq(bl->tail, rhs->tail);
 }
 END_TEST
 
@@ -159,7 +178,15 @@ START_TEST(test_blastlist_join_lhs_only) {
 
   blastlist *bl = conch_blastlist_join(lhs, NULL);
 
+  ASSERT_PTR_NOT_NULL(bl);
+  ASSERT_PTR_NOT_NULL(bl->head);
+  ASSERT_PTR_NOT_NULL(bl->current);
+  ASSERT_PTR_NOT_NULL(bl->tail);
+
   ck_assert_ptr_eq(bl, lhs);
+  ck_assert_ptr_eq(bl->head, lhs->head);
+  ck_assert_ptr_eq(bl->current, lhs->current);
+  ck_assert_ptr_eq(bl->tail, lhs->tail);
 }
 END_TEST
 
@@ -181,9 +208,17 @@ START_TEST(test_blastlist_join) {
 
   blastlist *bl = conch_blastlist_join(lhs, rhs);
 
+  ASSERT_PTR_NOT_NULL(bl);
+  ASSERT_PTR_NOT_NULL(bl->head);
+  ASSERT_PTR_NOT_NULL(bl->current);
+  ASSERT_PTR_NOT_NULL(bl->tail);
+
   ck_assert_ptr_eq(bl->head, lhs->head);
   ck_assert_ptr_eq(bl->head->next, rhs->head);
   ck_assert_ptr_eq(bl->head->next->prev, lhs->head);
+
+  ck_assert_ptr_eq(bl->current, lhs->current);
+  ck_assert_ptr_eq(bl->tail, rhs->tail);
 }
 END_TEST
 

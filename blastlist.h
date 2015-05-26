@@ -19,6 +19,7 @@ struct blast {
 typedef struct blastlist {
   blast *head;
   blast *current;
+  blast *tail;
 } blastlist;
 
 blastlist *conch_blastlist_new();
