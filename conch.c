@@ -1,19 +1,15 @@
-#include <caca.h>
 #include <curses.h>
-#include <getopt.h>
 #include <locale.h>
-#include <stdbool.h>
 #include <stdlib.h>
-#include <time.h>
 
 #include "backend.h"
 #include "blastlist.h"
 #include "caca-driver.h"
-#include "colors.h"
 #include "cli.h"
+#include "colors.h"
 #include "keys.h"
-#include "listview.h"
 #include "listview-render.h"
+#include "listview.h"
 #include "timeout.h"
 
 // Approximate time to wait between requests to the database (seconds)
