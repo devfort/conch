@@ -240,4 +240,5 @@ void conch_resultset_free(resultset *result) {
     free(result->blasts[i].posted_at);
   }
   free(result->blasts);
+  free(result);
 }
