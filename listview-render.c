@@ -28,7 +28,7 @@ typedef struct window_chrome_s {
 window_chrome_s chrome = {
   .blast_height = 2,
   .blast_left_margin = 1,
-  .blast_padding = 1,
+  .blast_padding = 2,
   .border_width = 1,
   .origin_x = 0,
   .origin_y = 0,
@@ -132,9 +132,9 @@ static int render_blast(WINDOW *window, int available_width, int y,
 
   mvwprintw(window, y + line, blast_x, "—%s at %s", blast->user,
             blast->posted_at);
+  line++;
 
-  // padding between blasts - shouldn't be here
-  return line + 2;
+  return line;
 }
 
 static int blast_highlight(blastlist *blast, listview *lv) {
