@@ -107,7 +107,7 @@ static resultset *pg_result_to_resultset(mouthpiece *mp,
     int extended_column = PQfnumber(query_result, "extended");
     assert(extended_column >= 0);
     result->count = PQntuples(query_result);
-    result->blasts = malloc(sizeof(blast) * result->count);
+    result->blasts = malloc(sizeof(blastdata) * result->count);
 
     int n = PQntuples(query_result);
 
@@ -125,7 +125,7 @@ static resultset *pg_result_to_resultset(mouthpiece *mp,
       int len = PQgetlength(query_result, i, id_column);
       assert(len == 4);
       uint32_t id = pg_char_to_int(PQgetvalue(query_result, i, id_column));
-      blast *blast = result->blasts + i;
+      blastdata *blast = result->blasts + i;
       blast->id = id;
       blast->user = strclone(PQgetvalue(query_result, i, name_column));
       blast->content = strclone(PQgetvalue(query_result, i, message_column));

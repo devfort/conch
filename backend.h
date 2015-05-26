@@ -13,7 +13,7 @@ typedef struct {
   char *posted_at;
   char *attachment;
   char *extended;
-} blast;
+} blastdata;
 
 typedef struct {
   // Invariant: If count > 0 then error == 0
@@ -29,7 +29,7 @@ typedef struct {
   // Number of blasts then a pointer to that many valid blasts.
   // Invariant: If count == 0 then blasts == NULL
   uint64_t count;
-  blast *blasts;
+  blastdata *blasts;
 } resultset;
 
 typedef struct { uint16_t page_size; } settings;
