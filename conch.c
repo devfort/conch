@@ -78,26 +78,28 @@ mouthpiece *wait_for_connection(settings *config) {
 }
 
 int main(int argc, char **argv) {
+  WINDOW *win;
+  blastlist *bl;
   conch_cli_options opts;
+  conch_timeout *poll;
   keypress_result res;
-  conch_timeout *poll = conch_timeout_new(DB_POLL_INTERVAL);
-
-  WINDOW *win = init_screen();
-
-  opts = conch_parse_command_line_args(argc, argv);
-
-  // Create new list view and render blank screen
-  listview *lv = conch_listview_new(opts.stick_to_top);
-  conch_listview_render(win, lv);
-
-  // Connect to postgres
+  listview *lv;
+  mouthpiece *conn;
   settings config = {
     .page_size = 42,
   };
-  mouthpiece *conn = wait_for_connection(&config);
 
-  // Fetch some initial data
-  blastlist *bl = init_blasts(conn);
+  win = init_screen();
+  poll = conch_timeout_new(DB_POLL_INTERVAL);
+  opts = conch_parse_command_line_args(argc, argv);
+
+  // Create new list view and render blank screen
+  lv = conch_listview_new(opts.stick_to_top);
+  conch_listview_render(win, lv);
+
+  // Connect to postgres and fetch initial data
+  conn = wait_for_connection(&config);
+  bl = init_blasts(conn);
   conch_listview_update(lv, bl);
   conch_timeout_reset(poll);
 
