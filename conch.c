@@ -110,12 +110,12 @@ int main(int argc, char **argv) {
   time_t last_update;
   keypress_result res;
 
-  WINDOW *main_window = init_screen();
+  WINDOW *win = init_screen();
 
   // Create new list view and render blank screen
   cli_options options = conch_parse_command_line_args(argc, argv);
   listview *lv = conch_listview_new(options.stick_to_top);
-  conch_listview_render(main_window, lv);
+  conch_listview_render(win, lv);
 
   // Connect to postgres
   settings config = {
@@ -135,13 +135,13 @@ int main(int argc, char **argv) {
       last_update = time(NULL);
     }
 
-    conch_listview_render(main_window, lv);
+    conch_listview_render(win, lv);
 
     if (lv->current_blast->next == NULL) {
       update_old_blasts(conn, lv->current_blast);
     }
 
-    res = conch_keypress_dispatch(wgetch(main_window), lv);
+    res = conch_keypress_dispatch(wgetch(win), lv);
     if (res == CONCH_EXIT) {
       break;
     }
