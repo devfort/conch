@@ -236,6 +236,9 @@ id user_id_for_username(mouthpiece *mp, char *user){
       mp->connection, "select id from auth_user where username = $1",
       1, NULL, params, NULL, NULL, true);
 
+  if (PQresultStatus(query_result) != PGRES_COMMAND_OK) {
+    fprintf(stderr, "Error when fetching user %s: %s", user, PQerrorMessage(mp->connection));
+  }
   int n = PQntuples(query_result);
   assert(n <= 1);
   if(!n){
