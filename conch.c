@@ -114,9 +114,9 @@ listview *conch_listview_new_from_args(int argc, char **argv) {
 
   while ((opt = getopt_long(argc, argv, "s", longopts, NULL)) != -1) {
     switch (opt) {
-      case 's':
-        stick_to_top = true;
-        break;
+    case 's':
+      stick_to_top = true;
+      break;
     }
   }
   argc -= optind;
