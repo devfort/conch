@@ -53,6 +53,8 @@ conch: \
   timeout.o \
   wordwrap.o
 
+blast: blast.o backend.o strutils.o
+
 blastlist-check: blastlist.o backend.o strutils.o
 backend-check: backend.o strutils.o .testdb
 wordwrap-check: wordwrap.o

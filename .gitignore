@@ -3,5 +3,6 @@
 /*-check
 /.deps
 /conch
+/blast
 .testdb
 *.swp
