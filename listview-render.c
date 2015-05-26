@@ -15,6 +15,7 @@
 
 typedef struct window_chrome_s {
   int blast_height;
+  int blast_left_margin;
   int blast_padding;
   int border_width;
   int origin_x;
@@ -26,6 +27,7 @@ typedef struct window_chrome_s {
 
 window_chrome_s chrome = {
   .blast_height = 2,
+  .blast_left_margin = 1,
   .blast_padding = 1,
   .border_width = 1,
   .origin_x = 0,
@@ -100,33 +102,35 @@ static void render_chrome(WINDOW *window) {
   render_help(window);
 }
 
-static int render_blast(WINDOW *window, int y, int x, blastlist *blast,
-                        chtype highlight) {
-
-  int width = getmaxx(window) - (2 * (chrome.padding_x + chrome.border_width));
-
-  mvwvline(window, y, x, highlight, (chrome.padding_x + chrome.border_width));
+static int render_blast(WINDOW *window, int available_width, int y,
+                        int gutter_x, blastlist *blast, chtype highlight) {
+  // TODO: Blast hightlight is wrong for wrapped blasts
+  const int assumed_blast_height = 2;
+  mvwvline(window, y, gutter_x, highlight, assumed_blast_height);
 
   wordwrap_s wrap;
-  init_wordwrap(&wrap, blast->content, width);
+  init_wordwrap(&wrap, blast->content, available_width);
+
+  // Gutter is 1 character wide because we use mvwvline
+  const int gutter_width = 1;
+  const int blast_x = gutter_x + gutter_width + chrome.blast_left_margin;
 
   int line = 0;
   for (token_s *token = wordwrap(&wrap); token != NULL;
        token = wordwrap(&wrap)) {
     line = token->y;
-    // 2 here is extra padding for blast - to skip over line
-    mvwaddnstr(window, y + token->y, x + token->x + 2, token->word,
+    mvwaddnstr(window, y + token->y, blast_x + token->x, token->word,
                token->length);
   }
 
   line++;
 
   if (blast->attachment != NULL) {
-    mvwprintw(window, y + line, x + 2, "%s", blast->attachment);
+    mvwprintw(window, y + line, blast_x, "%s", blast->attachment);
     line++;
   }
 
-  mvwprintw(window, y + line, x + 2, "—%s at %s", blast->user,
+  mvwprintw(window, y + line, blast_x, "—%s at %s", blast->user,
             blast->posted_at);
 
   // padding between blasts - shouldn't be here
@@ -150,6 +154,9 @@ void conch_listview_render(WINDOW *window, listview *lv) {
 
   const int usable_lines =
       max_y - (2 * (chrome.border_width + chrome.padding_y));
+  const int usable_window_width =
+      getmaxx(window) - (2 * (chrome.padding_x + chrome.border_width));
+
   int available_y = usable_lines;
 
   int max_blasts;
@@ -198,8 +205,8 @@ void conch_listview_render(WINDOW *window, listview *lv) {
 
   int blast_y = first_blast_y;
   for (int i = 0; i < max_blasts && available_y > 0; ++i) {
-    int blast_height = render_blast(window, blast_y, blast_x, blast,
-                                    blast_highlight(blast, lv));
+    int blast_height = render_blast(window, usable_window_width, blast_y,
+                                    blast_x, blast, blast_highlight(blast, lv));
 
     blast_y += chrome.blast_padding + blast_height;
     available_y -= blast_height;
