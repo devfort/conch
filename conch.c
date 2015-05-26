@@ -19,6 +19,8 @@
 // Maximum time to wait for a keypress (tenths of a second)
 #define KEY_DELAY 5
 
+typedef struct cli_options { bool stick_to_top; } cli_options;
+
 static void handle_keypress(const int key, listview *lv) {
   switch (key) {
   case '0':
@@ -105,8 +107,10 @@ blastlist *update_old_blasts(mouthpiece *conn, blastlist *blast) {
   return conch_blastlist_join(blast, more_blasts);
 }
 
-listview *conch_listview_new_from_args(int argc, char **argv) {
-  bool stick_to_top = false;
+cli_options conch_parse_command_line_args(int argc, char **argv) {
+  cli_options parsed_options = {
+    .stick_to_top = false,
+  };
   int opt;
   static struct option longopts[] = {
     { "stick-to-top", no_argument, NULL, 's' }, { NULL, 0, NULL, 0 },
@@ -115,14 +119,14 @@ listview *conch_listview_new_from_args(int argc, char **argv) {
   while ((opt = getopt_long(argc, argv, "s", longopts, NULL)) != -1) {
     switch (opt) {
     case 's':
-      stick_to_top = true;
+      parsed_options.stick_to_top = true;
       break;
     }
   }
   argc -= optind;
   argv += optind;
 
-  return conch_listview_new(stick_to_top);
+  return parsed_options;
 }
 
 mouthpiece *wait_for_connection(settings *config) {
@@ -142,7 +146,8 @@ int main(int argc, char **argv) {
   WINDOW *main_window = init_screen();
 
   // Create new list view and render blank screen
-  listview *lv = conch_listview_new_from_args(argc, argv);
+  cli_options options = conch_parse_command_line_args(argc, argv);
+  listview *lv = conch_listview_new(options.stick_to_top);
   conch_listview_render(main_window, lv);
 
   // Connect to postgres
