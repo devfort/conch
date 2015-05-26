@@ -156,6 +156,26 @@ START_TEST(test_free_null_resultset) {
 }
 END_TEST
 
+START_TEST(test_blast_post) {
+  char *message = "this is my content";
+  char *username = "subversion";
+  settings settings = {.page_size = 1 };
+  mouthpiece *mp = conch_test_connect(settings);
+
+  blastresult *posted = conch_blast_post(mp, username, message, NULL);
+  ck_assert_int_ne(posted->post, 0);
+  conch_blastresult_free(posted);
+
+  resultset *recent = conch_recent_blasts(mp);
+  assert_valid_resultset(mp, recent);
+  ck_assert_str_eq(recent->blasts[0].content, message);
+  ck_assert_str_eq(recent->blasts[0].user, username);
+  ck_assert_ptr_eq(recent->blasts[0].extended, NULL);
+  conch_resultset_free(recent);
+  conch_disconnect(mp);
+}
+END_TEST
+
 Suite *backend_suite(void) {
   Suite *s = suite_create("backend");
 
@@ -170,6 +190,7 @@ Suite *backend_suite(void) {
   ADD_TEST_CASE(s, test_free_null_resultset);
   ADD_TEST_CASE(s, test_has_at_least_one_attachment);
   ADD_TEST_CASE(s, test_has_at_least_one_extended);
+  ADD_TEST_CASE(s, test_blast_post);
 
   return s;
 }

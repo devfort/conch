@@ -229,19 +229,20 @@ resultset *conch_blasts_after(mouthpiece *mp, id after_token) {
   return pg_result_to_resultset(mp, query_result);
 }
 
-id user_id_for_username(mouthpiece *mp, char *user){
+id user_id_for_username(mouthpiece *mp, char *user) {
   // Return id for username, 0 indicating no such user.
-  const char * const params[] = { user };
+  const char *const params[] = { user };
   PGresult *query_result = PQexecParams(
-      mp->connection, "select id from auth_user where username = $1",
-      1, NULL, params, NULL, NULL, true);
+      mp->connection, "select id from auth_user where username = $1", 1, NULL,
+      params, NULL, NULL, true);
 
-  if (PQresultStatus(query_result) != PGRES_COMMAND_OK) {
-    fprintf(stderr, "Error when fetching user %s: %s", user, PQerrorMessage(mp->connection));
+  if (PQresultStatus(query_result) != PGRES_TUPLES_OK) {
+    fprintf(stderr, "Error when fetching user %s: %s", user,
+            PQerrorMessage(mp->connection));
   }
   int n = PQntuples(query_result);
   assert(n <= 1);
-  if(!n){
+  if (!n) {
     PQclear(query_result);
     return 0;
   }
@@ -251,15 +252,44 @@ id user_id_for_username(mouthpiece *mp, char *user){
   return result;
 }
 
-blast_post_result conch_blast_post(mouthpiece *mp, char *user, char *content, char *extended){
-  blast_post_result result = {};
+blastresult *conch_blast_post(mouthpiece *mp, char *user, char *content,
+                              char *extended) {
+  blastresult *result = calloc(1, sizeof(blastresult));
   id user_id = user_id_for_username(mp, user);
-  if(!user_id){
-    result.post = 0;
-    result.error_message = strcopycat("No user with name ", user);
-    return result;
+  if (!user_id) {
+    result->post = 0;
+    result->error_message = strcopycat("No user with name ", user);
+  } else {
+    char *user_id_str;
+    asprintf(&user_id_str, "%" PRIid, user_id);
+    const char *const params[] = { user_id_str, content, extended };
+    PGresult *insert_result =
+        PQexecParams(mp->connection, "insert into bugle_blast "
+                                     "(user_id, message, attachment, extended) "
+                                     "values ($1, $2, '', $3) returning id",
+                     3, NULL, params, NULL, NULL, true);
+    if (PQresultStatus(insert_result) != PGRES_TUPLES_OK) {
+      result->post = 0;
+      result->error_message = strclone(PQresultErrorMessage(insert_result));
+    } else {
+      assert(PQnfields(insert_result) == 1);
+      assert(PQntuples(insert_result) == 1);
+      result->post = pg_char_to_int(PQgetvalue(insert_result, 0, 0));
+    }
+    PQclear(insert_result);
+    free(user_id_str);
   }
-  // FIXME: Implement actually posting now. Over to you, adam.
+  return result;
+}
+
+void conch_blastresult_free(blastresult *result) {
+  if (result == NULL) {
+    return;
+  }
+  if (result->error_message != NULL) {
+    free(result->error_message);
+  }
+  free(result);
 }
 
 void conch_resultset_free(resultset *result) {

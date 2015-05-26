@@ -47,10 +47,12 @@ typedef struct {
   // id == 0 indicates an error and will result in a non-null error_message
   id post;
   char *error_message;
-} blast_post_result;
+} blastresult;
 
-blast_post_result conch_blast_post(mouthpiece *mp, char *user, char *content, char *extended);
+blastresult *conch_blast_post(mouthpiece *mp, char *user, char *content,
+                              char *extended);
 
 void conch_resultset_free(resultset *results);
+void conch_blastresult_free(blastresult *result);
 
 #endif /* _BACKEND_H */
