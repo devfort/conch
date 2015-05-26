@@ -7,6 +7,8 @@
 #include "caca-driver.h"
 #include "cli.h"
 #include "colors.h"
+#include "conchview-render.h"
+#include "conchview.h"
 #include "keys.h"
 #include "listview-render.h"
 #include "listview.h"
@@ -78,6 +80,7 @@ int main(int argc, char **argv) {
   blastlist *bl;
   conch_cli_options opts;
   conch_timeout *poll;
+  conchview *cv;
   keypress_result res;
   listview *lv;
   mouthpiece *conn;
@@ -89,9 +92,12 @@ int main(int argc, char **argv) {
   poll = conch_timeout_new(DB_POLL_INTERVAL);
   opts = conch_parse_command_line_args(argc, argv);
 
-  // Create new list view and render blank screen
+  // Create views
+  cv = conch_conchview_new();
   lv = conch_listview_new(opts.stick_to_top);
-  conch_listview_render(win, lv);
+
+  // Render conch while loading
+  conch_conchview_render(win, cv);
 
   // Connect to postgres and fetch initial data
   conn = wait_for_connection(&config);
@@ -119,5 +125,6 @@ int main(int argc, char **argv) {
   }
 
   endwin();
+  conch_conchview_free(cv);
   conch_listview_free(lv);
 }

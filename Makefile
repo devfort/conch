@@ -42,6 +42,8 @@ conch: \
   caca-driver.o \
   colors.o \
   common-image.o \
+  conchview.o \
+  conchview-render.o \
   cli.o \
   backend.o \
   keys.o \

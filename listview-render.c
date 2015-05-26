@@ -3,9 +3,7 @@
 #include <time.h>
 
 #include "blastlist.h"
-#include "caca-driver.h"
 #include "colors.h"
-#include "common-image.h"
 #include "listview.h"
 #include "listview-render.h"
 #include "wordwrap.h"
@@ -36,32 +34,6 @@ window_chrome_s chrome = {
   .padding_y = 1,
   .title_left_margin = 3,
 };
-
-void render_conch(WINDOW *window) {
-  int lines = getmaxy(window) - (2 * (chrome.border_width + chrome.padding_y));
-  int cols = getmaxx(window) - (2 * (chrome.border_width + chrome.padding_x));
-
-  struct image *i = load_image("rsrc/conch.png");
-  if (i == NULL) {
-    // Don't try and render the image if the conch doesn't load.
-    return;
-  }
-
-  caca_canvas_t *cv = caca_create_canvas(chrome.origin_y, chrome.origin_x);
-  caca_add_dirty_rect(cv, chrome.origin_y, chrome.origin_x, cols, lines);
-  caca_set_canvas_size(cv, cols, lines);
-  caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
-  caca_clear_canvas(cv);
-  caca_set_dither_algorithm(i->dither, "none");
-  caca_dither_bitmap(cv, chrome.origin_y, chrome.origin_x, cols, lines,
-                     i->dither, i->pixels);
-
-  mvw_ncurses_display(window, (chrome.border_width + chrome.padding_y),
-                      (chrome.border_width + chrome.padding_x), cv);
-
-  unload_image(i);
-  caca_free_canvas(cv);
-}
 
 static void render_clock(WINDOW *window) {
   char time_str[1024];
@@ -187,8 +159,6 @@ void conch_listview_render(WINDOW *window, listview *lv) {
 
   // If we don't have any blasts yet, we return early.
   if (lv->head == NULL || lv->current_blast == NULL) {
-    render_conch(window);
-    wrefresh(window);
     return;
   }
 
