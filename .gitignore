@@ -4,3 +4,4 @@
 /.deps
 /conch
 .testdb
+*.swp
