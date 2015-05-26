@@ -8,6 +8,7 @@
 
 #include "backend.h"
 #include "blastlist.h"
+#include "caca-driver.h"
 #include "colors.h"
 #include "listview.h"
 #include "listview-render.h"
@@ -66,8 +67,8 @@ WINDOW *init_screen() {
   noecho();
   refresh();
 
-  if (has_colors())
-    conch_init_colors();
+  conch_init_colors();
+  ncurses_init_caca_attrs(&caca_attr[0]);
 
   // get initial screen setup while we wait for connections
   WINDOW *window = newwin(0, 0, 0, 0);

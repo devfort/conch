@@ -3,13 +3,11 @@
 
 extern int curses_colors[];
 
-enum conch_color {
-  NORMAL_COLOR = 0,
-  NEW_COLOR = 2,
-  SELECTED_COLOR = 3,
-  TIMELINE_COLOR = 4,
-  STUCK_COLOR = 5,
-};
+extern int NORMAL_COLOR;
+extern int NEW_COLOR;
+extern int SELECTED_COLOR;
+extern int TIMELINE_COLOR;
+extern int STUCK_COLOR;
 
 void conch_init_colors();
 

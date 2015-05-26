@@ -3,6 +3,8 @@
 
 #include "colors.h"
 
+int caca_attr[16 * 16];
+
 void ncurses_write_utf32(WINDOW *window, uint32_t ch) {
   char buf[10];
   int bytes;
@@ -15,7 +17,7 @@ void ncurses_write_utf32(WINDOW *window, uint32_t ch) {
   waddstr(window, buf);
 }
 
-void ncurses_caca_attrs(int *attr) {
+void ncurses_init_caca_attrs(int *attr) {
   /* If COLORS == 16, it means the terminal supports full bright colours
    * using setab and setaf (will use \e[90m \e[91m etc. for colours >= 8),
    * we can build 16*16 colour pairs.
@@ -46,12 +48,11 @@ void ncurses_caca_attrs(int *attr) {
 }
 
 void mvw_ncurses_display(WINDOW *window, int y, int x, caca_canvas_t *canvas) {
-  int attr[16 * 16];
   int i;
   int cy;
   int cx;
 
-  ncurses_caca_attrs(&attr[0]);
+  ncurses_init_caca_attrs(&caca_attr[0]);
 
   for (i = 0; i < caca_get_dirty_rect_count(canvas); i++) {
     uint32_t const *cvchars, *cvattrs;
@@ -68,7 +69,7 @@ void mvw_ncurses_display(WINDOW *window, int y, int x, caca_canvas_t *canvas) {
       wmove(window, y + cy, x + dx);
 
       for (cx = dx; cx < dx + dw; cx++) {
-        (void)attrset(attr[caca_attr_to_ansi(*cvattrs++)]);
+        (void)attrset(caca_attr[caca_attr_to_ansi(*cvattrs++)]);
         ncurses_write_utf32(window, *cvchars++);
       }
 
