@@ -48,30 +48,22 @@ static void render_clock(WINDOW *window) {
             time_str);
 }
 
-static void render_help(WINDOW *window) {
+static void render_help(WINDOW *window, char *help_text) {
   int last_line = getmaxy(window) - 1;
-  mvwaddstr(
-      window, last_line, chrome.padding_x,
-      " j: down  k: up  s: stick to top  0: to top  TAB: to unread  q: quit ");
+  mvwaddstr(window, last_line, chrome.padding_x, help_text);
 }
 
-static void render_chrome(WINDOW *window) {
+static void render_chrome(WINDOW *window, char *title_text) {
   int max_x = getmaxx(window);
   int last_line = getmaxy(window) - 1;
 
   mvwhline(window, chrome.origin_y, chrome.origin_x, ACS_HLINE, max_x);
   mvwhline(window, last_line, chrome.origin_x, ACS_HLINE, max_x);
 
-  mvwaddstr(window, chrome.origin_y, chrome.title_left_margin, " conch 🐚  ");
+  mvwaddstr(window, chrome.origin_y, chrome.title_left_margin, title_text);
 
   // turns cursor invisble
   curs_set(0);
-
-  if (MIN_WIDTH_FOR_CLOCK <= max_x) {
-    render_clock(window);
-  }
-
-  render_help(window);
 }
 
 static int render_blast(WINDOW *window, int available_width, int y,
@@ -120,6 +112,7 @@ static int blast_highlight(blastlist *blast, listview *lv) {
 void conch_listview_render(listview *lv, WINDOW *window) {
 
   int max_y = getmaxy(window);
+  int max_x = getmaxx(window);
 
   const int first_blast_y = chrome.padding_y + chrome.border_width;
   const int blast_x = chrome.padding_x + chrome.border_width;
@@ -127,7 +120,7 @@ void conch_listview_render(listview *lv, WINDOW *window) {
   const int usable_lines =
       max_y - (2 * (chrome.border_width + chrome.padding_y));
   const int usable_window_width =
-      getmaxx(window) - (2 * (chrome.padding_x + chrome.border_width));
+      max_x - (2 * (chrome.padding_x + chrome.border_width));
 
   int available_y = usable_lines;
 
@@ -140,7 +133,15 @@ void conch_listview_render(listview *lv, WINDOW *window) {
 
   werase(window);
 
-  render_chrome(window);
+  render_chrome(window, " conch 🐚  ");
+
+  if (MIN_WIDTH_FOR_CLOCK <= max_x) {
+    render_clock(window);
+  }
+
+  render_help(
+      window,
+      " j: down  k: up  s: stick to top  0: to top  TAB: to unread  q: quit ");
 
   if (conch_listview_has_unread_blasts(lv)) {
     const char *unread_status = " unread blasts ";
