@@ -68,10 +68,6 @@ static void render_chrome(WINDOW *window, char *title_text) {
 
 static int render_blast(WINDOW *window, int available_width, int y,
                         int gutter_x, blastlist *blast, chtype highlight) {
-  // TODO: Blast hightlight is wrong for wrapped blasts
-  const int assumed_blast_height = 2;
-  mvwvline(window, y, gutter_x, highlight, assumed_blast_height);
-
   wordwrap_s wrap;
   init_wordwrap(&wrap, blast->content, available_width);
 
@@ -79,26 +75,28 @@ static int render_blast(WINDOW *window, int available_width, int y,
   const int gutter_width = 1;
   const int blast_x = gutter_x + gutter_width + chrome.blast_left_margin;
 
-  int line = 0;
+  int blast_height = 0;
   for (token_s *token = wordwrap(&wrap); token != NULL;
        token = wordwrap(&wrap)) {
-    line = token->y;
+    blast_height = token->y;
     mvwaddnstr(window, y + token->y, blast_x + token->x, token->word,
                token->length);
   }
 
-  line++;
+  blast_height++;
 
   if (blast->attachment != NULL) {
-    mvwprintw(window, y + line, blast_x, "%s", blast->attachment);
-    line++;
+    mvwprintw(window, y + blast_height, blast_x, "%s", blast->attachment);
+    blast_height++;
   }
 
-  mvwprintw(window, y + line, blast_x, "—%s at %s", blast->user,
+  mvwprintw(window, y + blast_height, blast_x, "—%s at %s", blast->user,
             blast->posted_at);
-  line++;
+  blast_height++;
 
-  return line;
+  mvwvline(window, y, gutter_x, highlight, blast_height);
+
+  return blast_height;
 }
 
 static int blast_highlight(blastlist *blast, listview *lv) {
