@@ -13,7 +13,7 @@
 #define PADDING_X 1
 #define PADDING_Y 1
 
-void render_conch(WINDOW *window, conchview *v) {
+void render_conch(conchview *v, WINDOW *window) {
   struct image *i = v->imdata;
 
   if (i == NULL) {
@@ -37,7 +37,7 @@ void render_conch(WINDOW *window, conchview *v) {
   caca_free_canvas(cv);
 }
 
-void conch_conchview_render(WINDOW *w, conchview *v) {
-  render_conch(w, v);
+void conch_conchview_render(conchview *v, WINDOW *w) {
+  render_conch(v, w);
   wrefresh(w);
 }

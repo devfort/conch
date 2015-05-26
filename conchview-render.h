@@ -5,6 +5,6 @@
 
 #include "conchview.h"
 
-void conch_conchview_render(WINDOW *w, conchview *v);
+void conch_conchview_render(conchview *v, WINDOW *w);
 
 #endif /* _CONCHVIEW_RENDER_H */

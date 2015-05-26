@@ -97,7 +97,7 @@ int main(int argc, char **argv) {
   lv = conch_listview_new(&opts);
 
   // Render conch while loading
-  conch_conchview_render(win, cv);
+  conch_conchview_render(cv, win);
 
   // Connect to postgres and fetch initial data
   conn = wait_for_connection(&config);
@@ -112,7 +112,7 @@ int main(int argc, char **argv) {
       conch_timeout_reset(poll);
     }
 
-    conch_listview_render(win, lv);
+    conch_listview_render(lv, win);
 
     if (lv->current_blast->next == NULL) {
       update_old_blasts(conn, lv->current_blast);

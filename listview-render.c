@@ -117,7 +117,7 @@ static int blast_highlight(blastlist *blast, listview *lv) {
   }
 }
 
-void conch_listview_render(WINDOW *window, listview *lv) {
+void conch_listview_render(listview *lv, WINDOW *window) {
 
   int max_y = getmaxy(window);
 
