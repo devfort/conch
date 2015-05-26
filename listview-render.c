@@ -14,19 +14,19 @@
 #define MIN_WIDTH_FOR_CLOCK 64
 
 typedef struct window_chrome_s {
-  int border_width;
-  int padding_y;
-  int padding_x;
-  int blast_padding;
   int blast_height;
+  int blast_padding;
+  int border_width;
+  int padding_x;
+  int padding_y;
 } window_chrome_s;
 
 window_chrome_s chrome = {
-  .border_width = 1,
-  .padding_y = 1,
-  .padding_x = 1,
-  .blast_padding = 1,
   .blast_height = 2,
+  .blast_padding = 1,
+  .border_width = 1,
+  .padding_x = 1,
+  .padding_y = 1,
 };
 
 void render_conch(WINDOW *window) {
