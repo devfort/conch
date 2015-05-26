@@ -5,6 +5,12 @@
 
 int caca_attr[16 * 16];
 
+typedef struct color_map_s {
+  int *color;
+  int fg;
+  int bg;
+} color_map_s;
+
 void ncurses_write_utf32(WINDOW *window, uint32_t ch) {
   char buf[10];
   int bytes;
@@ -27,6 +33,14 @@ void ncurses_init_caca_attrs(int *attr) {
   int fg, bg;
   int max = COLORS >= 16 ? 16 : 8;
 
+  color_map_s color_map[] = {
+    {.color = &NORMAL_COLOR, .fg = COLOR_WHITE, .bg = 0 },
+    {.color = &NEW_COLOR, .fg = COLOR_BLUE, .bg = COLOR_BLUE },
+    {.color = &SELECTED_COLOR, .fg = COLOR_RED, .bg = COLOR_RED },
+    {.color = &TIMELINE_COLOR, .fg = COLOR_CYAN, .bg = 0 },
+    {.color = &STUCK_COLOR, .fg = COLOR_GREEN, .bg = COLOR_GREEN },
+  };
+
   for (bg = 0; bg < max; bg++)
     for (fg = 0; fg < max; fg++) {
       /* Use ((max + 7 - fg) % max) instead of fg so that colour 0
@@ -44,6 +58,13 @@ void ncurses_init_caca_attrs(int *attr) {
         /* Bright fg on bright bg */
         attr[fg + 8 + 16 * (bg + 8)] = A_BLINK | A_BOLD | COLOR_PAIR(col);
       }
+
+      for (int i = 0; i < sizeof(color_map) / sizeof(color_map_s); ++i) {
+        if (color_map[i].fg == fg && color_map[i].bg == bg) {
+          *(color_map[i].color) = col;
+          break;
+        }
+      }
     }
 }
 
@@ -51,8 +72,6 @@ void mvw_ncurses_display(WINDOW *window, int y, int x, caca_canvas_t *canvas) {
   int i;
   int cy;
   int cx;
-
-  ncurses_init_caca_attrs(&caca_attr[0]);
 
   for (i = 0; i < caca_get_dirty_rect_count(canvas); i++) {
     uint32_t const *cvchars, *cvattrs;
