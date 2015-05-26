@@ -10,6 +10,7 @@
 #include "blastlist.h"
 #include "caca-driver.h"
 #include "colors.h"
+#include "keys.h"
 #include "listview.h"
 #include "listview-render.h"
 
@@ -20,40 +21,6 @@
 #define KEY_DELAY 5
 
 typedef struct cli_options { bool stick_to_top; } cli_options;
-
-static void handle_keypress(const int key, listview *lv) {
-  switch (key) {
-  case '0':
-    conch_listview_jump_to_top(lv);
-    break;
-
-  case '.':
-  case '\t':
-    conch_listview_jump_to_next_unread(lv);
-    break;
-
-  case 'j':
-    conch_listview_select_next_blast(lv);
-    break;
-
-  case 'k':
-    conch_listview_select_prev_blast(lv);
-    break;
-
-  case 's':
-    conch_listview_toggle_stick_to_top(lv);
-    break;
-
-  case 'q':
-    endwin();
-    exit(0);
-    break;
-
-  case ERR:
-  default:
-    break;
-  }
-}
 
 static bool update_timeout(time_t then, double timeout) {
   time_t now = time(NULL);
@@ -175,7 +142,7 @@ int main(int argc, char **argv) {
     }
 
     key = wgetch(main_window);
-    handle_keypress(key, lv);
+    conch_keypress_dispatch(key, lv);
   }
 
   endwin();

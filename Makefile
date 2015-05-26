@@ -43,6 +43,7 @@ conch: \
   colors.o \
   common-image.o \
   backend.o \
+  keys.o \
   listview.o \
   listview-render.o \
   strutils.o \
