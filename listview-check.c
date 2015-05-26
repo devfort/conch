@@ -1,13 +1,17 @@
+#include <stdbool.h>
+
 #include "checkrunner.h"
 
 #include "blastlist.h"
+#include "cli.h"
 #include "listview.h"
 
 #define ASSERT_PTR_NULL(ptr) ck_assert_ptr_eq(ptr, NULL)
 #define ASSERT_PTR_NOT_NULL(ptr) ck_assert_ptr_ne(ptr, NULL)
 
 START_TEST(test_listview_new) {
-  listview *lv = conch_listview_new(false);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
 
   ASSERT_PTR_NOT_NULL(lv);
   ASSERT_PTR_NULL(lv->head);
@@ -22,7 +26,8 @@ START_TEST(test_listview_new) {
 END_TEST
 
 START_TEST(test_listview_new_with_stick_to_top) {
-  listview *lv = conch_listview_new(true);
+  conch_cli_options opts = {.stick_to_top = true };
+  listview *lv = conch_listview_new(&opts);
 
   ASSERT_PTR_NOT_NULL(lv);
   ck_assert_int_eq(lv->stick_to_top, true);
@@ -33,7 +38,8 @@ END_TEST
 
 START_TEST(test_listview_update_null_blastlist) {
   blastlist *bl = NULL;
-  listview *lv = conch_listview_new(false);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
 
   conch_listview_update(lv, bl);
 
@@ -48,7 +54,8 @@ END_TEST
 
 START_TEST(test_listview_update_sets_current_if_null) {
   blastlist *bl = conch_blastlist_new();
-  listview *lv = conch_listview_new(false);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
 
   conch_listview_update(lv, bl);
 
@@ -66,7 +73,8 @@ END_TEST
 START_TEST(test_listview_update_does_not_set_current_otherwise) {
   blastlist *bl1 = conch_blastlist_new();
   blastlist *bl2 = conch_blastlist_join(conch_blastlist_new(), bl1);
-  listview *lv = conch_listview_new(false);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
 
   // If update is called and current_blast is already set, it should not be
   // overridden.
@@ -84,7 +92,8 @@ END_TEST
 
 START_TEST(test_listview_update_jumps_to_top_if_sticky) {
   blastlist *bl = conch_blastlist_new();
-  listview *lv = conch_listview_new(true);
+  conch_cli_options opts = {.stick_to_top = true };
+  listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
   bl = conch_blastlist_join(conch_blastlist_new(), bl);
@@ -98,7 +107,8 @@ START_TEST(test_listview_update_jumps_to_top_if_sticky) {
 END_TEST
 
 START_TEST(test_listview_toggle_stick_to_top) {
-  listview *lv = conch_listview_new(true);
+  conch_cli_options opts = {.stick_to_top = true };
+  listview *lv = conch_listview_new(&opts);
 
   ASSERT_PTR_NOT_NULL(lv);
   ck_assert_int_eq(lv->stick_to_top, true);
@@ -114,7 +124,8 @@ END_TEST
 START_TEST(test_listview_cursor_movement) {
   blastlist *bl = conch_blastlist_new();
   bl = conch_blastlist_join(conch_blastlist_new(), bl);
-  listview *lv = conch_listview_new(false);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
   // We can move forward
@@ -140,7 +151,8 @@ START_TEST(test_listview_cursor_movement_updates_latest_read) {
   blastlist *old_bl = conch_blastlist_new();
   old_bl = conch_blastlist_join(conch_blastlist_new(), old_bl);
   old_bl = conch_blastlist_join(conch_blastlist_new(), old_bl);
-  listview *lv = conch_listview_new(false);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, old_bl);
 
   // 2 read, now add 2 more unread
@@ -183,7 +195,8 @@ START_TEST(test_listview_jump_to_top) {
   blastlist *bl = conch_blastlist_new();
   bl = conch_blastlist_join(conch_blastlist_new(), bl);
   bl = conch_blastlist_join(conch_blastlist_new(), bl);
-  listview *lv = conch_listview_new(false);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
   conch_listview_select_next_blast(lv);
@@ -198,7 +211,8 @@ END_TEST
 
 START_TEST(test_listview_jump_to_top_updates_latest_read) {
   blastlist *bl = conch_blastlist_new();
-  listview *lv = conch_listview_new(false);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
   // Don't update latest_read on update when stick_to_top disabled
@@ -216,7 +230,8 @@ START_TEST(test_listview_jump_to_top_updates_latest_read) {
 END_TEST
 
 START_TEST(test_listview_has_unread_blasts) {
-  listview *lv = conch_listview_new(false);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
 
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
 
@@ -233,7 +248,8 @@ END_TEST
 
 START_TEST(test_listview_jump_to_next_unread) {
   blastlist *bl = conch_blastlist_new();
-  listview *lv = conch_listview_new(false);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
 
   conch_listview_jump_to_next_unread(lv);
 
