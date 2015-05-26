@@ -17,6 +17,8 @@ typedef struct window_chrome_s {
   int blast_height;
   int blast_padding;
   int border_width;
+  int origin_x;
+  int origin_y;
   int padding_x;
   int padding_y;
 } window_chrome_s;
@@ -25,6 +27,8 @@ window_chrome_s chrome = {
   .blast_height = 2,
   .blast_padding = 1,
   .border_width = 1,
+  .origin_x = 0,
+  .origin_y = 0,
   .padding_x = 1,
   .padding_y = 1,
 };
@@ -39,13 +43,14 @@ void render_conch(WINDOW *window) {
     return;
   }
 
-  caca_canvas_t *cv = caca_create_canvas(0, 0);
-  caca_add_dirty_rect(cv, 0, 0, cols, lines);
+  caca_canvas_t *cv = caca_create_canvas(chrome.origin_y, chrome.origin_x);
+  caca_add_dirty_rect(cv, chrome.origin_y, chrome.origin_x, cols, lines);
   caca_set_canvas_size(cv, cols, lines);
   caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
   caca_clear_canvas(cv);
   caca_set_dither_algorithm(i->dither, "none");
-  caca_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
+  caca_dither_bitmap(cv, chrome.origin_y, chrome.origin_x, cols, lines,
+                     i->dither, i->pixels);
 
   mvw_ncurses_display(window, 2, 2, cv);
 
@@ -62,7 +67,8 @@ static void render_clock(WINDOW *window) {
 
   int max_x = getmaxx(window);
 
-  mvwaddstr(window, 0, max_x - time_len - chrome.padding_x, time_str);
+  mvwaddstr(window, chrome.origin_y, max_x - time_len - chrome.padding_x,
+            time_str);
 }
 
 static void render_help(WINDOW *window) {
@@ -76,10 +82,12 @@ static void render_chrome(WINDOW *window) {
   int max_x = getmaxx(window);
   int max_y = getmaxy(window);
 
-  mvwhline(window, 0, 0, ACS_HLINE, max_x);
-  mvwhline(window, max_y - 1, 0, ACS_HLINE, max_x);
+  mvwhline(window, chrome.origin_y, chrome.origin_x, ACS_HLINE, max_x);
+  mvwhline(window, max_y - 1, chrome.origin_x, ACS_HLINE, max_x);
 
-  mvwaddstr(window, 0, 3, " conch 🐚  ");
+  mvwaddstr(window, chrome.origin_y, 3, " conch 🐚  ");
+
+  // turns cursor invisble
   curs_set(0);
 
   if (MIN_WIDTH_FOR_CLOCK <= getmaxx(window)) {
@@ -151,7 +159,7 @@ void conch_listview_render(WINDOW *window, listview *lv) {
   if (conch_listview_has_unread_blasts(lv)) {
     const char *unread_status = " unread blasts ";
     int center_offset = (getmaxx(window) - strlen(unread_status)) / 2;
-    mvwaddstr(window, 0, center_offset, " unread blasts ");
+    mvwaddstr(window, chrome.origin_y, center_offset, " unread blasts ");
   }
 
   mvwvline(window, chrome.border_width, blast_x,
@@ -200,6 +208,5 @@ void conch_listview_render(WINDOW *window, listview *lv) {
     mvwvline(window, max_y - (2 * chrome.border_width), blast_x,
              ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
   }
-  wmove(window, 0, 11);
   wrefresh(window);
 }
