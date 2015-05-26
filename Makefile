@@ -54,10 +54,7 @@ wordwrap-check: wordwrap.o
 listview-check: listview.o blastlist.o strutils.o
 
 check: $(BINS_TEST)
-	$(SILENT)set -e && for t in $^; do \
-		./$$t | ./tools/greenify; \
-		echo ----; \
-	done
+	$(SILENT)tools/runtests $^
 
 PG_BIN_DIR=$(shell pg_config --bindir)
 

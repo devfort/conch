@@ -1,0 +1,33 @@
+#!/bin/sh
+#
+# runtests: run test binaries
+
+set -eu
+
+pushd "$(dirname "$0")" >/dev/null 2>&1
+TOOLS=$PWD
+popd >/dev/null 2>&1
+
+usage () {
+    echo "Usage: runtests [testbin [testbin [...]]]"
+    echo
+    echo "Runs all passed test binaries, filtering output for readability."
+}
+
+run_all () {
+    for bin in "$@"; do
+        sep
+        ./"$bin" | "$TOOLS"/greenify
+    done
+}
+
+sep () {
+    echo ----
+}
+
+if [ "$#" -eq "0" ] || [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage >&2
+    exit 1
+fi
+
+run_all "$@"
