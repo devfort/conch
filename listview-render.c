@@ -62,34 +62,37 @@ static void render_clock(WINDOW *window) {
 
   int max_x = getmaxx(window);
 
-  mvwaddstr(window, 0,
-            max_x - time_len - chrome.border_width - chrome.padding_x,
-            time_str);
+  mvwaddstr(window, 0, max_x - time_len - chrome.padding_x, time_str);
 }
 
 static void render_help(WINDOW *window) {
   int max_y = getmaxy(window);
   mvwaddstr(
-      window, max_y - 1, chrome.padding_x + chrome.border_width,
+      window, max_y - 1, chrome.padding_x,
       " j: down  k: up  s: stick to top  0: to top  TAB: to unread  q: quit ");
 }
 
 static void render_chrome(WINDOW *window) {
-  box(window, 0, 0);
+  int max_x = getmaxx(window);
+  int max_y = getmaxy(window);
+
+  mvwhline(window, 0, 0, ACS_HLINE, max_x);
+  mvwhline(window, max_y - 1, 0, ACS_HLINE, max_x);
+
   mvwaddstr(window, 0, 3, " conch 🐚  ");
   curs_set(0);
 
   if (MIN_WIDTH_FOR_CLOCK <= getmaxx(window)) {
     render_clock(window);
   }
+
   render_help(window);
 }
 
 static int render_blast(WINDOW *window, int y, int x, blastlist *blast,
                         chtype highlight) {
 
-  int width =
-      getmaxx(window) - ((chrome.border_width + chrome.padding_x) * 2) - 2;
+  int width = getmaxx(window) - ((chrome.padding_x) * 2) - 2;
 
   mvwvline(window, y, x, highlight, 2);
 
