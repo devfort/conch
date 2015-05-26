@@ -37,11 +37,12 @@ window_chrome_s chrome = {
 
 static void render_clock(WINDOW *window, char *clock_text) {
   int max_x = getmaxx(window);
-  mvwaddstr(window, chrome.origin_y, max_x - strlen(clock_text) - chrome.padding_x,
-            clock_text);
+  mvwaddstr(window, chrome.origin_y,
+            max_x - strlen(clock_text) - chrome.padding_x, clock_text);
 }
 
-static void generate_clock_text(WINDOW *window, int time_str_limit, char *time_str) {
+static void generate_clock_text(WINDOW *window, int time_str_limit,
+                                char *time_str) {
   time_t now = time(NULL);
   struct tm *now_tm = localtime(&now);
   strftime(time_str, time_str_limit, " %Y-%m-%d %H:%M:%S ", now_tm);
