@@ -21,6 +21,7 @@ typedef struct window_chrome_s {
   int origin_y;
   int padding_x;
   int padding_y;
+  int title_left_margin;
 } window_chrome_s;
 
 window_chrome_s chrome = {
@@ -31,11 +32,12 @@ window_chrome_s chrome = {
   .origin_y = 0,
   .padding_x = 1,
   .padding_y = 1,
+  .title_left_margin = 3,
 };
 
 void render_conch(WINDOW *window) {
-  int lines = getmaxy(window) - 4;
-  int cols = getmaxx(window) - 4;
+  int lines = getmaxy(window) - (2 * (chrome.border_width + chrome.padding_y));
+  int cols = getmaxx(window) - (2 * (chrome.border_width + chrome.padding_x));
 
   struct image *i = load_image("rsrc/conch.png");
   if (i == NULL) {
@@ -52,7 +54,8 @@ void render_conch(WINDOW *window) {
   caca_dither_bitmap(cv, chrome.origin_y, chrome.origin_x, cols, lines,
                      i->dither, i->pixels);
 
-  mvw_ncurses_display(window, 2, 2, cv);
+  mvw_ncurses_display(window, (chrome.border_width + chrome.padding_y),
+                      (chrome.border_width + chrome.padding_x), cv);
 
   unload_image(i);
   caca_free_canvas(cv);
@@ -72,25 +75,25 @@ static void render_clock(WINDOW *window) {
 }
 
 static void render_help(WINDOW *window) {
-  int max_y = getmaxy(window);
+  int last_line = getmaxy(window) - 1;
   mvwaddstr(
-      window, max_y - 1, chrome.padding_x,
+      window, last_line, chrome.padding_x,
       " j: down  k: up  s: stick to top  0: to top  TAB: to unread  q: quit ");
 }
 
 static void render_chrome(WINDOW *window) {
   int max_x = getmaxx(window);
-  int max_y = getmaxy(window);
+  int last_line = getmaxy(window) - 1;
 
   mvwhline(window, chrome.origin_y, chrome.origin_x, ACS_HLINE, max_x);
-  mvwhline(window, max_y - 1, chrome.origin_x, ACS_HLINE, max_x);
+  mvwhline(window, last_line, chrome.origin_x, ACS_HLINE, max_x);
 
-  mvwaddstr(window, chrome.origin_y, 3, " conch 🐚  ");
+  mvwaddstr(window, chrome.origin_y, chrome.title_left_margin, " conch 🐚  ");
 
   // turns cursor invisble
   curs_set(0);
 
-  if (MIN_WIDTH_FOR_CLOCK <= getmaxx(window)) {
+  if (MIN_WIDTH_FOR_CLOCK <= max_x) {
     render_clock(window);
   }
 
@@ -100,9 +103,9 @@ static void render_chrome(WINDOW *window) {
 static int render_blast(WINDOW *window, int y, int x, blastlist *blast,
                         chtype highlight) {
 
-  int width = getmaxx(window) - ((chrome.padding_x) * 2) - 2;
+  int width = getmaxx(window) - (2 * (chrome.padding_x + chrome.border_width));
 
-  mvwvline(window, y, x, highlight, 2);
+  mvwvline(window, y, x, highlight, (chrome.padding_x + chrome.border_width));
 
   wordwrap_s wrap;
   init_wordwrap(&wrap, blast->content, width);
@@ -111,18 +114,22 @@ static int render_blast(WINDOW *window, int y, int x, blastlist *blast,
   for (token_s *token = wordwrap(&wrap); token != NULL;
        token = wordwrap(&wrap)) {
     line = token->y;
+    // 2 here is extra padding for blast - to skip over line
     mvwaddnstr(window, y + token->y, x + token->x + 2, token->word,
                token->length);
   }
 
+  line++;
+
   if (blast->attachment != NULL) {
-    mvwprintw(window, y + line + 1, x + 2, "%s", blast->attachment);
+    mvwprintw(window, y + line, x + 2, "%s", blast->attachment);
     line++;
   }
 
-  mvwprintw(window, y + line + 1, x + 2, "—%s at %s", blast->user,
+  mvwprintw(window, y + line, x + 2, "—%s at %s", blast->user,
             blast->posted_at);
 
+  // padding between blasts - shouldn't be here
   return line + 2;
 }
 
@@ -142,7 +149,7 @@ void conch_listview_render(WINDOW *window, listview *lv) {
   const int blast_x = chrome.padding_x + chrome.border_width;
 
   const int usable_lines =
-      max_y - ((chrome.border_width * 2) + (chrome.padding_y * 2));
+      max_y - (2 * (chrome.border_width + chrome.padding_y));
   int available_y = usable_lines;
 
   int max_blasts;
@@ -164,7 +171,7 @@ void conch_listview_render(WINDOW *window, listview *lv) {
 
   mvwvline(window, chrome.border_width, blast_x,
            ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR),
-           max_y - (chrome.border_width * 2));
+           max_y - (2 * chrome.border_width));
 
   if (0 == max_blasts) {
     mvwaddstr(window, first_blast_y, blast_x + 1,
