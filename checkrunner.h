@@ -1,6 +1,7 @@
 #ifndef _CHECKRUNNER_H
 #define _CHECKRUNNER_H
 
+#pragma GCC diagnostic ignored "-Wunknown-pragmas"
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
 #include <check.h>
