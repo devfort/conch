@@ -23,8 +23,8 @@ static void render_blast(WINDOW *window, char **blast_lines, int y,
   mvwvline(window, y, gutter_x, highlight, number_of_blast_lines);
 }
 
-static int generate_blast_lines(WINDOW *window, int available_width, int y,
-                                int gutter_x, blast *blast, chtype highlight) {
+int generate_blast_lines(WINDOW *window, int available_width, int y,
+                         int gutter_x, blast *blast, chtype highlight) {
 
   int blast_height = 0;
 
@@ -43,6 +43,12 @@ static int generate_blast_lines(WINDOW *window, int available_width, int y,
   char *attribution_string = malloc(1024);
   sprintf(attribution_string, "—%s at %s", blast->user, blast->posted_at);
   blast_lines[blast_height] = attribution_string;
+
+  if (blast->extended) {
+    // Show a marker to indicate the blast has a code block with it
+    // TODO: Find a better/clearer indicator
+    blast_lines[blast_height] = strcat(attribution_string, "…");
+  }
   blast_height++;
 
   blast_lines[blast_height] = NULL;

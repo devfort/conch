@@ -6,6 +6,7 @@
 typedef enum {
   VIEW_CONCH,
   VIEW_LIST,
+  VIEW_DETAIL,
 } view_type;
 
 typedef struct {

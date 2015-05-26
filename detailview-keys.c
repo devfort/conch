@@ -1,0 +1,27 @@
+#include "detailview-keys.h"
+
+#include <curses.h>
+
+extern void fatal_error(const char *, ...);
+
+keypress_result conch_detailview_keypress_dispatch(int key, detailview *v) {
+
+  switch (key) {
+  case KEY_DOWN:
+    conch_detailview_scroll_down(v);
+    break;
+  case KEY_UP:
+    conch_detailview_scroll_up(v);
+    break;
+  case KEY_LEFT:
+    conch_detailview_scroll_code_left(v);
+    break;
+  case KEY_RIGHT:
+    conch_detailview_scroll_code_right(v);
+    break;
+  case '\r':
+  case '\n':
+    return CONCH_LIST;
+  }
+  return CONCH_NOP;
+}

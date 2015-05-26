@@ -27,6 +27,10 @@ keypress_result conch_listview_keypress_dispatch(int key, listview *lv) {
   case 's':
     conch_listview_toggle_stick_to_top(lv);
     break;
+
+  case '\r':
+  case '\n':
+    return CONCH_DETAIL;
   }
   return CONCH_NOP;
 }

@@ -7,10 +7,11 @@
 #include "caca-driver.h"
 #include "cli.h"
 #include "colors.h"
+#include "keys.h"
 #include "conchview-render.h"
 #include "conchview.h"
-#include "keys.h"
 #include "listview.h"
+#include "detailview.h"
 #include "render.h"
 
 // Approximate time to wait between requests to the database (seconds)
@@ -34,6 +35,9 @@ WINDOW *init_screen() {
 
   // get initial screen setup while we wait for connections
   WINDOW *window = newwin(0, 0, 0, 0);
+
+  // Ask ncurses to give us KEY_LEFT etc, not escape followed by some more keys
+  keypad(window, true);
 
   // Turn on "half delay" mode, in which getch functions will block for up to n
   // tenths of a second before returning ERR.
@@ -111,12 +115,14 @@ int main(int argc, char **argv) {
   init_blasts(conn, bl);
   conch_listview_update(lv, bl);
 
+  detailview *dv = conch_detailview_new(bl);
+
   bool running = true;
 
   while (running) {
     if (splash_display_cycles > 0) {
       splash_display_cycles--;
-    } else {
+    } else if (current_view == VIEW_CONCH) {
       current_view = VIEW_LIST;
       current_view_state = lv;
     }
@@ -143,6 +149,14 @@ int main(int argc, char **argv) {
       break;
     case CONCH_EXIT:
       running = false;
+      break;
+    case CONCH_DETAIL:
+      current_view = VIEW_DETAIL;
+      current_view_state = dv;
+      break;
+    case CONCH_LIST:
+      current_view = VIEW_LIST;
+      current_view_state = lv;
       break;
     }
   }
