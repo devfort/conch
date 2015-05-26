@@ -108,7 +108,7 @@ mouthpiece *wait_for_connection(settings *config) {
 
 int main(int argc, char **argv) {
   time_t last_update;
-  int key;
+  keypress_result res;
 
   WINDOW *main_window = init_screen();
 
@@ -141,8 +141,10 @@ int main(int argc, char **argv) {
       update_old_blasts(conn, lv->current_blast);
     }
 
-    key = wgetch(main_window);
-    conch_keypress_dispatch(key, lv);
+    res = conch_keypress_dispatch(wgetch(main_window), lv);
+    if (res == CONCH_EXIT) {
+      break;
+    }
   }
 
   endwin();

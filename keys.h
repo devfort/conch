@@ -3,6 +3,11 @@
 
 #include "listview.h"
 
-void conch_keypress_dispatch(const int key, listview *lv);
+typedef enum {
+  CONCH_NOP,
+  CONCH_EXIT,
+} keypress_result;
+
+keypress_result conch_keypress_dispatch(const int key, listview *lv);
 
 #endif /* _KEYS_H */

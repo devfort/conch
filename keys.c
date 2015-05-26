@@ -1,9 +1,7 @@
-#include <curses.h>
-#include <stdlib.h>
-
+#include "keys.h"
 #include "listview.h"
 
-void conch_keypress_dispatch(const int key, listview *lv) {
+keypress_result conch_keypress_dispatch(const int key, listview *lv) {
   switch (key) {
   case '0':
     conch_listview_jump_to_top(lv);
@@ -27,12 +25,12 @@ void conch_keypress_dispatch(const int key, listview *lv) {
     break;
 
   case 'q':
-    endwin();
-    exit(0);
-    break;
+    return CONCH_EXIT;
 
-  case ERR:
+  case -1:
   default:
     break;
   }
+
+  return CONCH_NOP;
 }
