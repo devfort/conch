@@ -4,6 +4,10 @@
 
 set -eu
 
+COL_GREEN="\033[32m"
+COL_RED="\033[31m"
+COL_RST="\033[m"
+
 CUR=$PWD
 cd "$(dirname "$0")" >/dev/null 2>&1
 TOOLS=$PWD
@@ -16,10 +20,31 @@ usage () {
 }
 
 run_all () {
+    local out=
+    local fail=0
     for bin in "$@"; do
         sep
-        ./"$bin" | "$TOOLS"/greenify
+        set +e
+        out=$(./"$bin")
+        if [ "$?" -ne "0" ]; then
+            fail=1
+        fi
+        set -e
+        echo "$out" | "$TOOLS"/greenify
     done
+    sep
+    if [ "$fail" -ne "0" ]; then
+        colecho $COL_RED "Some tests failed. See above for details."
+        exit 1
+    else
+        colecho $COL_GREEN "All tests passed! Sing a song to celebrate!"
+    fi
+}
+
+colecho () {
+    local col=$1
+    shift
+    echo "${col}${@}${COL_RST}"
 }
 
 sep () {
