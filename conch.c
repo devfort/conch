@@ -13,6 +13,7 @@
 #include "keys.h"
 #include "listview.h"
 #include "listview-render.h"
+#include "timeout.h"
 
 // Approximate time to wait between requests to the database (seconds)
 #define DB_POLL_INTERVAL 10
@@ -21,13 +22,6 @@
 #define KEY_DELAY 5
 
 typedef struct cli_options { bool stick_to_top; } cli_options;
-
-static bool update_timeout(time_t then, double timeout) {
-  time_t now = time(NULL);
-  double delta = difftime(now, then);
-
-  return (delta > timeout);
-}
 
 WINDOW *init_screen() {
   setlocale(LC_ALL, "");
@@ -107,8 +101,8 @@ mouthpiece *wait_for_connection(settings *config) {
 }
 
 int main(int argc, char **argv) {
-  time_t last_update;
   keypress_result res;
+  conch_timeout *poll = conch_timeout_new(DB_POLL_INTERVAL);
 
   WINDOW *win = init_screen();
 
@@ -126,13 +120,13 @@ int main(int argc, char **argv) {
   // Fetch some initial data
   blastlist *bl = init_blasts(conn);
   conch_listview_update(lv, bl);
-  last_update = time(NULL);
+  conch_timeout_reset(poll);
 
   while (1) {
-    if (update_timeout(last_update, DB_POLL_INTERVAL)) {
+    if (conch_timeout_expired(poll)) {
       bl = update_new_blasts(conn, bl);
       conch_listview_update(lv, bl);
-      last_update = time(NULL);
+      conch_timeout_reset(poll);
     }
 
     conch_listview_render(win, lv);

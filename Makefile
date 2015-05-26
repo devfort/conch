@@ -47,12 +47,14 @@ conch: \
   listview.o \
   listview-render.o \
   strutils.o \
+  timeout.o \
   wordwrap.o
 
 blastlist-check: blastlist.o backend.o strutils.o
 backend-check: backend.o strutils.o .testdb
 wordwrap-check: wordwrap.o
 listview-check: listview.o blastlist.o strutils.o
+timeout-check: timeout.o
 
 check: $(BINS_TEST)
 	$(SILENT)./tools/runtests $^
