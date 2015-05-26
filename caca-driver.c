@@ -41,11 +41,12 @@ void ncurses_init_caca_attrs(int *attr) {
     {.color = &STUCK_COLOR, .fg = COLOR_GREEN, .bg = COLOR_GREEN },
   };
 
-  for (bg = 0; bg < max; bg++)
+  for (bg = 0; bg < max; bg++) {
     for (fg = 0; fg < max; fg++) {
       /* Use ((max + 7 - fg) % max) instead of fg so that colour 0
        * is light gray on black. Some terminals don't like this
        * colour pair to be redefined. */
+
       int col = ((max + 7 - fg) % max) + max * bg;
       init_pair(col, curses_colors[fg], curses_colors[bg]);
       attr[fg + 16 * bg] = COLOR_PAIR(col);
@@ -60,12 +61,14 @@ void ncurses_init_caca_attrs(int *attr) {
       }
 
       for (int i = 0; i < sizeof(color_map) / sizeof(color_map_s); ++i) {
-        if (color_map[i].fg == fg && color_map[i].bg == bg) {
+        if (color_map[i].fg == curses_colors[fg] &&
+            color_map[i].bg == curses_colors[bg]) {
           *(color_map[i].color) = col;
           break;
         }
       }
     }
+  }
 }
 
 void mvw_ncurses_display(WINDOW *window, int y, int x, caca_canvas_t *canvas) {
