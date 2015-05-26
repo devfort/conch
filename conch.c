@@ -93,8 +93,8 @@ int main(int argc, char **argv) {
   opts = conch_parse_command_line_args(argc, argv);
 
   // Create views
-  cv = conch_conchview_new();
-  lv = conch_listview_new(opts.stick_to_top);
+  cv = conch_conchview_new(&opts);
+  lv = conch_listview_new(&opts);
 
   // Render conch while loading
   conch_conchview_render(win, cv);

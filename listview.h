@@ -4,6 +4,7 @@
 #include <stdbool.h>
 
 #include "blastlist.h"
+#include "cli.h"
 
 typedef struct listview {
   blastlist *head;
@@ -13,7 +14,7 @@ typedef struct listview {
   bool stick_to_top;
 } listview;
 
-listview *conch_listview_new(bool stick_to_top);
+listview *conch_listview_new(conch_cli_options const *opts);
 void conch_listview_update(listview *lv, blastlist *bl);
 void conch_listview_toggle_stick_to_top(listview *lv);
 void conch_listview_jump_to_top(listview *lv);

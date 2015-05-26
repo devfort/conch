@@ -1,9 +1,10 @@
 #include <stdlib.h>
 
+#include "cli.h"
 #include "conchview.h"
 #include "common-image.h"
 
-conchview *conch_conchview_new() {
+conchview *conch_conchview_new(conch_cli_options const *opts) {
   conchview *v = malloc(sizeof(conchview));
   v->imdata = load_image("rsrc/conch.png");
   return v;

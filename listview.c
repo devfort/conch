@@ -2,9 +2,9 @@
 
 #include "listview.h"
 
-listview *conch_listview_new(bool stick_to_top) {
+listview *conch_listview_new(conch_cli_options const *opts) {
   listview *lv = calloc(1, sizeof(listview));
-  lv->stick_to_top = stick_to_top;
+  lv->stick_to_top = opts->stick_to_top;
   return lv;
 }
 
