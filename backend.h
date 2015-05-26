@@ -43,6 +43,14 @@ resultset *conch_recent_blasts(mouthpiece *mp);
 resultset *conch_blasts_before(mouthpiece *mp, id before_token);
 resultset *conch_blasts_after(mouthpiece *mp, id after_token);
 
+typedef struct {
+  // id == 0 indicates an error and will result in a non-null error_message
+  id post;
+  char *error_message;
+} blast_post_result;
+
+blast_post_result conch_blast_post(mouthpiece *mp, char *user, char *content, char *extended);
+
 void conch_resultset_free(resultset *results);
 
 #endif /* _BACKEND_H */

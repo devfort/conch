@@ -16,4 +16,6 @@ mouthpiece *conch_test_connect(settings settings);
 
 void conch_let_silence_fall(mouthpiece *mp);
 
+id user_id_for_username(mouthpiece *mp, char *user);
+
 #endif /* _BACKEND_INTERNAL_H */

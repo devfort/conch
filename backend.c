@@ -229,6 +229,36 @@ resultset *conch_blasts_after(mouthpiece *mp, id after_token) {
   return pg_result_to_resultset(mp, query_result);
 }
 
+id user_id_for_username(mouthpiece *mp, char *user){
+  // Return id for username, 0 indicating no such user.
+  const char * const params[] = { user };
+  PGresult *query_result = PQexecParams(
+      mp->connection, "select id from auth_user where username = $1",
+      1, NULL, params, NULL, NULL, true);
+
+  int n = PQntuples(query_result);
+  assert(n <= 1);
+  if(!n){
+    PQclear(query_result);
+    return 0;
+  }
+  assert(PQnfields(query_result) == 1);
+  id result = pg_char_to_int(PQgetvalue(query_result, 0, 0));
+  PQclear(query_result);
+  return result;
+}
+
+blast_post_result conch_blast_post(mouthpiece *mp, char *user, char *content, char *extended){
+  blast_post_result result = {};
+  id user_id = user_id_for_username(mp, user);
+  if(!user_id){
+    result.post = 0;
+    result.error_message = strcopycat("No user with name ", user);
+    return result;
+  }
+  // FIXME: Implement actually posting now. Over to you, adam.
+}
+
 void conch_resultset_free(resultset *result) {
   if (result == NULL) {
     return;
