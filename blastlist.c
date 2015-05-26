@@ -6,24 +6,35 @@
 #include "blastlist.h"
 #include "strutils.h"
 
-static void item_copy(blastlist *bl, blast *b) {
-  bl->id = b->id;
-  bl->user = strclone(b->user);
-  bl->content = strclone(b->content);
-  bl->posted_at = strclone(b->posted_at);
-  bl->attachment = strclone(b->attachment);
+static void blastdata_copy(blast *b, blastdata *d) {
+  b->id = d->id;
+  b->user = strclone(d->user);
+  b->content = strclone(d->content);
+  b->posted_at = strclone(d->posted_at);
+  b->attachment = strclone(d->attachment);
 }
 
-static void item_free(blastlist *bl) {
-  free(bl->user);
-  free(bl->content);
-  free(bl->posted_at);
-  free(bl->attachment);
-  free(bl);
+static blast *blast_new() {
+  blast *b = calloc(1, sizeof(blast));
+
+  if (b == NULL) {
+    fprintf(stderr, "conch_blast_new: could not alloc\n");
+    abort();
+  }
+
+  return b;
+}
+
+static void blast_free(blast *b) {
+  free(b->user);
+  free(b->content);
+  free(b->posted_at);
+  free(b->attachment);
+  free(b);
 }
 
 blastlist *conch_blastlist_new() {
-  blastlist *bl = (blastlist *)calloc(1, sizeof(blastlist));
+  blastlist *bl = calloc(1, sizeof(blastlist));
 
   if (bl == NULL) {
     fprintf(stderr, "conch_blastlist_new: could not alloc\n");
@@ -34,21 +45,27 @@ blastlist *conch_blastlist_new() {
 }
 
 blastlist *conch_blastlist_from_resultset(resultset *rs) {
-  // If there are no items out of which to make a blastlist, return NULL
+  blastlist *bl = conch_blastlist_new();
+
+  // If there are no items out of which to make a blastlist, return
   if (rs == NULL || rs->count == 0) {
-    return NULL;
+    return bl;
   }
 
-  blastlist *head = conch_blastlist_new();
-  item_copy(head, rs->blasts);
+  bl->head = blast_new();
+  bl->current = bl->head;
+  blastdata_copy(bl->head, rs->blasts);
+
+  blast *cur = bl->head;
 
   for (uint64_t i = 1; i < rs->count; ++i) {
-    blastlist *next = conch_blastlist_new();
-    item_copy(next, rs->blasts + i);
-    head = conch_blastlist_join(head, next);
+    cur->next = blast_new();
+    cur->next->prev = cur;
+    blastdata_copy(cur->next, rs->blasts + i);
+    cur = cur->next;
   }
 
-  return head;
+  return bl;
 }
 
 blastlist *conch_blastlist_join(blastlist *lhs, blastlist *rhs) {
@@ -60,7 +77,7 @@ blastlist *conch_blastlist_join(blastlist *lhs, blastlist *rhs) {
   }
 
   // Otherwise both lists are non-null, so we find the tail of the lhs:
-  blastlist *cur = lhs;
+  blast *cur = lhs->head;
   while (1) {
     if (cur->next == NULL) {
       break;
@@ -69,26 +86,30 @@ blastlist *conch_blastlist_join(blastlist *lhs, blastlist *rhs) {
   }
 
   // And point the tail of lhs at the head of rhs:
-  cur->next = rhs;
+  cur->next = rhs->head;
   cur->next->prev = cur;
 
   return lhs;
 }
 
 void conch_blastlist_free(blastlist *bl) {
-  blastlist *cur;
-  blastlist *next = bl;
-
   if (bl == NULL) {
     return;
   }
 
+  blast *cur;
+  blast *next = bl->head;
+
   // We should have received the head of a list, or I'm going to explode.
-  assert(next->prev == NULL);
+  if (bl->head != NULL) {
+    assert(next->prev == NULL);
+  }
 
   while (next != NULL) {
     cur = next;
     next = cur->next;
-    item_free(cur);
+    blast_free(cur);
   }
+
+  free(bl);
 }

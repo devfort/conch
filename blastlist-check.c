@@ -10,8 +10,8 @@ START_TEST(test_blastlist_new) {
   blastlist *bl = conch_blastlist_new();
 
   ASSERT_PTR_NOT_NULL(bl);
-  ASSERT_PTR_NULL(bl->prev);
-  ASSERT_PTR_NULL(bl->next);
+  ASSERT_PTR_NULL(bl->head);
+  ASSERT_PTR_NULL(bl->current);
 
   conch_blastlist_free(bl);
 }
@@ -21,7 +21,9 @@ START_TEST(test_blastlist_from_resultset_null) {
   resultset *rs = NULL;
   blastlist *bl = conch_blastlist_from_resultset(rs);
 
-  ASSERT_PTR_NULL(bl);
+  ASSERT_PTR_NOT_NULL(bl);
+  ASSERT_PTR_NULL(bl->head);
+  ASSERT_PTR_NULL(bl->current);
 
   conch_blastlist_free(bl);
 }
@@ -31,14 +33,16 @@ START_TEST(test_blastlist_from_resultset_empty) {
   resultset rs = { 0 };
   blastlist *bl = conch_blastlist_from_resultset(&rs);
 
-  ASSERT_PTR_NULL(bl);
+  ASSERT_PTR_NOT_NULL(bl);
+  ASSERT_PTR_NULL(bl->head);
+  ASSERT_PTR_NULL(bl->current);
 
   conch_blastlist_free(bl);
 }
 END_TEST
 
 START_TEST(test_blastlist_from_resultset_single) {
-  blast b = {
+  blastdata b = {
     .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
   };
   resultset rs = {
@@ -48,41 +52,51 @@ START_TEST(test_blastlist_from_resultset_single) {
 
   // List should exist and have head
   ASSERT_PTR_NOT_NULL(bl);
+  ASSERT_PTR_NOT_NULL(bl->head);
 
-  // List head should contain the correct content
-  ck_assert(bl->id == b.id);
-  ck_assert_str_eq(bl->user, b.user);
-  ck_assert_str_eq(bl->content, b.content);
+  // Current should be head
+  ck_assert_ptr_eq(bl->head, bl->current);
+
+  // Head should contain the correct content
+  ck_assert(bl->head->id == b.id);
+  ck_assert_str_eq(bl->head->user, b.user);
+  ck_assert_str_eq(bl->head->content, b.content);
 
   // And both list pointers should be NULL
-  ASSERT_PTR_NULL(bl->prev);
-  ASSERT_PTR_NULL(bl->next);
+  ASSERT_PTR_NULL(bl->head->prev);
+  ASSERT_PTR_NULL(bl->head->next);
 
   conch_blastlist_free(bl);
 }
 END_TEST
 
 START_TEST(test_blastlist_from_resultset_multiple) {
-  blast b1 = {
+  blastdata b1 = {
     .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
   };
-  blast b2 = {
+  blastdata b2 = {
     .id = 2, .user = "elephant", .content = "Splashy splashy water.",
   };
-  blast b3 = {
+  blastdata b3 = {
     .id = 3, .user = "hippo", .content = "Mud, glorious mud!",
   };
   resultset rs = {
-    .count = 3, .blasts = (blast[]){ b1, b2, b3 },
+    .count = 3, .blasts = (blastdata[]){ b1, b2, b3 },
   };
   blastlist *bl = conch_blastlist_from_resultset(&rs);
 
   // List should exist
   ASSERT_PTR_NOT_NULL(bl);
 
-  // Check list items
-  blastlist *prev = NULL;
-  blastlist *cur = bl;
+  // List should exist and have head
+  ASSERT_PTR_NOT_NULL(bl);
+  ASSERT_PTR_NOT_NULL(bl->head);
+
+  // Current should be head
+  ck_assert_ptr_eq(bl->head, bl->current);
+
+  blast *prev = NULL;
+  blast *cur = bl->head;
 
   ck_assert(cur->id == b1.id);
   ck_assert_str_eq(cur->user, b1.user);
@@ -120,7 +134,7 @@ START_TEST(test_blastlist_join_null) {
 END_TEST
 
 START_TEST(test_blastlist_join_rhs_only) {
-  blast b1 = {
+  blastdata b1 = {
     .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
   };
   resultset rs1 = {
@@ -135,7 +149,7 @@ START_TEST(test_blastlist_join_rhs_only) {
 END_TEST
 
 START_TEST(test_blastlist_join_lhs_only) {
-  blast b1 = {
+  blastdata b1 = {
     .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
   };
   resultset rs1 = {
@@ -150,10 +164,10 @@ START_TEST(test_blastlist_join_lhs_only) {
 END_TEST
 
 START_TEST(test_blastlist_join) {
-  blast b1 = {
+  blastdata b1 = {
     .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
   };
-  blast b2 = {
+  blastdata b2 = {
     .id = 2, .user = "elephant", .content = "Splashy splashy water.",
   };
   resultset rs1 = {
@@ -167,9 +181,9 @@ START_TEST(test_blastlist_join) {
 
   blastlist *bl = conch_blastlist_join(lhs, rhs);
 
-  ck_assert_ptr_eq(bl, lhs);
-  ck_assert_ptr_eq(bl->next, rhs);
-  ck_assert_ptr_eq(bl->next->prev, lhs);
+  ck_assert_ptr_eq(bl->head, lhs->head);
+  ck_assert_ptr_eq(bl->head->next, rhs->head);
+  ck_assert_ptr_eq(bl->head->next->prev, lhs->head);
 }
 END_TEST
 

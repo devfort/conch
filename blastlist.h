@@ -3,18 +3,23 @@
 
 #include "backend.h"
 
-typedef struct blastlist blastlist;
+typedef struct blast blast;
 
-struct blastlist {
+struct blast {
   id id;
   char *user;
   char *content;
   char *posted_at;
   char *attachment;
 
-  blastlist *prev;
-  blastlist *next;
+  blast *prev;
+  blast *next;
 };
+
+typedef struct blastlist {
+  blast *head;
+  blast *current;
+} blastlist;
 
 blastlist *conch_blastlist_new();
 blastlist *conch_blastlist_from_resultset(resultset *rs);
