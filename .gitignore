@@ -1,5 +1,8 @@
 *.a
 *.o
+*.gcno
+*.gcda
+*.gch
 /*-check
 /.deps
 /conch
