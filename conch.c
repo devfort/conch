@@ -90,6 +90,7 @@ int main(int argc, char **argv) {
   view_type current_view;
   void *current_view_state;
   int splash_display_cycles = SPLASH_DELAY / KEY_DELAY;
+  bool started = false;
   settings config = {
     .page_size = 42,
   };
@@ -118,11 +119,15 @@ int main(int argc, char **argv) {
   detailview *dv = conch_detailview_new(bl);
 
   while (1) {
-    if (splash_display_cycles > 0) {
-      splash_display_cycles--;
-    } else if (current_view == VIEW_CONCH) {
-      current_view = VIEW_LIST;
-      current_view_state = lv;
+    if (!started) {
+      if (splash_display_cycles > 0) {
+        splash_display_cycles--;
+      } else {
+        cv->started = true;
+        started = true;
+        current_view = VIEW_LIST;
+        current_view_state = lv;
+      }
     }
 
     if (conch_notifications_poll(&notifications)) {

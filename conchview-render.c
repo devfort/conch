@@ -25,18 +25,20 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
   }
   gettimeofday(&now, NULL);
 
-  int n = 2 * (int)now.tv_sec + ((int)now.tv_usec / 5e5);
-  size_t choice = n % (sizeof(startup_msgs) / sizeof(char const *));
+  if (!v->started) {
+    int n = 2 * (int)now.tv_sec + ((int)now.tv_usec / 5e5);
+    size_t choice = n % (sizeof(startup_msgs) / sizeof(char const *));
 
-  char *pre = "conch loading: ";
-  int prelen = strlen(pre);
+    char *pre = "conch loading: ";
+    int prelen = strlen(pre);
 
-  char *msg = malloc(STATUS_MAXLEN * sizeof(char));
-  strncpy(msg, pre, prelen);
-  strncpy(msg + prelen, startup_msgs[choice], STATUS_MAXLEN - prelen);
+    char *msg = malloc(STATUS_MAXLEN * sizeof(char));
+    strncpy(msg, pre, prelen);
+    strncpy(msg + prelen, startup_msgs[choice], STATUS_MAXLEN - prelen);
 
-  conch_status_set(msg);
-  free(msg);
+    conch_status_set(msg);
+    free(msg);
+  }
 
   int max_x = rect->width;
 
