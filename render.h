@@ -3,7 +3,10 @@
 
 #include <curses.h>
 
-typedef enum { VIEW_LIST } view_type;
+typedef enum {
+  VIEW_CONCH,
+  VIEW_LIST,
+} view_type;
 
 typedef struct { unsigned int top, left, bottom, right; } winrect;
 

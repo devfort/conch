@@ -5,6 +5,7 @@
 #include "colors.h"
 
 #include "render.h"
+#include "conchview-render.h"
 #include "listview-render.h"
 
 window_chrome_s chrome = {
@@ -83,6 +84,9 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
   conch_status_clear();
 
   switch (current_view) {
+  case VIEW_CONCH:
+    conch_conchview_render((conchview *)view_state, window, &rect);
+    break;
   case VIEW_LIST:
     conch_listview_render((listview *)view_state, window, &rect);
     break;

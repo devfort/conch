@@ -78,6 +78,8 @@ int main(int argc, char **argv) {
   keypress_result res;
   listview *lv;
   mouthpiece *conn;
+  view_type current_view;
+  void *current_view_state;
   settings config = {
     .page_size = 42,
   };
@@ -92,7 +94,9 @@ int main(int argc, char **argv) {
   lv = conch_listview_new(&opts);
 
   // Render conch while loading
-  conch_conchview_render(cv, win);
+  current_view = VIEW_CONCH;
+  current_view_state = cv;
+  render_view(win, current_view, current_view_state);
 
   // Connect to postgres and fetch initial data
   conn = wait_for_connection(&config);
@@ -101,8 +105,8 @@ int main(int argc, char **argv) {
   init_blasts(conn, bl);
   conch_listview_update(lv, bl);
 
-  view_type current_view = VIEW_LIST;
-  void *current_view_state = (void *)lv;
+  current_view = VIEW_LIST;
+  current_view_state = lv;
 
   while (1) {
     if (conch_notifications_poll(&notifications)) {
