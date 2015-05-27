@@ -5,7 +5,7 @@ DEPS=.deps
 
 CFLAGS+=$(CDEBUG) --std=c99 -Wall -Wformat -Werror --pedantic
 
-BINS=conch
+BINS=conch blast
 BINS_TEST=$(patsubst %.c,%,$(wildcard *-check.c))
 
 LIBS=libpq caca imlib2
