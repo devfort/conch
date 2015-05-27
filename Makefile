@@ -15,6 +15,14 @@ ifndef verbose
   SILENT = @
 endif
 
+ifdef coverage
+	# Enable coverage reports. May not work correctly on LLVM yet :(
+	CFLAGS_COVER = -fprofile-arcs -ftest-coverage -O0
+	LDFLAGS_COVER = -lgcov
+	CFLAGS += $(CFLAGS_COVER)
+	LDFLAGS += $(LDFLAGS_COVER)
+endif
+
 # imglib2 requires this define when compiled without X11 support
 CFLAGS+=-DX_DISPLAY_MISSING=1
 
@@ -80,6 +88,9 @@ clean:
 
 reformat: *.c *.h
 	clang-format -i *.h *.c
+
+coverage: *.gcda *.gcno
+	gcov $<
 
 %-check.o: %-check.c
 	@mkdir -p $(DEPS)
