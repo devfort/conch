@@ -37,23 +37,32 @@ void blast_usage(char *arg0) {
 
 char *get_ext_msg(blast_options options) {
   if (options.extended) {
+    FILE *extfile;
     if (options.extended_filename) {
-      return NULL;
+      if (strcmp(options.extended_filename, "-")) {
+        extfile = fopen(options.extended_filename, "r");
+        if (extfile == NULL) {
+          fprintf(stderr, "Couldn't open the file: %s", options.extended_filename);
+        }
+      } else {
+        extfile = stdin;
+      }
     } else {
       printf("Enter your extended message\n");
       printf("  press ^D on a new line to end\n");
-      int size = 1;
-      int read = 0;
-      char *buffer = NULL;
-      do {
-        size += READ_BUFFER_SIZE;
-        buffer = realloc(buffer, size*sizeof(char));
-        read += fread(buffer+read, sizeof(char), READ_BUFFER_SIZE, stdin);
-      }
-      while( !feof(stdin) );
-      buffer[read] = '\0';
-      return buffer;
+      extfile = stdin;
     }
+    int size = 1;
+    int read = 0;
+    char *buffer = NULL;
+    do {
+      size += READ_BUFFER_SIZE;
+      buffer = realloc(buffer, size*sizeof(char));
+      read += fread(buffer+read, sizeof(char), READ_BUFFER_SIZE, extfile);
+    }
+    while( !feof(extfile) );
+    buffer[read] = '\0';
+    return buffer;
   } else {
     return NULL;
   }
