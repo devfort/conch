@@ -288,8 +288,8 @@ blastresult *conch_blast_post(mouthpiece *mp, char *user, char *content,
     const char *const params[] = { user_id_str, content, extended };
     PGresult *insert_result =
         PQexecParams(mp->connection, "insert into bugle_blast "
-                                     "(user_id, message, attachment, extended) "
-                                     "values ($1, $2, '', $3) returning id",
+                                     "(user_id, message, created, attachment, extended) "
+                                     "values ($1, $2, now(), '', $3) returning id",
                      3, NULL, params, NULL, NULL, true);
     if (PQresultStatus(insert_result) != PGRES_TUPLES_OK) {
       result->post = 0;
