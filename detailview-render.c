@@ -88,7 +88,8 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   }
 
   // Render the blast at 0,0 on the pad
-  generate_blast_lines(pad, available_width, 0, 0, v->blastlist->current, ' ');
+  char **blast_lines = generate_blast_lines(pad, available_width, 0, 0, v->blastlist->current, ' ');
+  wrap_lines_free(blast_lines);
 
   // Render the chrome to ncurses internal state, but don't render to the
   // screen.

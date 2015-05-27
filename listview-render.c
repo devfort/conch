@@ -52,7 +52,6 @@ char **generate_blast_lines(WINDOW *window, int available_width, int y,
 
   wrapped_blast[blast_height] = NULL;
   render_blast(window, wrapped_blast, y, gutter_x, highlight);
-  wrap_lines_free(wrapped_blast);
 
   return wrapped_blast;
 }
@@ -125,6 +124,7 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
       break;
     }
 
+    wrap_lines_free(wrapped_blast);
     // Exit when we run out of blasts
     if (blast->next) {
       blast = blast->next;
