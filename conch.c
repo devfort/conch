@@ -110,13 +110,17 @@ int main(int argc, char **argv) {
 
   while (1) {
     if (conch_notifications_poll(&notifications)) {
-      update_new_blasts(conn, bl);
+      if (bl->current == NULL) {
+        init_blasts(conn, bl);
+      } else {
+        update_new_blasts(conn, bl);
+      }
       conch_listview_update(lv, bl);
     }
 
     render_view(win, current_view, current_view_state);
 
-    if (bl->current->next == NULL) {
+    if (bl->current != NULL && bl->current->next == NULL) {
       update_old_blasts(conn, bl);
     }
 

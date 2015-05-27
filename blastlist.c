@@ -72,6 +72,10 @@ void conch_blastlist_prepend_resultset(blastlist *bl, resultset *rs) {
   blast *chainhead;
   blast *chaintail;
 
+  if (rs == NULL) {
+    return;
+  }
+
   blasts_from_resultset(rs, &chainhead, &chaintail);
 
   // Nothing in resultset. We're done.

@@ -35,6 +35,8 @@ void conch_listview_toggle_stick_to_top(listview *lv) {
 }
 
 void conch_listview_jump_to_top(listview *lv) {
+  if (lv->blasts->current == NULL)
+    return;
   lv->latest_read = lv->blasts->current = lv->blasts->head;
   lv->top = lv->latest_read;
   lv->at_top = true;
@@ -44,6 +46,8 @@ void conch_listview_jump_to_next_unread(listview *lv) {
   if (lv->latest_read == NULL) {
     return;
   }
+  if (lv->blasts->current == NULL)
+    return;
   if (lv->latest_read->prev) {
     lv->latest_read = lv->blasts->current = lv->latest_read->prev;
     lv->top = lv->latest_read;
@@ -52,6 +56,8 @@ void conch_listview_jump_to_next_unread(listview *lv) {
 }
 
 void conch_listview_select_next_blast(listview *lv) {
+  if (lv->blasts->current == NULL)
+    return;
   if (lv->blasts->current->next) {
     if (lv->bottom == lv->blasts->current) {
       lv->top = lv->top->next;
@@ -68,6 +74,8 @@ void conch_listview_select_next_blast(listview *lv) {
 }
 
 void conch_listview_select_prev_blast(listview *lv) {
+  if (lv->blasts->current == NULL)
+    return;
   if (lv->blasts->current->prev) {
     bool current_is_latest_read = (lv->latest_read == lv->blasts->current);
 
