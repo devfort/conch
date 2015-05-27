@@ -1,4 +1,4 @@
-eDEBUG?=-g
+CDEBUG?=-g
 CFLAGS?=
 LDFLAGS?=
 DEPS=.deps
