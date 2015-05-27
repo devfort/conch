@@ -13,7 +13,7 @@
 #include "backend-internal.h"
 #include "strutils.h"
 
-#define POSTED_DATEFORMAT "'YYYY-MM-DD HH24:MI:SS tz'"
+#define POSTED_DATEFORMAT "'YYYY-MM-DD HH24:MI:SS TZ'"
 
 static mouthpiece *conch_connect_internal(settings settings) {
   PGconn *connection = PQsetdbLogin(settings.host, NULL, NULL, NULL,
