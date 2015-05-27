@@ -8,6 +8,7 @@
 
 typedef enum {
   CONCH_NOP,
+  CONCH_CONCH,
   CONCH_DETAIL,
   CONCH_EXIT,
   CONCH_LIST,

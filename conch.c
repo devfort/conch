@@ -152,6 +152,10 @@ int main(int argc, char **argv) {
       break;
     case CONCH_EXIT:
       goto terminate;
+    case CONCH_CONCH:
+      current_view = VIEW_CONCH;
+      current_view_state = cv;
+      break;
     case CONCH_DETAIL:
       current_view = VIEW_DETAIL;
       current_view_state = dv;

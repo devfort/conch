@@ -11,6 +11,13 @@ keypress_result conch_keypress_dispatch(const int key, view_type current_view,
 
   case 'q':
     return CONCH_EXIT;
+  case '@':
+    // Toggle "conch view"
+    if (current_view == VIEW_CONCH) {
+      return CONCH_LIST;
+    } else {
+      return CONCH_CONCH;
+    }
 
   case -1:
     break;
