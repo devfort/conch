@@ -83,14 +83,19 @@ char **wrap_lines(char *text, int max_line_length) {
   while (remaining_content && strlen(remaining_content)) {
     char *line = calloc(1, max_line_length);
 
-    if (max_line_length < strlen(remaining_content)) {
+    if (strlen(remaining_content) < max_line_length) {
+      remaining_content += strlen(remaining_content);
+    } else {
       remaining_content += max_line_length;
 
-      while (!isspace(*remaining_content)) {
+      while ((start_of_line < remaining_content) &&
+             !isspace(*remaining_content)) {
         --remaining_content;
       }
-    } else {
-      remaining_content += strlen(remaining_content);
+
+      if (remaining_content == start_of_line) {
+        remaining_content += max_line_length;
+      }
     }
 
     strncat(line, start_of_line, remaining_content - start_of_line);

@@ -148,6 +148,44 @@ START_TEST(test_wrap_lines_lands_on_a_space) {
 }
 END_TEST
 
+START_TEST(test_wrap_lines_with_no_spaces) {
+  char *expected_blast_lines[1024];
+  char **actual_blast_lines;
+
+  expected_blast_lines[0] = "You'rego";
+  expected_blast_lines[1] = "ingtonee";
+  expected_blast_lines[2] = "dabigger";
+  expected_blast_lines[3] = "boat";
+  expected_blast_lines[4] = NULL;
+
+  int available_width = 8;
+
+  actual_blast_lines =
+      wrap_lines("You'regoingtoneedabiggerboat", available_width);
+  for (int i = 0; expected_blast_lines[i]; i++) {
+    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
+  }
+
+  wrap_lines_free(actual_blast_lines);
+}
+END_TEST
+
+// We can't accurately test wrapping output because rendering
+// depends on where the string is broken, so just check nothing explodes
+START_TEST(test_wrap_lines_with_odd_unicode_doesnt_explode) {
+  char **actual_blast_lines;
+
+  int available_width = 13;
+
+  actual_blast_lines =
+      wrap_lines("H̕͝ ̛G̢̧̛Ó̧̕D̶͘ ̢ST̶͢ÓP T͠H̷͏E̵̸̛͝ "
+                 "̶́͝P̷͡Ą͠͠͡I̷͟N̶͜!¡!",
+                 available_width);
+
+  wrap_lines_free(actual_blast_lines);
+}
+END_TEST
+
 START_TEST(test_wrap_lines_empty_text) {
   char *expected_blast_lines[1024];
   char **actual_blast_lines;
@@ -206,6 +244,8 @@ Suite *strutils_suite(void) {
   ADD_TEST_CASE(s, test_wrap_lines_empty_text);
   ADD_TEST_CASE(s, test_wrap_lines_null_text);
   ADD_TEST_CASE(s, test_wrap_lines_free);
+  ADD_TEST_CASE(s, test_wrap_lines_with_no_spaces);
+  ADD_TEST_CASE(s, test_wrap_lines_with_odd_unicode_doesnt_explode);
 
   return s;
 }
