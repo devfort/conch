@@ -10,9 +10,11 @@ struct mouthpiece {
   PGconn *connection;
   settings settings;
   bool is_test;
+  int64_t notification_counter;
 };
 
 mouthpiece *conch_test_connect(settings settings);
+mouthpiece *conch_local_connect(settings settings);
 
 void conch_let_silence_fall(mouthpiece *mp);
 

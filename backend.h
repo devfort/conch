@@ -2,6 +2,7 @@
 #define _BACKEND_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef uint64_t id;
 #define PRIid PRIu64
@@ -54,5 +55,14 @@ blastresult *conch_blast_post(mouthpiece *mp, char *user, char *content,
 
 void conch_resultset_free(resultset *results);
 void conch_blastresult_free(blastresult *result);
+
+typedef struct {
+  uint64_t last_notify;
+  mouthpiece *mouthpiece;
+} notifications;
+
+void conch_notifications_init(notifications *notifications, mouthpiece *mp);
+bool conch_notifications_poll(notifications *notifications);
+bool conch_notifications_await(notifications *notifications, int timeout_ms);
 
 #endif /* _BACKEND_H */

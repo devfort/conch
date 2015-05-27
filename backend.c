@@ -7,6 +7,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define __USE_XOPEN_EXTENDED
+#include <unistd.h>
+
 #include "backend-internal.h"
 #include "strutils.h"
 
@@ -23,12 +26,18 @@ static mouthpiece *conch_connect_internal(settings settings,
   mp->settings = settings;
   mp->connection = connection;
   mp->is_test = false;
+  mp->notification_counter = 0;
   return mp;
 }
 
 mouthpiece *conch_connect(settings settings) {
   return conch_connect_internal(settings,
                                 "host=core.fort dbname=bugle user=bugle");
+}
+
+mouthpiece *conch_local_connect(settings settings) {
+  return conch_connect_internal(settings,
+                                "host=localhost dbname=bugle_test user=bugle");
 }
 
 mouthpiece *conch_test_connect(settings settings) {
@@ -40,6 +49,14 @@ mouthpiece *conch_test_connect(settings settings) {
   PGresult *res = PQexec(mp->connection, "BEGIN");
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
     fprintf(stderr, "Could not start test transaction: %s",
+            PQerrorMessage(mp->connection));
+    conch_disconnect(mp);
+    return NULL;
+  }
+  res = PQexec(mp->connection,
+               "set transaction isolation level read uncommitted");
+  if (PQresultStatus(res) != PGRES_COMMAND_OK) {
+    fprintf(stderr, "Could not set isolation of test transaction: %s",
             PQerrorMessage(mp->connection));
     conch_disconnect(mp);
     return NULL;
@@ -304,4 +321,57 @@ void conch_resultset_free(resultset *result) {
   }
   free(result->blasts);
   free(result);
+}
+
+void conch_notifications_init(notifications *notifications, mouthpiece *mp) {
+  notifications->mouthpiece = mp;
+  if (!mp->notification_counter) {
+    PGresult *listen = PQexec(mp->connection, "listen newblast");
+    if (PQresultStatus(listen) != PGRES_COMMAND_OK) {
+      fprintf(stderr, "Error listening for notifications: %s\n",
+              PQerrorMessage(mp->connection));
+      abort();
+    }
+    PQclear(listen);
+    mp->notification_counter++;
+  }
+  notifications->last_notify = mp->notification_counter;
+}
+
+bool conch_notifications_poll(notifications *notifications) {
+  PGconn *conn = notifications->mouthpiece->connection;
+  if (!PQconsumeInput(conn)) {
+    fprintf(stderr, "Error listening for notifications: %s\n",
+            PQerrorMessage(conn));
+    abort();
+  }
+  while (true) {
+    PGnotify *notification = PQnotifies(conn);
+    if (notification == NULL)
+      break;
+    PQfreemem(notification);
+    notifications->mouthpiece->notification_counter++;
+  }
+  bool result = notifications->mouthpiece->notification_counter >
+                notifications->last_notify;
+  notifications->last_notify = notifications->mouthpiece->notification_counter;
+  return result;
+}
+
+bool conch_notifications_await(notifications *notifications, int timeout_ms) {
+  int sleep_left = timeout_ms * 1000;
+  int backoff = 1;
+  while (sleep_left >= 0) {
+    bool result = conch_notifications_poll(notifications);
+    if (result)
+      return true;
+    if (!sleep_left)
+      return false;
+    usleep(backoff);
+    sleep_left -= backoff;
+    backoff *= 2;
+    if (backoff > sleep_left)
+      backoff = sleep_left;
+  }
+  return false;
 }

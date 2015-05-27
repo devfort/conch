@@ -176,6 +176,46 @@ START_TEST(test_blast_post) {
 }
 END_TEST
 
+static void post_or_fail(mouthpiece *mp, char *username, char *message) {
+  blastresult *posted = conch_blast_post(mp, username, message, NULL);
+  ck_assert_int_ne(posted->post, 0);
+  conch_blastresult_free(posted);
+}
+
+START_TEST(test_is_notified_on_new_blasts) {
+  settings settings = {.page_size = 1 };
+  mouthpiece *mp = conch_local_connect(settings);
+  mouthpiece *real_mp = conch_local_connect(settings);
+
+  notifications notify;
+  conch_notifications_init(&notify, mp);
+  ck_assert_int_eq(0, conch_notifications_await(&notify, 500));
+
+  post_or_fail(real_mp, "DRMacIver", "A test message");
+  ck_assert_int_eq(1, conch_notifications_poll(&notify));
+
+  conch_disconnect(mp);
+}
+END_TEST
+
+START_TEST(test_clears_notification_on_read) {
+  settings settings = {.page_size = 1 };
+  mouthpiece *mp = conch_local_connect(settings);
+  mouthpiece *real_mp = conch_local_connect(settings);
+
+  notifications notify;
+  conch_notifications_init(&notify, mp);
+  ck_assert_int_eq(0, conch_notifications_await(&notify, 500));
+
+  post_or_fail(real_mp, "DRMacIver", "A test message");
+  post_or_fail(real_mp, "DRMacIver", "Another test message");
+  ck_assert_int_eq(1, conch_notifications_poll(&notify));
+  ck_assert_int_eq(0, conch_notifications_poll(&notify));
+
+  conch_disconnect(mp);
+}
+END_TEST
+
 Suite *backend_suite(void) {
   Suite *s = suite_create("backend");
 
@@ -191,6 +231,8 @@ Suite *backend_suite(void) {
   ADD_TEST_CASE(s, test_has_at_least_one_attachment);
   ADD_TEST_CASE(s, test_has_at_least_one_extended);
   ADD_TEST_CASE(s, test_blast_post);
+  ADD_TEST_CASE(s, test_is_notified_on_new_blasts);
+  ADD_TEST_CASE(s, test_clears_notification_on_read);
 
   return s;
 }
