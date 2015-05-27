@@ -55,6 +55,7 @@ void conch_listview_select_next_blast(listview *lv) {
   if (lv->blasts->current->next) {
     if (lv->bottom == lv->blasts->current) {
       lv->top = lv->top->next;
+      lv->bottom = lv->bottom->next;
     }
 
     lv->blasts->current = lv->blasts->current->next;
@@ -69,6 +70,7 @@ void conch_listview_select_prev_blast(listview *lv) {
 
     if (lv->top == lv->blasts->current) {
       lv->top = lv->top->prev;
+      lv->bottom = lv->bottom->prev;
     }
 
     lv->blasts->current = lv->blasts->current->prev;

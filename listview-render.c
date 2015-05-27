@@ -73,6 +73,9 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
     return;
   }
 
+  // Keep track that we are scrolling from the bottom
+  bool at_bottom = (lv->bottom == lv->blasts->current);
+
   blast *blast = lv->top;
 
   // Indicate that prior blasts are available
@@ -110,17 +113,16 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
   }
 
   // Keep track of the last complete blast on screen so that the next blast key
-  // press
-  // can increment top correctly.
+  // press can increment top correctly. Move bottom back up the last fully rendered
+  // blast if we overflowed the space.
   lv->bottom = blast;
   if (available_y < 0) {
     lv->bottom = lv->bottom->prev;
   }
 
-  // FIXME: Use count of rendered blasts.
-  if (0) {
-    mvwaddstr(window, first_blast_y, blast_x + 1,
-              "You're gonna need a bigger boat! (Or window.)");
+  // If we started at the bottom we should remain at the last drawn item.
+  if (at_bottom) {
+    lv->blasts->current = lv->bottom;
   }
 
   // Indicate that more blasts are available
