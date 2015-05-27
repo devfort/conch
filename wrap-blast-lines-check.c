@@ -96,21 +96,37 @@ START_TEST(test_blast_lines_lands_on_a_space) {
 }
 END_TEST
 
-// START_TEST(test_blast_lines_empty_blast) {
-//   char *expected_blast_lines[1024];
-//   char **actual_blast_lines;
-//
-//   expected_blast_lines[0] = "";
-//   expected_blast_lines[1] = NULL;
-//
-//   actual_blast_lines = conch_blast_lines("", 15);
-//   for (int i = 0; expected_blast_lines[i]; i++) {
-//     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
-//   }
-//
-//   conch_blast_lines_free(actual_blast_lines);
-// }
-// END_TEST
+START_TEST(test_blast_lines_empty_blast) {
+  char *expected_blast_lines[1024];
+  char **actual_blast_lines;
+
+  expected_blast_lines[0] = "";
+  expected_blast_lines[1] = NULL;
+
+  actual_blast_lines = conch_blast_lines("", 15);
+  for (int i = 0; expected_blast_lines[i]; i++) {
+    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
+  }
+
+  conch_blast_lines_free(actual_blast_lines);
+}
+END_TEST
+
+START_TEST(test_blast_lines_null_blast) {
+  char *expected_blast_lines[1024];
+  char **actual_blast_lines;
+
+  expected_blast_lines[0] = "";
+  expected_blast_lines[1] = NULL;
+
+  actual_blast_lines = conch_blast_lines(NULL, 15);
+  for (int i = 0; expected_blast_lines[i]; i++) {
+    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
+  }
+
+  conch_blast_lines_free(actual_blast_lines);
+}
+END_TEST
 
 START_TEST(test_blast_lines_free_null) {
   char **actual_blast_lines = NULL;
@@ -126,7 +142,8 @@ Suite *blast_lines_suite(void) {
   ADD_TEST_CASE(s, test_blast_lines_30);
   ADD_TEST_CASE(s, test_blast_lines_multiple_spaces);
   ADD_TEST_CASE(s, test_blast_lines_lands_on_a_space);
-  // ADD_TEST_CASE(s, test_blast_lines_empty_blast);
+  ADD_TEST_CASE(s, test_blast_lines_empty_blast);
+  ADD_TEST_CASE(s, test_blast_lines_null_blast);
   ADD_TEST_CASE(s, test_blast_lines_free_null);
 
   return s;

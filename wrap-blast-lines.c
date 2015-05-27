@@ -11,10 +11,16 @@ char **conch_blast_lines(char *blast, int available_width) {
   char *start_of_line, *remaining_content;
   start_of_line = remaining_content = blast;
 
-  while (strlen(remaining_content)) {
+  if (NULL == blast || 0 == strlen(blast)) {
+    char *empty_string = calloc(1, 1);
+    lines[lines_required] = empty_string;
+    lines_required++;
+  }
+
+  while (remaining_content && strlen(remaining_content)) {
     char *line = calloc(1, available_width);
 
-    if(available_width < strlen(remaining_content)) {
+    if (available_width < strlen(remaining_content)) {
       remaining_content += available_width;
 
       while (!isspace(*remaining_content)) {
