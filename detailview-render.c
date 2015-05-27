@@ -122,11 +122,22 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
           "conch_detailview_render: Could not create code pad h: %d, w: %d",
           code_height, code_width);
     }
-    if (waddstr(code_pad, v->blastlist->current->extended) == ERR) {
+
+    // There might be '\r' in the code snippet. Annoyingly when ncurses prints
+    // a '\r' it erases the line it just printed. So as a bit of a hack replace
+    // every '\r' with a ' '
+    char *string, *token;
+    string = token = strclone(v->blastlist->current->extended);
+    while ((token = strchr(token, '\r')) != NULL) {
+      *token = ' ';
+    }
+
+    if (waddstr(code_pad, string) == ERR) {
       fatal_error("conch_detailview_render: waddstr to code_pad failed! Pad "
                   "size %d,%d",
                   code_height + 1, code_width);
     }
+    free(string);
 
     // Where the top of the code pad should be drawn to - if we have scrolled
     // up this could be < 0
