@@ -11,7 +11,6 @@
 #include "conchview.h"
 #include "keys.h"
 #include "listview.h"
-#include "timeout.h"
 #include "render.h"
 
 // Approximate time to wait between requests to the database (seconds)
@@ -74,7 +73,7 @@ int main(int argc, char **argv) {
   WINDOW *win;
   blastlist *bl;
   conch_cli_options opts;
-  conch_timeout *poll;
+  notifications notifications;
   conchview *cv;
   keypress_result res;
   listview *lv;
@@ -84,7 +83,6 @@ int main(int argc, char **argv) {
   };
 
   win = init_screen();
-  poll = conch_timeout_new(DB_POLL_INTERVAL);
   opts = conch_parse_command_line_args(argc, argv);
 
   // Create views
@@ -96,19 +94,18 @@ int main(int argc, char **argv) {
 
   // Connect to postgres and fetch initial data
   conn = wait_for_connection(&config);
+  conch_notifications_init(&notifications, conn);
   bl = conch_blastlist_new();
   init_blasts(conn, bl);
   conch_listview_update(lv, bl);
-  conch_timeout_reset(poll);
 
   view_type current_view = VIEW_LIST;
   void *current_view_state = (void *)lv;
 
   while (1) {
-    if (conch_timeout_expired(poll)) {
+    if (conch_notifications_poll(&notifications)) {
       update_new_blasts(conn, bl);
       conch_listview_update(lv, bl);
-      conch_timeout_reset(poll);
     }
 
     render_view(win, current_view, current_view_state);
