@@ -61,24 +61,12 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
 
   int available_y = usable_lines;
 
-  int max_blasts;
-  if (usable_lines == chrome.blast_height) {
-    max_blasts = 1;
-  } else {
-    max_blasts = usable_lines / (chrome.blast_padding + chrome.blast_height);
-  }
-
   if (conch_listview_has_unread_blasts(lv)) {
     conch_status_set("unread blasts");
   }
 
   mvwvline(window, first_blast_y, blast_x,
            ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR), usable_lines);
-
-  if (0 == max_blasts) {
-    mvwaddstr(window, first_blast_y, blast_x + 1,
-              "You're gonna need a bigger boat! (Or window.)");
-  }
 
   // If we don't have any blasts yet, we return early.
   if (lv->blasts == NULL || lv->blasts->current == NULL) {
@@ -96,22 +84,47 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
              ACS_VLINE | COLOR_PAIR(STUCK_COLOR), 1);
   }
 
+  // Loop until we run out of available_y or blasts
   int blast_y = first_blast_y;
-  for (int i = 0; i < max_blasts && available_y > 0; ++i) {
+  while (1) {
     int blast_height = render_blast(window, usable_window_width, blast_y,
                                     blast_x, blast, blast_highlight(blast, lv));
 
     blast_y += chrome.blast_padding + blast_height;
-    available_y -= blast_height;
+    available_y -= chrome.blast_padding + blast_height;
 
-    blast = blast->next;
-    if (!blast) {
+    // See if we hit the end of the screen and exit if we did
+    if (available_y <= 0) {
+      // If we did, discount the padding so that you can still select the last
+      // element on screen
+      available_y += chrome.blast_padding;
+      break;
+    }
+
+    // Exit when we run out of blasts
+    if (blast->next) {
+      blast = blast->next;
+    } else {
       break;
     }
   }
 
+  // Keep track of the last complete blast on screen so that the next blast key
+  // press
+  // can increment top correctly.
+  lv->bottom = blast;
+  if (available_y < 0) {
+    lv->bottom = lv->bottom->prev;
+  }
+
+  // FIXME: Use count of rendered blasts.
+  if (0) {
+    mvwaddstr(window, first_blast_y, blast_x + 1,
+              "You're gonna need a bigger boat! (Or window.)");
+  }
+
   // Indicate that more blasts are available
-  if (blast) {
+  if (blast->next) {
     mvwvline(window, max_y - (2 * chrome.border_width), blast_x,
              ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
   }

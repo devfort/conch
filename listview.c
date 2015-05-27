@@ -53,14 +53,23 @@ void conch_listview_jump_to_next_unread(listview *lv) {
 
 void conch_listview_select_next_blast(listview *lv) {
   if (lv->blasts->current->next) {
+    if (lv->bottom == lv->blasts->current) {
+      lv->top = lv->top->next;
+    }
+
     lv->blasts->current = lv->blasts->current->next;
   }
+
   lv->at_top = (lv->blasts->current->prev == NULL);
 }
 
 void conch_listview_select_prev_blast(listview *lv) {
   if (lv->blasts->current->prev) {
     bool current_is_latest_read = (lv->latest_read == lv->blasts->current);
+
+    if (lv->top == lv->blasts->current) {
+      lv->top = lv->top->prev;
+    }
 
     lv->blasts->current = lv->blasts->current->prev;
     if (current_is_latest_read) {
