@@ -166,6 +166,63 @@ START_TEST(test_listview_cursor_movement) {
 }
 END_TEST
 
+START_TEST(test_listview_cursor_movement_scroll_down) {
+  blastlist *bl = blastlist_fixture_new(3);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
+  conch_listview_update(lv, bl);
+
+  lv->bottom = lv->blasts->head->next;
+
+  ck_assert_ptr_eq(lv->top, lv->blasts->head);
+  ck_assert_ptr_eq(lv->top, lv->blasts->current);
+
+  // We can move forward
+  conch_listview_select_next_blast(lv);
+
+  ck_assert_ptr_eq(lv->top, lv->blasts->current->prev);
+  ck_assert_ptr_eq(lv->blasts->current, lv->blasts->head->next);
+
+  // Moving past bottom should move the whole window down
+  conch_listview_select_next_blast(lv);
+
+  ck_assert_ptr_eq(lv->top, lv->blasts->current->prev);
+  ck_assert_ptr_eq(lv->blasts->current, lv->blasts->head->next->next);
+  ck_assert_ptr_eq(lv->bottom, lv->blasts->tail);
+
+  conch_listview_free(lv);
+  conch_blastlist_free(bl);
+}
+END_TEST
+
+START_TEST(test_listview_cursor_movement_scroll_up) {
+  blastlist *bl = blastlist_fixture_new(3);
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
+  conch_listview_update(lv, bl);
+
+  lv->top = lv->blasts->head->next;
+  lv->bottom = lv->blasts->tail;
+  lv->blasts->current = lv->blasts->tail;
+
+  // We can move up
+  conch_listview_select_prev_blast(lv);
+
+  ck_assert_ptr_eq(lv->top, lv->blasts->head->next);
+  ck_assert_ptr_eq(lv->blasts->current, lv->blasts->head->next);
+
+  // Moving past top should push the whole window up
+  conch_listview_select_prev_blast(lv);
+
+  ck_assert_ptr_eq(lv->top, lv->blasts->head);
+  ck_assert_ptr_eq(lv->top, lv->blasts->current);
+  ck_assert_ptr_eq(lv->bottom, lv->blasts->head->next);
+
+  conch_listview_free(lv);
+  conch_blastlist_free(bl);
+}
+END_TEST
+
 START_TEST(test_listview_cursor_movement_updates_latest_read) {
   blastlist *bl = blastlist_fixture_new(3);
   conch_cli_options opts = {.stick_to_top = false };
@@ -345,7 +402,8 @@ Suite *listview_suite(void) {
   ADD_TEST_CASE(s, test_listview_jump_to_top_updates_latest_read);
   ADD_TEST_CASE(s, test_listview_has_unread_blasts);
   ADD_TEST_CASE(s, test_listview_jump_to_next_unread);
-
+  ADD_TEST_CASE(s, test_listview_cursor_movement_scroll_down);
+  ADD_TEST_CASE(s, test_listview_cursor_movement_scroll_up);
   return s;
 }
 
