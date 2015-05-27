@@ -38,3 +38,15 @@ char **conch_blast_lines(char *blast, int available_width) {
 
   return lines;
 }
+
+void conch_blast_lines_free(char **blast_lines) {
+  if (blast_lines == NULL) {
+    return;
+  }
+
+  for (int i = 0; blast_lines[i]; i++) {
+    free(blast_lines[i]);
+  }
+
+  free(blast_lines);
+}

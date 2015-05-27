@@ -14,6 +14,8 @@ START_TEST(test_blast_fits_on_one_line) {
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
+
+  conch_blast_lines_free(actual_blast_lines);
 }
 END_TEST
 
@@ -31,6 +33,8 @@ START_TEST(test_blast_lines_13) {
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
+
+  conch_blast_lines_free(actual_blast_lines);
 }
 END_TEST
 
@@ -47,6 +51,8 @@ START_TEST(test_blast_lines_30) {
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
+
+  conch_blast_lines_free(actual_blast_lines);
 }
 END_TEST
 
@@ -64,6 +70,8 @@ START_TEST(test_blast_lines_multiple_spaces) {
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
+
+  conch_blast_lines_free(actual_blast_lines);
 }
 END_TEST
 
@@ -84,6 +92,7 @@ START_TEST(test_blast_lines_lands_on_a_space) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
 
+  conch_blast_lines_free(actual_blast_lines);
 }
 END_TEST
 
@@ -98,8 +107,16 @@ END_TEST
 //   for (int i = 0; expected_blast_lines[i]; i++) {
 //     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
 //   }
+//
+//   conch_blast_lines_free(actual_blast_lines);
 // }
 // END_TEST
+
+START_TEST(test_blast_lines_free_null) {
+  char **actual_blast_lines = NULL;
+  conch_blast_lines_free(actual_blast_lines);
+}
+END_TEST
 
 Suite *blast_lines_suite(void) {
   Suite *s = suite_create("blast_lines");
@@ -110,6 +127,7 @@ Suite *blast_lines_suite(void) {
   ADD_TEST_CASE(s, test_blast_lines_multiple_spaces);
   ADD_TEST_CASE(s, test_blast_lines_lands_on_a_space);
   // ADD_TEST_CASE(s, test_blast_lines_empty_blast);
+  ADD_TEST_CASE(s, test_blast_lines_free_null);
 
   return s;
 }
