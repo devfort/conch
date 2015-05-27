@@ -117,9 +117,7 @@ int main(int argc, char **argv) {
 
   detailview *dv = conch_detailview_new(bl);
 
-  bool running = true;
-
-  while (running) {
+  while (1) {
     if (splash_display_cycles > 0) {
       splash_display_cycles--;
     } else if (current_view == VIEW_CONCH) {
@@ -148,8 +146,7 @@ int main(int argc, char **argv) {
     case CONCH_NOP:
       break;
     case CONCH_EXIT:
-      running = false;
-      break;
+      goto terminate;
     case CONCH_DETAIL:
       current_view = VIEW_DETAIL;
       current_view_state = dv;
@@ -161,6 +158,7 @@ int main(int argc, char **argv) {
     }
   }
 
+terminate:
   endwin();
   conch_conchview_free(cv);
   conch_listview_free(lv);
