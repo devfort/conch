@@ -1,3 +1,6 @@
+/* Enable sigaction macros on Linux (occasionally) */
+#define _XOPEN_SOURCE 600
+
 #include <curses.h>
 #include <locale.h>
 #include <stdlib.h>
@@ -67,9 +70,19 @@ void update_old_blasts(mouthpiece *conn, blastlist *bl) {
   conch_resultset_free(result);
 }
 
-void handle_magic_message_from_the_operator(int signal) {
+static void handle_magic_message_from_the_operator(int signal) {
   // What does this do? Who really knows.
   ungetch('@');
+}
+
+static void bind_signal_handlers() {
+  struct sigaction act, oact;
+
+  act.sa_handler = handle_magic_message_from_the_operator;
+  sigemptyset(&act.sa_mask);
+  act.sa_flags = SA_RESTART;
+
+  sigaction(SIGUSR1, &act, &oact);
 }
 
 mouthpiece *wait_for_connection(settings *config) {
@@ -114,7 +127,8 @@ int main(int argc, char **argv) {
   current_view = VIEW_CONCH;
   current_view_state = cv;
   render_view(win, current_view, current_view_state);
-  signal(SIGUSR1, handle_magic_message_from_the_operator);
+
+  bind_signal_handlers();
 
   // Connect to postgres and fetch initial data
   conn = wait_for_connection(&config);
