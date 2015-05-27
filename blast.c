@@ -7,6 +7,8 @@
 #include "strutils.h"
 #include "backend.h"
 
+#define READ_BUFFER_SIZE 1000
+
 typedef struct {
   char *config_filename;
   char *username;
@@ -33,6 +35,30 @@ void blast_usage(char *arg0) {
     "  --verbose\t\t\tprint out blast details\n");
 }
 
+char *get_ext_msg(blast_options options) {
+  if (options.extended) {
+    if (options.extended_filename) {
+      return NULL;
+    } else {
+      printf("Enter your extended message\n");
+      printf("  press ^D on a new line to end\n");
+      int size = 1;
+      int read = 0;
+      char *buffer = NULL;
+      do {
+        size += READ_BUFFER_SIZE;
+        buffer = realloc(buffer, size*sizeof(char));
+        read += fread(buffer+read, sizeof(char), READ_BUFFER_SIZE, stdin);
+      }
+      while( !feof(stdin) );
+      buffer[read] = '\0';
+      return buffer;
+    }
+  } else {
+    return NULL;
+  }
+}
+
 int main(int argc, char **argv) {
   int exit_code = 0;
   blast_options options = blast_parse_command_line_args(argc, argv);
@@ -47,7 +73,9 @@ int main(int argc, char **argv) {
     };
     mouthpiece *mp = conch_connect(config);
 
-    blastresult *result = conch_blast_post(mp, options.username, msg, NULL);
+    char *ext_msg = get_ext_msg(options);
+
+    blastresult *result = conch_blast_post(mp, options.username, msg, ext_msg);
     if (result->post == 0) {
       fprintf(stderr, "Fail: %s\n", result->error_message);
       exit_code = 1;
@@ -55,6 +83,7 @@ int main(int argc, char **argv) {
     conch_blastresult_free(result);
     conch_disconnect(mp);
     free(msg);
+    free(ext_msg);
   }
 
   return exit_code;
