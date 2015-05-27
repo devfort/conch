@@ -7,7 +7,6 @@
 #include "render.h"
 #include "conchview-render.h"
 #include "listview-render.h"
-#include "detailview-render.h"
 
 window_chrome_s chrome = {
   .blast_height = 2,
@@ -95,9 +94,6 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
     break;
   case VIEW_LIST:
     conch_listview_render((listview *)view_state, window, &rect);
-    break;
-  case VIEW_DETAIL:
-    conch_detailview_render((detailview *)view_state, window, &rect);
     break;
   }
 

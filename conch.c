@@ -111,7 +111,9 @@ int main(int argc, char **argv) {
   init_blasts(conn, bl);
   conch_listview_update(lv, bl);
 
-  while (1) {
+  bool running = true;
+
+  while (running) {
     if (splash_display_cycles > 0) {
       splash_display_cycles--;
     } else {
@@ -134,8 +136,13 @@ int main(int argc, char **argv) {
       update_old_blasts(conn, bl);
     }
 
-    res = conch_keypress_dispatch(wgetch(win), lv);
-    if (res == CONCH_EXIT) {
+    res =
+        conch_keypress_dispatch(wgetch(win), current_view, current_view_state);
+    switch (res) {
+    case CONCH_NOP:
+      break;
+    case CONCH_EXIT:
+      running = false;
       break;
     }
   }

@@ -1,35 +1,24 @@
 #include "keys.h"
 #include "listview.h"
 
-keypress_result conch_keypress_dispatch(const int key, listview *lv) {
+#include "listview-keys.h"
+
+keypress_result conch_keypress_dispatch(const int key, view_type current_view,
+                                        void *view_state) {
   switch (key) {
-  case '0':
-    conch_listview_jump_to_top(lv);
-    break;
-
-  case '.':
-  case '\t':
-    conch_listview_jump_to_next_unread(lv);
-    break;
-
-  case 'j':
-    conch_listview_select_next_blast(lv);
-    break;
-
-  case 'k':
-    conch_listview_select_prev_blast(lv);
-    break;
-
-  case 's':
-    conch_listview_toggle_stick_to_top(lv);
-    break;
 
   case 'q':
     return CONCH_EXIT;
 
   case -1:
-  default:
     break;
+  default:
+    switch (current_view) {
+    case VIEW_LIST:
+      return conch_listview_keypress_dispatch(key, (listview *)view_state);
+    case VIEW_CONCH:
+      break;
+    }
   }
 
   return CONCH_NOP;

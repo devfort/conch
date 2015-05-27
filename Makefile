@@ -54,6 +54,7 @@ conch: \
   conchview-render.o \
   listview.o \
   listview-render.o \
+  listview-keys.o \
   render.o \
   cli.o \
   backend.o \
