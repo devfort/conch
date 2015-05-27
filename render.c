@@ -68,7 +68,7 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
                   .right = max_x - (chrome.padding_x + chrome.border_width) };
 
   werase(window);
-  render_chrome(window, " conch 螺");
+  render_chrome(window, " conch 螺 ");
 
   if (MIN_WIDTH_FOR_CLOCK <= max_x) {
     char clock_text[1024];
