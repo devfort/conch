@@ -10,9 +10,9 @@
 #include "conchview-render.h"
 #include "conchview.h"
 #include "keys.h"
-#include "listview-render.h"
 #include "listview.h"
 #include "timeout.h"
+#include "render.h"
 
 // Approximate time to wait between requests to the database (seconds)
 #define DB_POLL_INTERVAL 10
@@ -101,6 +101,9 @@ int main(int argc, char **argv) {
   conch_listview_update(lv, bl);
   conch_timeout_reset(poll);
 
+  view_type current_view = VIEW_LIST;
+  void *current_view_state = (void *)lv;
+
   while (1) {
     if (conch_timeout_expired(poll)) {
       update_new_blasts(conn, bl);
@@ -108,7 +111,7 @@ int main(int argc, char **argv) {
       conch_timeout_reset(poll);
     }
 
-    conch_listview_render(lv, win);
+    render_view(win, current_view, current_view_state);
 
     if (bl->current->next == NULL) {
       update_old_blasts(conn, bl);

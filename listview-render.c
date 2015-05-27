@@ -1,6 +1,5 @@
 #include <curses.h>
 #include <string.h>
-#include <time.h>
 
 #include "blastlist.h"
 #include "colors.h"
@@ -8,63 +7,7 @@
 #include "listview-render.h"
 #include "wordwrap.h"
 
-// 64 characters provides space for a 14-character status with the clock
-#define MIN_WIDTH_FOR_CLOCK 64
-
-typedef struct window_chrome_s {
-  int blast_height;
-  int blast_left_margin;
-  int blast_padding;
-  int border_width;
-  int origin_x;
-  int origin_y;
-  int padding_x;
-  int padding_y;
-  int title_left_margin;
-} window_chrome_s;
-
-window_chrome_s chrome = {
-  .blast_height = 2,
-  .blast_left_margin = 1,
-  .blast_padding = 2,
-  .border_width = 1,
-  .origin_x = 0,
-  .origin_y = 0,
-  .padding_x = 1,
-  .padding_y = 1,
-  .title_left_margin = 3,
-};
-
-static void render_clock(WINDOW *window, char *clock_text) {
-  int max_x = getmaxx(window);
-  mvwaddstr(window, chrome.origin_y,
-            max_x - strlen(clock_text) - chrome.padding_x, clock_text);
-}
-
-static void generate_clock_text(WINDOW *window, int time_str_limit,
-                                char *time_str) {
-  time_t now = time(NULL);
-  struct tm *now_tm = localtime(&now);
-  strftime(time_str, time_str_limit, " %Y-%m-%d %H:%M:%S ", now_tm);
-}
-
-static void render_help(WINDOW *window, char *help_text) {
-  int last_line = getmaxy(window) - 1;
-  mvwaddstr(window, last_line, chrome.padding_x, help_text);
-}
-
-static void render_chrome(WINDOW *window, char *title_text) {
-  int max_x = getmaxx(window);
-  int last_line = getmaxy(window) - 1;
-
-  mvwhline(window, chrome.origin_y, chrome.origin_x, ACS_HLINE, max_x);
-  mvwhline(window, last_line, chrome.origin_x, ACS_HLINE, max_x);
-
-  mvwaddstr(window, chrome.origin_y, chrome.title_left_margin, title_text);
-
-  const int cursor_invisible = 0;
-  curs_set(cursor_invisible);
-}
+#include "render.h"
 
 static int render_blast(WINDOW *window, int available_width, int y,
                         int gutter_x, blast *blast, chtype highlight) {
@@ -107,18 +50,14 @@ static int blast_highlight(blast *blast, listview *lv) {
   }
 }
 
-void conch_listview_render(listview *lv, WINDOW *window) {
+void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
+
+  const int first_blast_y = rect->top, blast_x = rect->left;
 
   int max_y = getmaxy(window);
-  int max_x = getmaxx(window);
 
-  const int first_blast_y = chrome.padding_y + chrome.border_width;
-  const int blast_x = chrome.padding_x + chrome.border_width;
-
-  const int usable_lines =
-      max_y - (2 * (chrome.border_width + chrome.padding_y));
-  const int usable_window_width =
-      max_x - (2 * (chrome.padding_x + chrome.border_width));
+  const int usable_lines = rect->bottom - rect->top;
+  const int usable_window_width = rect->right - rect->left;
 
   int available_y = usable_lines;
 
@@ -129,29 +68,12 @@ void conch_listview_render(listview *lv, WINDOW *window) {
     max_blasts = usable_lines / (chrome.blast_padding + chrome.blast_height);
   }
 
-  werase(window);
-
-  render_chrome(window, " conch 螺");
-
-  if (MIN_WIDTH_FOR_CLOCK <= max_x) {
-    char clock_text[1024];
-    generate_clock_text(window, sizeof(clock_text), clock_text);
-    render_clock(window, clock_text);
-  }
-
-  render_help(
-      window,
-      " j: down  k: up  s: stick to top  0: to top  TAB: to unread  q: quit ");
-
   if (conch_listview_has_unread_blasts(lv)) {
-    const char *unread_status = " unread blasts ";
-    int center_offset = (getmaxx(window) - strlen(unread_status)) / 2;
-    mvwaddstr(window, chrome.origin_y, center_offset, " unread blasts ");
+    render_status_message(window, "unread blasts");
   }
 
-  mvwvline(window, chrome.border_width, blast_x,
-           ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR),
-           max_y - (2 * chrome.border_width));
+  mvwvline(window, first_blast_y, blast_x,
+           ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR), usable_lines);
 
   if (0 == max_blasts) {
     mvwaddstr(window, first_blast_y, blast_x + 1,

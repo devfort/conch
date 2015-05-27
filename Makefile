@@ -52,11 +52,12 @@ conch: \
   common-image.o \
   conchview.o \
   conchview-render.o \
+  listview.o \
+  listview-render.o \
+  render.o \
   cli.o \
   backend.o \
   keys.o \
-  listview.o \
-  listview-render.o \
   strutils.o \
   timeout.o \
   wordwrap.o
