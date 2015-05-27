@@ -1,4 +1,4 @@
-CDEBUG?=-g
+eDEBUG?=-g
 CFLAGS?=
 LDFLAGS?=
 DEPS=.deps
@@ -59,6 +59,7 @@ conch: \
   backend.o \
   keys.o \
   strutils.o \
+  wrap-blast-lines.o \
   wordwrap.o
 
 blast: blast.o backend.o strutils.o
@@ -66,6 +67,7 @@ blast: blast.o backend.o strutils.o
 blastlist-check: blastlist.o backend.o strutils.o
 backend-check: backend.o strutils.o .testdb
 wordwrap-check: wordwrap.o
+wrap-blast-lines-check: wrap-blast-lines.o
 listview-check: listview.o blastlist.o strutils.o
 strutils-check: strutils.o
 
