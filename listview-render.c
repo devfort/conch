@@ -113,7 +113,8 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
   }
 
   // Keep track of the last complete blast on screen so that the next blast key
-  // press can increment top correctly. Move bottom back up the last fully rendered
+  // press can increment top correctly. Move bottom back up the last fully
+  // rendered
   // blast if we overflowed the space.
   lv->bottom = blast;
   if (available_y < 0) {
