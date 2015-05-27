@@ -62,6 +62,22 @@ char* stralleycat(int count, char **strs) {
   return result;
 }
 
+char *expand_home(const char *path) {
+  char *tilde = strchr(path, '~');
+  if (tilde != NULL) {
+    int index = tilde - path;
+    char *home = getenv("HOME");
+    char *result = malloc(strlen(path) + strlen(home) - 1);
+    strncat(result, path, index);
+    strcat(result, home);
+    strcat(result, tilde + 1);
+    return result;
+  } else {
+    return strclone(path);
+  }
+  return tilde;
+}
+
 int count_lines_and_find_length_of_longest(const char *string,
                                            int *out_longest_line) {
   *out_longest_line = 0;

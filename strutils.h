@@ -3,7 +3,9 @@
 
 char *strclone(const char *c);
 char *strcopycat(const char *c, const char *d);
-char* stralleycat(int count, char **strs);
+char *stralleycat(int count, char **strs);
+
+char *expand_home(const char *path);
 
 int count_lines_and_find_length_of_longest(const char *string,
                                            int *out_longest_line);
