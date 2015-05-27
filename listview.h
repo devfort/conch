@@ -9,7 +9,7 @@
 typedef struct listview {
   blastlist *blasts;
   blast *latest_read;
-  int blast_offset;
+  blast *top;
   bool stick_to_top;
   bool at_top;
 } listview;

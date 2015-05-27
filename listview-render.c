@@ -85,7 +85,7 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
     return;
   }
 
-  blast *blast = lv->blasts->current;
+  blast *blast = lv->top;
 
   // Indicate that prior blasts are available
   if (blast->prev) {
