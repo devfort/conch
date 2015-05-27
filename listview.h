@@ -7,11 +7,11 @@
 #include "cli.h"
 
 typedef struct listview {
-  blastlist *head;
-  blastlist *current_blast;
-  blastlist *latest_read;
+  blastlist *blasts;
+  blast *latest_read;
   int blast_offset;
   bool stick_to_top;
+  bool at_top;
 } listview;
 
 listview *conch_listview_new(conch_cli_options const *opts);

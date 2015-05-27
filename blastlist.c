@@ -44,56 +44,74 @@ blastlist *conch_blastlist_new() {
   return bl;
 }
 
-blastlist *conch_blastlist_from_resultset(resultset *rs) {
-  blastlist *bl = conch_blastlist_new();
-
+static void blasts_from_resultset(resultset *rs, blast **head, blast **tail) {
   // If there are no items out of which to make a blastlist, return
   if (rs == NULL || rs->count == 0) {
-    return bl;
+    *head = NULL;
+    *tail = NULL;
+    return;
   }
 
-  bl->head = blast_new();
-  bl->current = bl->head;
-  bl->tail = bl->head;
-  blastdata_copy(bl->head, rs->blasts);
+  blast *cur = blast_new();
+  blast *chainhead = cur;
 
-  blast *cur = bl->head;
+  blastdata_copy(cur, rs->blasts);
 
   for (uint64_t i = 1; i < rs->count; ++i) {
     cur->next = blast_new();
     cur->next->prev = cur;
     blastdata_copy(cur->next, rs->blasts + i);
-    bl->tail = cur;
     cur = cur->next;
   }
 
-  return bl;
+  *head = chainhead;
+  *tail = cur;
 }
 
-blastlist *conch_blastlist_join(blastlist *lhs, blastlist *rhs) {
-  if (lhs == NULL) {
-    return rhs;
-  }
-  if (rhs == NULL) {
-    return lhs;
-  }
+void conch_blastlist_prepend_resultset(blastlist *bl, resultset *rs) {
+  blast *chainhead;
+  blast *chaintail;
 
-  // Otherwise both lists are non-null, so we find the tail of the lhs:
-  blast *cur = lhs->head;
-  while (1) {
-    if (cur->next == NULL) {
-      break;
-    }
-    cur = cur->next;
+  blasts_from_resultset(rs, &chainhead, &chaintail);
+
+  // Nothing in resultset. We're done.
+  if (chainhead == NULL || chaintail == NULL) {
+    return;
   }
 
-  // And point the tail of lhs at the head of rhs:
-  cur->next = rhs->head;
-  cur->next->prev = cur;
+  if (bl->head == NULL) {
+    bl->head = chainhead;
+    bl->tail = chaintail;
+    bl->current = bl->head;
+    return;
+  }
 
-  lhs->tail = rhs->tail;
+  bl->head->prev = chaintail;
+  bl->head->prev->next = bl->head;
+  bl->head = chainhead;
+}
 
-  return lhs;
+void conch_blastlist_append_resultset(blastlist *bl, resultset *rs) {
+  blast *chainhead;
+  blast *chaintail;
+
+  blasts_from_resultset(rs, &chainhead, &chaintail);
+
+  // Nothing in resultset. We're done.
+  if (chainhead == NULL || chaintail == NULL) {
+    return;
+  }
+
+  if (bl->tail == NULL) {
+    bl->head = chainhead;
+    bl->tail = chaintail;
+    bl->current = bl->head;
+    return;
+  }
+
+  bl->tail->next = chainhead;
+  bl->tail->next->prev = bl->tail;
+  bl->tail = chaintail;
 }
 
 void conch_blastlist_free(blastlist *bl) {

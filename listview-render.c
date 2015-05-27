@@ -67,7 +67,7 @@ static void render_chrome(WINDOW *window, char *title_text) {
 }
 
 static int render_blast(WINDOW *window, int available_width, int y,
-                        int gutter_x, blastlist *blast, chtype highlight) {
+                        int gutter_x, blast *blast, chtype highlight) {
   wordwrap_s wrap;
   init_wordwrap(&wrap, blast->content, available_width);
 
@@ -99,8 +99,8 @@ static int render_blast(WINDOW *window, int available_width, int y,
   return blast_height;
 }
 
-static int blast_highlight(blastlist *blast, listview *lv) {
-  if (blast == lv->current_blast) {
+static int blast_highlight(blast *blast, listview *lv) {
+  if (blast == lv->blasts->current) {
     return ' ' | COLOR_PAIR(SELECTED_COLOR);
   } else {
     return ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR);
@@ -159,11 +159,11 @@ void conch_listview_render(listview *lv, WINDOW *window) {
   }
 
   // If we don't have any blasts yet, we return early.
-  if (lv->head == NULL || lv->current_blast == NULL) {
+  if (lv->blasts == NULL || lv->blasts->current == NULL) {
     return;
   }
 
-  blastlist *blast = lv->current_blast;
+  blast *blast = lv->blasts->current;
 
   // Indicate that prior blasts are available
   if (blast->prev) {

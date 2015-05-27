@@ -23,8 +23,8 @@ typedef struct blastlist {
 } blastlist;
 
 blastlist *conch_blastlist_new();
-blastlist *conch_blastlist_from_resultset(resultset *rs);
-blastlist *conch_blastlist_join(blastlist *lhs, blastlist *rhs);
+void conch_blastlist_prepend_resultset(blastlist *bl, resultset *rs);
+void conch_blastlist_append_resultset(blastlist *bl, resultset *rs);
 
 void conch_blastlist_free(blastlist *bl);
 

@@ -1,4 +1,6 @@
 #include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #include "checkrunner.h"
 
@@ -9,13 +11,61 @@
 #define ASSERT_PTR_NULL(ptr) ck_assert_ptr_eq(ptr, NULL)
 #define ASSERT_PTR_NOT_NULL(ptr) ck_assert_ptr_ne(ptr, NULL)
 
+/*
+ * Make a new empty fixture blast with the specified id.
+ */
+blast *blast_fixture_new(id id) {
+  blast *b = calloc(1, sizeof(blast));
+
+  if (b == NULL) {
+    fprintf(stderr, "conch_blast_new: could not alloc\n");
+    abort();
+  }
+
+  b->id = id;
+
+  return b;
+}
+
+/*
+ * Make a new fixture blastlist of the specified length. All blasts in the
+ * blastlist will be empty (zero-valued) and if n > 0 the current blast will
+ * point to the head.
+ */
+blastlist *blastlist_fixture_new(int n) {
+  int i = 0;
+  blastlist *bl = calloc(1, sizeof(blastlist));
+
+  if (bl == NULL) {
+    fprintf(stderr, "blastlist_fixture_new: could not alloc\n");
+    abort();
+  }
+
+  if (n == 0) {
+    return bl;
+  }
+
+  blast *cur = blast_fixture_new((id)i);
+  bl->head = cur;
+  bl->current = cur;
+
+  for (i = 1; i < n; i++) {
+    cur->next = blast_fixture_new((id)i);
+    cur->next->prev = cur;
+    cur = cur->next;
+  }
+
+  bl->tail = cur;
+
+  return bl;
+}
+
 START_TEST(test_listview_new) {
   conch_cli_options opts = {.stick_to_top = false };
   listview *lv = conch_listview_new(&opts);
 
   ASSERT_PTR_NOT_NULL(lv);
-  ASSERT_PTR_NULL(lv->head);
-  ASSERT_PTR_NULL(lv->current_blast);
+  ASSERT_PTR_NULL(lv->blasts);
   ASSERT_PTR_NULL(lv->latest_read);
   ck_assert_int_eq(lv->blast_offset, 0);
   ck_assert_int_eq(lv->stick_to_top, false);
@@ -43,8 +93,7 @@ START_TEST(test_listview_update_null_blastlist) {
 
   conch_listview_update(lv, bl);
 
-  ASSERT_PTR_NULL(lv->head);
-  ASSERT_PTR_NULL(lv->current_blast);
+  ASSERT_PTR_NULL(lv->blasts);
   ASSERT_PTR_NULL(lv->latest_read);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
 
@@ -52,57 +101,27 @@ START_TEST(test_listview_update_null_blastlist) {
 }
 END_TEST
 
-START_TEST(test_listview_update_sets_current_if_null) {
-  blastlist *bl = conch_blastlist_new();
-  conch_cli_options opts = {.stick_to_top = false };
-  listview *lv = conch_listview_new(&opts);
-
-  conch_listview_update(lv, bl);
-
-  // On first update, both head and current_blast should be set to the head of
-  // the passed blastlist.
-  ck_assert_ptr_eq(lv->head, bl);
-  ck_assert_ptr_eq(lv->current_blast, bl);
-  ck_assert_ptr_eq(lv->latest_read, bl);
-  ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
-
-  conch_listview_free(lv);
-}
-END_TEST
-
-START_TEST(test_listview_update_does_not_set_current_otherwise) {
-  blastlist *bl1 = conch_blastlist_new();
-  blastlist *bl2 = conch_blastlist_join(conch_blastlist_new(), bl1);
-  conch_cli_options opts = {.stick_to_top = false };
-  listview *lv = conch_listview_new(&opts);
-
-  // If update is called and current_blast is already set, it should not be
-  // overridden.
-  conch_listview_update(lv, bl1);
-  conch_listview_update(lv, bl2);
-
-  ck_assert_ptr_eq(lv->head, bl2);
-  ck_assert_ptr_eq(lv->current_blast, bl1);
-  ck_assert_ptr_eq(lv->latest_read, bl1);
-  ck_assert_int_eq(conch_listview_has_unread_blasts(lv), true);
-
-  conch_listview_free(lv);
-}
-END_TEST
-
 START_TEST(test_listview_update_jumps_to_top_if_sticky) {
-  blastlist *bl = conch_blastlist_new();
+  blastlist *bl = blastlist_fixture_new(1);
   conch_cli_options opts = {.stick_to_top = true };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
-  bl = conch_blastlist_join(conch_blastlist_new(), bl);
+  blastdata b = {
+    .id = 1,
+  };
+  resultset rs = {
+    .count = 1, .blasts = &b,
+  };
+  conch_blastlist_prepend_resultset(bl, &rs);
   conch_listview_update(lv, bl);
-  ck_assert_ptr_eq(lv->current_blast, lv->head);
-  ck_assert_ptr_eq(lv->latest_read, lv->head);
+
+  ck_assert_ptr_eq(lv->blasts->current, lv->blasts->head);
+  ck_assert_ptr_eq(lv->latest_read, lv->blasts->head);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
 
   conch_listview_free(lv);
+  conch_blastlist_free(bl);
 }
 END_TEST
 
@@ -122,79 +141,91 @@ START_TEST(test_listview_toggle_stick_to_top) {
 END_TEST
 
 START_TEST(test_listview_cursor_movement) {
-  blastlist *bl = conch_blastlist_new();
-  bl = conch_blastlist_join(conch_blastlist_new(), bl);
+  blastlist *bl = blastlist_fixture_new(2);
   conch_cli_options opts = {.stick_to_top = false };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
   // We can move forward
   conch_listview_select_next_blast(lv);
-  ck_assert_ptr_ne(lv->head, lv->current_blast);
+  ck_assert_ptr_eq(lv->blasts->tail, lv->blasts->current);
 
   // We can't move past the end
-  blastlist *current = lv->current_blast;
   conch_listview_select_next_blast(lv);
-  ck_assert_ptr_eq(current, lv->current_blast);
+  ck_assert_ptr_eq(lv->blasts->tail, lv->blasts->current);
 
   // We can move back
   conch_listview_select_prev_blast(lv);
-  ck_assert_ptr_eq(lv->head, lv->current_blast);
+  ck_assert_ptr_eq(lv->blasts->head, lv->blasts->current);
 
   // We can't move past the beginning
   conch_listview_select_prev_blast(lv);
-  ck_assert_ptr_eq(lv->head, lv->current_blast);
+  ck_assert_ptr_eq(lv->blasts->head, lv->blasts->current);
+
+  conch_listview_free(lv);
+  conch_blastlist_free(bl);
 }
 END_TEST
 
 START_TEST(test_listview_cursor_movement_updates_latest_read) {
-  blastlist *old_bl = conch_blastlist_new();
-  old_bl = conch_blastlist_join(conch_blastlist_new(), old_bl);
-  old_bl = conch_blastlist_join(conch_blastlist_new(), old_bl);
+  blastlist *bl = blastlist_fixture_new(3);
   conch_cli_options opts = {.stick_to_top = false };
   listview *lv = conch_listview_new(&opts);
-  conch_listview_update(lv, old_bl);
+  conch_listview_update(lv, bl);
 
   // 2 read, now add 2 more unread
-  blastlist *new_bl1 = conch_blastlist_join(conch_blastlist_new(), old_bl);
-  blastlist *new_bl2 = conch_blastlist_join(conch_blastlist_new(), new_bl1);
-  conch_listview_update(lv, new_bl2);
-  ck_assert_ptr_eq(lv->latest_read, old_bl);
+  blastdata b2 = {
+    .id = 2,
+  };
+  blastdata b3 = {
+    .id = 3,
+  };
+  resultset rs = {
+    .count = 2, .blasts = (blastdata[]){ b3, b2 },
+  };
+
+  blast *orighead = bl->head;
+
+  conch_blastlist_prepend_resultset(bl, &rs);
+  conch_listview_update(lv, bl);
+
+  ck_assert_ptr_eq(lv->latest_read, orighead);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), true);
 
   // Moving through already-read blasts doesn't change latest_read
   conch_listview_select_next_blast(lv);
-  ck_assert_ptr_eq(lv->latest_read, old_bl);
+  ck_assert_ptr_eq(lv->latest_read, orighead);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), true);
   conch_listview_select_next_blast(lv);
-  ck_assert_ptr_eq(lv->latest_read, old_bl);
+  ck_assert_ptr_eq(lv->latest_read, orighead);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), true);
   conch_listview_select_prev_blast(lv);
-  ck_assert_ptr_eq(lv->latest_read, old_bl);
+  ck_assert_ptr_eq(lv->latest_read, orighead);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), true);
   conch_listview_select_prev_blast(lv);
-  ck_assert_ptr_eq(lv->latest_read, old_bl);
+  ck_assert_ptr_eq(lv->latest_read, orighead);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), true);
 
   // Moving through unread blasts changes latest_read to current blast
   conch_listview_select_prev_blast(lv);
-  ck_assert_ptr_eq(lv->latest_read, new_bl1);
+  ck_assert_ptr_eq(lv->latest_read, orighead->prev);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), true);
   conch_listview_select_prev_blast(lv);
-  ck_assert_ptr_eq(lv->latest_read, new_bl2);
+  ck_assert_ptr_eq(lv->latest_read, bl->head);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
 
   // Don't set latest_read off the top
   conch_listview_select_prev_blast(lv);
-  ck_assert_ptr_eq(lv->latest_read, new_bl2);
+  ck_assert_ptr_eq(lv->latest_read, bl->head);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
+
+  conch_listview_free(lv);
+  conch_blastlist_free(bl);
 }
 END_TEST
 
 START_TEST(test_listview_jump_to_top) {
-  blastlist *bl = conch_blastlist_new();
-  bl = conch_blastlist_join(conch_blastlist_new(), bl);
-  bl = conch_blastlist_join(conch_blastlist_new(), bl);
+  blastlist *bl = blastlist_fixture_new(3);
   conch_cli_options opts = {.stick_to_top = false };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
@@ -202,30 +233,44 @@ START_TEST(test_listview_jump_to_top) {
   conch_listview_select_next_blast(lv);
   conch_listview_select_next_blast(lv);
 
-  ck_assert_ptr_ne(lv->head, lv->current_blast);
+  ck_assert_ptr_eq(bl->tail, bl->current);
   conch_listview_jump_to_top(lv);
-  ck_assert_ptr_eq(lv->head, lv->current_blast);
+  ck_assert_ptr_eq(bl->head, bl->current);
   ck_assert_int_eq(lv->blast_offset, 0);
+
+  conch_listview_free(lv);
+  conch_blastlist_free(bl);
 }
 END_TEST
 
 START_TEST(test_listview_jump_to_top_updates_latest_read) {
-  blastlist *bl = conch_blastlist_new();
+  blastlist *bl = blastlist_fixture_new(1);
   conch_cli_options opts = {.stick_to_top = false };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
+  ck_assert_ptr_eq(lv->latest_read, bl->head);
+
   // Don't update latest_read on update when stick_to_top disabled
-  ck_assert_ptr_eq(lv->latest_read, lv->head);
-  bl = conch_blastlist_join(conch_blastlist_new(), bl);
+  blastdata b = {
+    .id = 1,
+  };
+  resultset rs = {
+    .count = 1, .blasts = &b,
+  };
+  conch_blastlist_prepend_resultset(bl, &rs);
   conch_listview_update(lv, bl);
-  ck_assert_ptr_ne(lv->latest_read, lv->head);
+
+  ck_assert_ptr_eq(lv->latest_read, bl->tail);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), true);
 
   // Update latest_read when jumping to top
   conch_listview_jump_to_top(lv);
-  ck_assert_ptr_eq(lv->latest_read, lv->head);
+  ck_assert_ptr_eq(lv->latest_read, bl->head);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
+
+  conch_listview_free(lv);
+  conch_blastlist_free(bl);
 }
 END_TEST
 
@@ -235,37 +280,56 @@ START_TEST(test_listview_has_unread_blasts) {
 
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
 
-  blastlist *bl = conch_blastlist_new();
+  blastlist *bl = blastlist_fixture_new(1);
   conch_listview_update(lv, bl);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
 
   // Indicate unread blasts when updating
-  bl = conch_blastlist_join(conch_blastlist_new(), bl);
+  blastdata b = {
+    .id = 1,
+  };
+  resultset rs = {
+    .count = 1, .blasts = &b,
+  };
+  conch_blastlist_prepend_resultset(bl, &rs);
   conch_listview_update(lv, bl);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), true);
+
+  conch_listview_free(lv);
+  conch_blastlist_free(bl);
 }
 END_TEST
 
 START_TEST(test_listview_jump_to_next_unread) {
-  blastlist *bl = conch_blastlist_new();
+  blastlist *bl = blastlist_fixture_new(1);
   conch_cli_options opts = {.stick_to_top = false };
   listview *lv = conch_listview_new(&opts);
 
   conch_listview_jump_to_next_unread(lv);
-
   conch_listview_update(lv, bl);
 
-  blastlist *bl1 = conch_blastlist_join(conch_blastlist_new(), bl);
-  blastlist *bl2 = conch_blastlist_join(conch_blastlist_new(), bl1);
-  conch_listview_update(lv, bl2);
+  blastdata b2 = {
+    .id = 2,
+  };
+  blastdata b3 = {
+    .id = 3,
+  };
+  resultset rs = {
+    .count = 2, .blasts = (blastdata[]){ b3, b2 },
+  };
+  conch_blastlist_prepend_resultset(bl, &rs);
+  conch_listview_update(lv, bl);
 
   conch_listview_jump_to_next_unread(lv);
-  ck_assert_ptr_eq(lv->latest_read, bl1);
+  ck_assert_ptr_eq(lv->latest_read, bl->tail->prev);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), true);
 
   conch_listview_jump_to_next_unread(lv);
-  ck_assert_ptr_eq(lv->latest_read, bl2);
+  ck_assert_ptr_eq(lv->latest_read, bl->head);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
+
+  conch_listview_free(lv);
+  conch_blastlist_free(bl);
 }
 END_TEST
 
@@ -275,8 +339,6 @@ Suite *listview_suite(void) {
   ADD_TEST_CASE(s, test_listview_new);
   ADD_TEST_CASE(s, test_listview_new_with_stick_to_top);
   ADD_TEST_CASE(s, test_listview_update_null_blastlist);
-  ADD_TEST_CASE(s, test_listview_update_sets_current_if_null);
-  ADD_TEST_CASE(s, test_listview_update_does_not_set_current_otherwise);
   ADD_TEST_CASE(s, test_listview_toggle_stick_to_top);
   ADD_TEST_CASE(s, test_listview_cursor_movement);
   ADD_TEST_CASE(s, test_listview_cursor_movement_updates_latest_read);

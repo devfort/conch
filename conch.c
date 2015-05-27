@@ -42,27 +42,22 @@ WINDOW *init_screen() {
   return window;
 }
 
-blastlist *init_blasts(mouthpiece *conn) {
+void init_blasts(mouthpiece *conn, blastlist *bl) {
   resultset *result = conch_recent_blasts(conn);
-  blastlist *blasts = conch_blastlist_from_resultset(result);
+  conch_blastlist_prepend_resultset(bl, result);
   conch_resultset_free(result);
-  return blasts;
 }
 
-blastlist *update_new_blasts(mouthpiece *conn, blastlist *blast) {
-  resultset *result = conch_blasts_after(conn, blast->id);
-  blastlist *more_blasts = conch_blastlist_from_resultset(result);
+void update_new_blasts(mouthpiece *conn, blastlist *bl) {
+  resultset *result = conch_blasts_after(conn, bl->head->id);
+  conch_blastlist_prepend_resultset(bl, result);
   conch_resultset_free(result);
-
-  return conch_blastlist_join(more_blasts, blast);
 }
 
-blastlist *update_old_blasts(mouthpiece *conn, blastlist *blast) {
-  resultset *result = conch_blasts_before(conn, blast->id);
-  blastlist *more_blasts = conch_blastlist_from_resultset(result);
+void update_old_blasts(mouthpiece *conn, blastlist *bl) {
+  resultset *result = conch_blasts_before(conn, bl->tail->id);
+  conch_blastlist_append_resultset(bl, result);
   conch_resultset_free(result);
-
-  return conch_blastlist_join(blast, more_blasts);
 }
 
 mouthpiece *wait_for_connection(settings *config) {
@@ -101,21 +96,22 @@ int main(int argc, char **argv) {
 
   // Connect to postgres and fetch initial data
   conn = wait_for_connection(&config);
-  bl = init_blasts(conn);
+  bl = conch_blastlist_new();
+  init_blasts(conn, bl);
   conch_listview_update(lv, bl);
   conch_timeout_reset(poll);
 
   while (1) {
     if (conch_timeout_expired(poll)) {
-      bl = update_new_blasts(conn, bl);
+      update_new_blasts(conn, bl);
       conch_listview_update(lv, bl);
       conch_timeout_reset(poll);
     }
 
     conch_listview_render(lv, win);
 
-    if (lv->current_blast->next == NULL) {
-      update_old_blasts(conn, lv->current_blast);
+    if (bl->current->next == NULL) {
+      update_old_blasts(conn, bl);
     }
 
     res = conch_keypress_dispatch(wgetch(win), lv);
