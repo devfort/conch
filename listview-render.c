@@ -1,43 +1,53 @@
 #include <curses.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "blastlist.h"
 #include "colors.h"
 #include "listview.h"
 #include "listview-render.h"
-#include "wordwrap.h"
+#include "strutils.h"
 
 #include "render.h"
 
-static int render_blast(WINDOW *window, int available_width, int y,
-                        int gutter_x, blast *blast, chtype highlight) {
-  wordwrap_s wrap;
-  init_wordwrap(&wrap, blast->content, available_width);
-
+static void render_blast(WINDOW *window, char **blast_lines, int y,
+                         int gutter_x, chtype highlight) {
   // Gutter is 1 character wide because we use mvwvline
   const int gutter_width = 1;
   const int blast_x = gutter_x + gutter_width + chrome.blast_left_margin;
+  int i;
+  for (i = 0; blast_lines[i]; i++) {
+    mvwaddnstr(window, y + i, blast_x, blast_lines[i], strlen(blast_lines[i]));
+  }
+  int number_of_blast_lines = i;
+  mvwvline(window, y, gutter_x, highlight, number_of_blast_lines);
+}
+
+static int generate_blast_lines(WINDOW *window, int available_width, int y,
+                                int gutter_x, blast *blast, chtype highlight) {
 
   int blast_height = 0;
-  for (token_s *token = wordwrap(&wrap); token != NULL;
-       token = wordwrap(&wrap)) {
-    blast_height = token->y;
-    mvwaddnstr(window, y + token->y, blast_x + token->x, token->word,
-               token->length);
-  }
 
-  blast_height++;
-
-  if (blast->attachment != NULL) {
-    mvwprintw(window, y + blast_height, blast_x, "%s", blast->attachment);
+  char **blast_lines = wrap_lines(blast->content, available_width);
+  for (int i = 0; blast_lines[i]; i++) {
     blast_height++;
   }
 
-  mvwprintw(window, y + blast_height, blast_x, "—%s at %s", blast->user,
-            blast->posted_at);
+  if (blast->attachment != NULL) {
+    char *attachment = malloc(strlen(blast->attachment));
+    strcpy(attachment, blast->attachment);
+    blast_lines[blast_height] = attachment;
+    blast_height++;
+  }
+
+  char *attribution_string = malloc(1024);
+  sprintf(attribution_string, "—%s at %s", blast->user, blast->posted_at);
+  blast_lines[blast_height] = attribution_string;
   blast_height++;
 
-  mvwvline(window, y, gutter_x, highlight, blast_height);
+  blast_lines[blast_height] = NULL;
+  render_blast(window, blast_lines, y, gutter_x, highlight);
+  wrap_lines_free(blast_lines);
 
   return blast_height;
 }
@@ -90,8 +100,9 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
   // Loop until we run out of available_y or blasts
   int blast_y = first_blast_y;
   while (1) {
-    int blast_height = render_blast(window, usable_window_width, blast_y,
-                                    blast_x, blast, blast_highlight(blast, lv));
+    int blast_height =
+        generate_blast_lines(window, usable_window_width, blast_y, blast_x,
+                             blast, blast_highlight(blast, lv));
 
     blast_y += chrome.blast_padding + blast_height;
     available_y -= chrome.blast_padding + blast_height;
