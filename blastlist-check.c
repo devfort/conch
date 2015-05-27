@@ -20,7 +20,10 @@ END_TEST
 
 START_TEST(test_blastlist_append_resultset) {
   blastdata b1 = {
-    .id = 1, .user = "giraffe", .content = "Mmm. Tasty leaves.",
+    .id = 1,
+    .user = "giraffe",
+    .content = "Mmm. Tasty leaves.",
+    .extended = "I'm some code",
   };
   blastdata b2 = {
     .id = 2, .user = "elephant", .content = "Splashy splashy water.",
@@ -73,6 +76,7 @@ START_TEST(test_blastlist_append_resultset) {
   ck_assert_int_eq(cur->id, 3);
   ck_assert_str_eq(cur->user, b3.user);
   ck_assert_str_eq(cur->content, b3.content);
+  ASSERT_PTR_NULL(cur->extended);
   ck_assert_ptr_eq(cur->prev, prev);
 
   prev = cur;
@@ -81,6 +85,7 @@ START_TEST(test_blastlist_append_resultset) {
   ck_assert_int_eq(cur->id, 2);
   ck_assert_str_eq(cur->user, b2.user);
   ck_assert_str_eq(cur->content, b2.content);
+  ASSERT_PTR_NULL(cur->extended);
   ck_assert_ptr_eq(cur->prev, prev);
 
   prev = cur;
@@ -89,6 +94,8 @@ START_TEST(test_blastlist_append_resultset) {
   ck_assert_int_eq(cur->id, 1);
   ck_assert_str_eq(cur->user, b1.user);
   ck_assert_str_eq(cur->content, b1.content);
+  ASSERT_PTR_NOT_NULL(cur->extended);
+  ck_assert_str_eq(cur->extended, b1.extended);
   ck_assert_ptr_eq(cur->prev, prev);
 
   conch_blastlist_free(bl);

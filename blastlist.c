@@ -12,6 +12,7 @@ static void blastdata_copy(blast *b, blastdata *d) {
   b->content = strclone(d->content);
   b->posted_at = strclone(d->posted_at);
   b->attachment = strclone(d->attachment);
+  b->extended = strclone(d->extended);
 }
 
 static blast *blast_new() {
@@ -30,6 +31,7 @@ static void blast_free(blast *b) {
   free(b->content);
   free(b->posted_at);
   free(b->attachment);
+  free(b->extended);
   free(b);
 }
 

@@ -11,6 +11,7 @@ struct blast {
   char *content;
   char *posted_at;
   char *attachment;
+  char *extended;
 
   blast *prev;
   blast *next;
