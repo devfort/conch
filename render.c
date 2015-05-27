@@ -19,6 +19,10 @@ window_chrome_s chrome = {
   .title_left_margin = 3,
 };
 
+// Placeholder for status message
+#define STATUS_MAXLEN 64
+static char status[STATUS_MAXLEN];
+
 // 64 characters provides space for a 14-character status with the clock
 #define MIN_WIDTH_FOR_CLOCK 64
 
@@ -53,8 +57,16 @@ static void render_chrome(WINDOW *window, char *title_text) {
   curs_set(cursor_invisible);
 }
 
-void render_status_message(WINDOW *window, const char *status) {
-  int center_offset = (getmaxx(window) - strlen(status) + 2) / 2;
+void conch_status_clear() { status[0] = '\0'; }
+
+void conch_status_set(const char *msg) { strncpy(status, msg, STATUS_MAXLEN); }
+
+static void render_status_message(WINDOW *window) {
+  size_t len = strlen(status);
+  if (len == 0) {
+    return;
+  }
+  int center_offset = (getmaxx(window) - len + 2) / 2;
   mvwprintw(window, chrome.origin_y, center_offset, " %s ", status);
 }
 
@@ -68,6 +80,14 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
                   .right = max_x - (chrome.padding_x + chrome.border_width) };
 
   werase(window);
+  conch_status_clear();
+
+  switch (current_view) {
+  case VIEW_LIST:
+    conch_listview_render((listview *)view_state, window, &rect);
+    break;
+  }
+
   render_chrome(window, " conch 螺 ");
 
   if (MIN_WIDTH_FOR_CLOCK <= max_x) {
@@ -76,13 +96,9 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
     render_clock(window, clock_text);
   }
 
+  render_status_message(window);
+
   render_help(
       window,
       " j: down  k: up  s: stick to top  0: to top  TAB: to unread  q: quit ");
-
-  switch (current_view) {
-  case VIEW_LIST:
-    conch_listview_render((listview *)view_state, window, &rect);
-    break;
-  }
 }

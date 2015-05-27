@@ -69,7 +69,7 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
   }
 
   if (conch_listview_has_unread_blasts(lv)) {
-    render_status_message(window, "unread blasts");
+    conch_status_set("unread blasts");
   }
 
   mvwvline(window, first_blast_y, blast_x,

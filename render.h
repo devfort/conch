@@ -21,6 +21,7 @@ typedef struct window_chrome_s {
 extern window_chrome_s chrome;
 
 void render_view(WINDOW *window, view_type current_view, void *view_state);
-void render_status_message(WINDOW *window, const char *status);
+void conch_status_clear();
+void conch_status_set(const char *status);
 
 #endif
