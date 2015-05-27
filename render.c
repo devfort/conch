@@ -101,4 +101,6 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
   render_help(
       window,
       " j: down  k: up  s: stick to top  0: to top  TAB: to unread  q: quit ");
+
+  wrefresh(window);
 }

@@ -115,5 +115,4 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
     mvwvline(window, max_y - (2 * chrome.border_width), blast_x,
              ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
   }
-  wrefresh(window);
 }
