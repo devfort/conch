@@ -17,7 +17,10 @@
 #define DB_POLL_INTERVAL 10
 
 // Maximum time to wait for a keypress (tenths of a second)
-#define KEY_DELAY 5
+#define KEY_DELAY 2
+
+// Duration to show splash screen at startup (tenths of a second)
+#define SPLASH_DELAY 20
 
 WINDOW *init_screen() {
   setlocale(LC_ALL, "");
@@ -61,11 +64,13 @@ void update_old_blasts(mouthpiece *conn, blastlist *bl) {
 
 mouthpiece *wait_for_connection(settings *config) {
   mouthpiece *conn;
-  do {
+  while (1) {
     conn = conch_connect(*config);
+    if (conn != NULL) {
+      break;
+    }
     sleep(1);
-  } while (conn == NULL);
-
+  }
   return conn;
 }
 
@@ -80,6 +85,7 @@ int main(int argc, char **argv) {
   mouthpiece *conn;
   view_type current_view;
   void *current_view_state;
+  int splash_display_cycles = SPLASH_DELAY / KEY_DELAY;
   settings config = {
     .page_size = 42,
   };
@@ -96,7 +102,6 @@ int main(int argc, char **argv) {
   // Render conch while loading
   current_view = VIEW_CONCH;
   current_view_state = cv;
-  render_view(win, current_view, current_view_state);
 
   // Connect to postgres and fetch initial data
   conn = wait_for_connection(&config);
@@ -105,10 +110,14 @@ int main(int argc, char **argv) {
   init_blasts(conn, bl);
   conch_listview_update(lv, bl);
 
-  current_view = VIEW_LIST;
-  current_view_state = lv;
-
   while (1) {
+    if (splash_display_cycles > 0) {
+      splash_display_cycles--;
+    } else {
+      current_view = VIEW_LIST;
+      current_view_state = lv;
+    }
+
     if (conch_notifications_poll(&notifications)) {
       if (bl->current == NULL) {
         init_blasts(conn, bl);
