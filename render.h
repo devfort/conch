@@ -29,5 +29,7 @@ extern window_chrome_s chrome;
 void render_view(WINDOW *window, view_type current_view, void *view_state);
 void conch_status_clear();
 void conch_status_set(const char *status);
+void conch_spinner_hide();
+void conch_spinner_show();
 
 #endif

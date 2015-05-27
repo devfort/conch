@@ -26,6 +26,8 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
   gettimeofday(&now, NULL);
 
   if (!v->started) {
+    conch_spinner_show();
+
     int n = 2 * (int)now.tv_sec + ((int)now.tv_usec / 5e5);
     size_t choice = n % (sizeof(startup_msgs) / sizeof(char const *));
 

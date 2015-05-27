@@ -1,4 +1,5 @@
 #include <curses.h>
+#include <stdbool.h>
 #include <string.h>
 #include <time.h>
 
@@ -28,6 +29,9 @@ static char status[STATUS_MAXLEN];
 // 64 characters provides space for a 14-character status with the clock
 #define MIN_WIDTH_FOR_CLOCK 64
 
+// Should we display the spinner?
+static bool show_spinner = false;
+
 static void render_clock(WINDOW *window, char *clock_text) {
   int max_x = getmaxx(window);
   mvwaddstr(window, chrome.origin_y,
@@ -46,11 +50,24 @@ static void render_help(WINDOW *window, char *help_text) {
   mvwaddstr(window, last_line, chrome.padding_x, help_text);
 }
 
-static void render_watermark(WINDOW *window, char *watermark_text) {
+static void render_watermark(WINDOW *window, bool spin) {
   int max_x = getmaxx(window);
   int max_y = getmaxy(window) - 1;
-  mvwaddstr(window, max_y, max_x - strlen(watermark_text) - chrome.padding_x,
-            watermark_text);
+  static unsigned int spinner_state;
+  static char const *spinner[] = {
+    " /dev/fort 11 ", " -dev-fort 11 ", " \\dev\\fort 11 ", " |dev|fort 11 ",
+  };
+
+  // Spin, either if we've been explicitly instructed to spin, or if we have not
+  // completed a whole revolution of the spinner.
+  if (spin || spinner_state != 0) {
+    spinner_state =
+        (spinner_state + 1) % (sizeof(spinner) / sizeof(char const *));
+  }
+
+  mvwaddstr(window, max_y,
+            max_x - strlen(spinner[spinner_state]) - chrome.padding_x,
+            spinner[spinner_state]);
 }
 
 static void render_chrome(WINDOW *window, char *title_text) {
@@ -69,6 +86,9 @@ static void render_chrome(WINDOW *window, char *title_text) {
 void conch_status_clear() { status[0] = '\0'; }
 
 void conch_status_set(const char *msg) { strncpy(status, msg, STATUS_MAXLEN); }
+
+void conch_spinner_hide() { show_spinner = false; }
+void conch_spinner_show() { show_spinner = true; }
 
 static void render_status_message(WINDOW *window) {
   size_t len = strlen(status);
@@ -93,6 +113,7 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
   rect.height = rect.bottom - rect.top + 1;
 
   werase(window);
+  conch_spinner_hide();
   conch_status_clear();
 
   switch (current_view) {
@@ -121,7 +142,7 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
       window,
       " j/k: down/up  s: stick to top  0: to top  TAB: next unread  q: quit ");
 
-  render_watermark(window, " /dev/fort 11 ");
+  render_watermark(window, show_spinner);
 
   wrefresh(window);
 }
