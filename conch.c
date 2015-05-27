@@ -84,6 +84,8 @@ int main(int argc, char **argv) {
 
   win = init_screen();
   opts = conch_parse_command_line_args(argc, argv);
+  config.host = opts.host;
+  config.database = opts.database;
 
   // Create views
   cv = conch_conchview_new(&opts);

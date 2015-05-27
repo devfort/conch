@@ -15,9 +15,9 @@
 
 #define POSTED_DATEFORMAT "'YYYY-MM-DD HH24:MI:SS tz'"
 
-static mouthpiece *conch_connect_internal(settings settings,
-                                          char *connection_string) {
-  PGconn *connection = PQconnectdb(connection_string);
+static mouthpiece *conch_connect_internal(settings settings) {
+  PGconn *connection = PQsetdbLogin(settings.host, NULL, NULL, NULL,
+                                    settings.database, "bugle", NULL);
   if (PQstatus(connection) == CONNECTION_BAD) {
     fprintf(stderr, "%s", PQerrorMessage(connection));
     return NULL;
@@ -31,18 +31,23 @@ static mouthpiece *conch_connect_internal(settings settings,
 }
 
 mouthpiece *conch_connect(settings settings) {
-  return conch_connect_internal(settings,
-                                "host=core.fort dbname=bugle user=bugle");
+  if (settings.host == NULL) {
+    settings.host = "core.fort";
+  }
+  if (settings.database == NULL) {
+    settings.database = "bugle";
+  }
+  return conch_connect_internal(settings);
 }
 
 mouthpiece *conch_local_connect(settings settings) {
-  return conch_connect_internal(settings,
-                                "host=localhost dbname=bugle_test user=bugle");
+  settings.host = "localhost";
+  settings.database = "bugle_test";
+  return conch_connect_internal(settings);
 }
 
 mouthpiece *conch_test_connect(settings settings) {
-  mouthpiece *mp = conch_connect_internal(
-      settings, "host=localhost dbname=bugle_test user=bugle");
+  mouthpiece *mp = conch_local_connect(settings);
   assert(mp != NULL);
   mp->is_test = true;
 

@@ -3,7 +3,11 @@
 
 #include <stdbool.h>
 
-typedef struct { bool stick_to_top; } conch_cli_options;
+typedef struct {
+  bool stick_to_top;
+  char *host;
+  char *database;
+} conch_cli_options;
 
 conch_cli_options conch_parse_command_line_args(int argc, char **argv);
 

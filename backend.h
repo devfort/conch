@@ -33,7 +33,11 @@ typedef struct {
   blastdata *blasts;
 } resultset;
 
-typedef struct { uint16_t page_size; } settings;
+typedef struct {
+  uint16_t page_size;
+  char *host;
+  char *database;
+} settings;
 
 typedef struct mouthpiece mouthpiece;
 
