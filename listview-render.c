@@ -23,39 +23,38 @@ static void render_blast(WINDOW *window, char **blast_lines, int y,
   mvwvline(window, y, gutter_x, highlight, number_of_blast_lines);
 }
 
-int generate_blast_lines(WINDOW *window, int available_width, int y,
-                         int gutter_x, blast *blast, chtype highlight) {
-
+char **generate_blast_lines(WINDOW *window, int available_width, int y,
+                            int gutter_x, blast *blast, chtype highlight) {
   int blast_height = 0;
 
-  char **blast_lines = wrap_lines(blast->content, available_width);
-  for (int i = 0; blast_lines[i]; i++) {
+  char **wrapped_blast = wrap_lines(blast->content, available_width);
+  for (int i = 0; wrapped_blast[i]; i++) {
     blast_height++;
   }
 
   if (blast->attachment != NULL) {
     char *attachment = malloc(strlen(blast->attachment));
     strcpy(attachment, blast->attachment);
-    blast_lines[blast_height] = attachment;
+    wrapped_blast[blast_height] = attachment;
     blast_height++;
   }
 
   char *attribution_string = malloc(1024);
   sprintf(attribution_string, "—%s at %s", blast->user, blast->posted_at);
-  blast_lines[blast_height] = attribution_string;
+  wrapped_blast[blast_height] = attribution_string;
 
   if (blast->extended) {
     // Show a marker to indicate the blast has a code block with it
     // TODO: Find a better/clearer indicator
-    blast_lines[blast_height] = strcat(attribution_string, "…");
+    wrapped_blast[blast_height] = strcat(attribution_string, "…");
   }
   blast_height++;
 
-  blast_lines[blast_height] = NULL;
-  render_blast(window, blast_lines, y, gutter_x, highlight);
-  wrap_lines_free(blast_lines);
+  wrapped_blast[blast_height] = NULL;
+  render_blast(window, wrapped_blast, y, gutter_x, highlight);
+  wrap_lines_free(wrapped_blast);
 
-  return blast_height;
+  return wrapped_blast;
 }
 
 static int blast_highlight(blast *blast, listview *lv) {
@@ -105,11 +104,16 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
 
   // Loop until we run out of available_y or blasts
   int blast_y = first_blast_y;
+  char **wrapped_blast;
   while (1) {
-    int blast_height =
+    wrapped_blast =
         generate_blast_lines(window, usable_window_width, blast_y, blast_x,
                              blast, blast_highlight(blast, lv));
 
+    int blast_height = 0;
+    for (int i = 0; wrapped_blast[i]; i++) {
+      blast_height++;
+    }
     blast_y += chrome.blast_padding + blast_height;
     available_y -= chrome.blast_padding + blast_height;
 

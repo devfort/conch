@@ -10,8 +10,9 @@
 
 extern window_chrome_s chrome;
 
-extern int generate_blast_lines(WINDOW *window, int available_width, int y,
-                                int gutter_x, blast *blast, chtype highlight);
+extern char **generate_blast_lines(WINDOW *window, int available_width, int y,
+                                   int gutter_x, blast *blast,
+                                   chtype highlight);
 
 int calculate_summary_blast_height(blast *blast, int usable_window_width) {
   wordwrap_s wrap;
