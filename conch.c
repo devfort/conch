@@ -27,6 +27,8 @@
 // Duration to show splash screen at startup (tenths of a second)
 #define SPLASH_DELAY 20
 
+static bool toggle_conchview;
+
 WINDOW *init_screen() {
   setlocale(LC_ALL, "");
   initscr();
@@ -71,8 +73,7 @@ void update_old_blasts(mouthpiece *conn, blastlist *bl) {
 }
 
 static void handle_magic_message_from_the_operator(int signal) {
-  // What does this do? Who really knows.
-  ungetch('@');
+  toggle_conchview = true;
 }
 
 static void bind_signal_handlers() {
@@ -158,6 +159,11 @@ int main(int argc, char **argv) {
         update_new_blasts(conn, bl);
       }
       conch_listview_update(lv, bl);
+    }
+
+    if (toggle_conchview) {
+      toggle_conchview = false;
+      ungetch('@');
     }
 
     render_view(win, current_view, current_view_state);
