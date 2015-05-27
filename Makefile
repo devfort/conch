@@ -89,7 +89,7 @@ PG_BIN_DIR=$(shell pg_config --bindir)
 	touch .testdb
 
 clean:
-	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST)
+	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST) .testdb
 
 reformat: *.c *.h
 	clang-format -i *.h *.c
