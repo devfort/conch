@@ -1,6 +1,7 @@
 #include <curses.h>
 #include <locale.h>
 #include <stdlib.h>
+#include <signal.h>
 
 #include "backend.h"
 #include "blastlist.h"
@@ -66,6 +67,11 @@ void update_old_blasts(mouthpiece *conn, blastlist *bl) {
   conch_resultset_free(result);
 }
 
+void handle_magic_message_from_the_operator(int signal) {
+  // What does this do? Who really knows.
+  ungetch('@');
+}
+
 mouthpiece *wait_for_connection(settings *config) {
   mouthpiece *conn;
   while (1) {
@@ -108,6 +114,7 @@ int main(int argc, char **argv) {
   current_view = VIEW_CONCH;
   current_view_state = cv;
   render_view(win, current_view, current_view_state);
+  signal(SIGUSR1, handle_magic_message_from_the_operator);
 
   // Connect to postgres and fetch initial data
   conn = wait_for_connection(&config);
