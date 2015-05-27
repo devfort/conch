@@ -67,6 +67,7 @@ blastlist-check: blastlist.o backend.o strutils.o
 backend-check: backend.o strutils.o .testdb
 wordwrap-check: wordwrap.o
 listview-check: listview.o blastlist.o strutils.o
+strutils-check: strutils.o
 
 check: $(BINS_TEST)
 	$(SILENT)./tools/runtests $^
