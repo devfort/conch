@@ -1,6 +1,6 @@
 #include <caca.h>
 #include <curses.h>
-#include <time.h>
+#include <sys/time.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -17,14 +17,16 @@ static char const *startup_msgs[] = {
 };
 
 void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
+  struct timeval now;
   struct image *i = v->imdata;
 
   if (i == NULL) {
     return;
   }
+  gettimeofday(&now, NULL);
 
-  int now = (int)time(NULL);
-  size_t choice = now % (sizeof(startup_msgs) / sizeof(char const *));
+  int n = 2 * (int)now.tv_sec + ((int)now.tv_usec / 5e5);
+  size_t choice = n % (sizeof(startup_msgs) / sizeof(char const *));
 
   char *pre = "conch loading: ";
   int prelen = strlen(pre);
