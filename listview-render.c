@@ -131,7 +131,7 @@ void conch_listview_render(listview *lv, WINDOW *window) {
 
   werase(window);
 
-  render_chrome(window, " conch 🐚  ");
+  render_chrome(window, " conch 螺");
 
   if (MIN_WIDTH_FOR_CLOCK <= max_x) {
     char clock_text[1024];
