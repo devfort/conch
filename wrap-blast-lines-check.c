@@ -4,13 +4,13 @@
 
 START_TEST(test_blast_fits_on_one_line) {
   char *expected_blast_lines[1024];
-  char *actual_blast_lines[1024];
+  char **actual_blast_lines;
 
   expected_blast_lines[0] = "We're going to need a bigger boat";
   expected_blast_lines[1] = NULL;
 
-  conch_blast_lines(actual_blast_lines, "We're going to need a bigger boat",
-                    42);
+  actual_blast_lines =
+      conch_blast_lines("We're going to need a bigger boat", 42);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
@@ -19,15 +19,15 @@ END_TEST
 
 START_TEST(test_blast_lines_13) {
   char *expected_blast_lines[1024];
-  char *actual_blast_lines[1024];
+  char **actual_blast_lines;
 
   expected_blast_lines[0] = "We're going";
   expected_blast_lines[1] = "to need a";
   expected_blast_lines[2] = "bigger boat";
   expected_blast_lines[3] = NULL;
 
-  conch_blast_lines(actual_blast_lines, "We're going to need a bigger boat",
-                    13);
+  actual_blast_lines =
+      conch_blast_lines("We're going to need a bigger boat", 13);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
@@ -36,14 +36,14 @@ END_TEST
 
 START_TEST(test_blast_lines_30) {
   char *expected_blast_lines[1024];
-  char *actual_blast_lines[1024];
+  char **actual_blast_lines;
 
   expected_blast_lines[0] = "We're going to need a bigger";
   expected_blast_lines[1] = "boat";
   expected_blast_lines[2] = NULL;
 
-  conch_blast_lines(actual_blast_lines, "We're going to need a bigger boat",
-                    30);
+  actual_blast_lines =
+      conch_blast_lines("We're going to need a bigger boat", 30);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
@@ -52,15 +52,15 @@ END_TEST
 
 START_TEST(test_blast_lines_multiple_spaces) {
   char *expected_blast_lines[1024];
-  char *actual_blast_lines[1024];
+  char **actual_blast_lines;
 
   expected_blast_lines[0] = "We're going to";
   expected_blast_lines[1] = "need a bigger";
   expected_blast_lines[2] = "boat";
   expected_blast_lines[3] = NULL;
 
-  conch_blast_lines(actual_blast_lines, "We're going to    need a bigger boat",
-                    14);
+  actual_blast_lines =
+      conch_blast_lines("We're going to    need a bigger boat", 14);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
@@ -71,15 +71,15 @@ END_TEST
 // but for the purposes of this, it doesn't really matter
 START_TEST(test_blast_lines_lands_on_a_space) {
   char *expected_blast_lines[1024];
-  char *actual_blast_lines[1024];
+  char **actual_blast_lines;
 
   expected_blast_lines[0] = "We're going to "; // note the trailing space
   expected_blast_lines[1] = "need a bigger";
   expected_blast_lines[2] = "boat";
   expected_blast_lines[3] = NULL;
 
-  conch_blast_lines(actual_blast_lines, "We're going to    need a bigger boat",
-                    15);
+  actual_blast_lines =
+      conch_blast_lines("We're going to    need a bigger boat", 15);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
@@ -88,12 +88,12 @@ END_TEST
 
 START_TEST(test_blast_lines_empty_blast) {
   char *expected_blast_lines[1024];
-  char *actual_blast_lines[1024];
+  char **actual_blast_lines;
 
   expected_blast_lines[0] = "";
   expected_blast_lines[1] = NULL;
 
-  conch_blast_lines(actual_blast_lines, "", 15);
+  actual_blast_lines = conch_blast_lines("", 15);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
