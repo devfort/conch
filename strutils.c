@@ -44,33 +44,28 @@ int count_lines_and_find_length_of_longest(const char *string,
   *out_longest_line = 0;
   int lines = 0;
 
-  char const *start_of_line = string;
+  char const *start_of_line = string, *end_of_line;
 
-  string = strchr(string, '\n');
-  while (string != NULL) {
-    int this_line_len = string - start_of_line;
+  end_of_line = strchr(string, '\n');
+  while (start_of_line != NULL && end_of_line != NULL) {
+    int this_line_len = end_of_line - start_of_line;
     if (this_line_len > *out_longest_line) {
       *out_longest_line = this_line_len;
     }
     lines++;
 
     // Skip over the new line
-    string += 1;
-    start_of_line = string;
-    string = strchr(string, '\n');
+    start_of_line = end_of_line + 1;
+    end_of_line = strchr(start_of_line, '\n');
   }
 
-  // handle last line - which could have no trailing new-line ("...\nabc\0" vs
-  // "...\n\0")
-  if (*start_of_line != '\0') {
-    int this_line_len = strlen(start_of_line);
-    if (this_line_len > *out_longest_line) {
-      *out_longest_line = this_line_len;
-    }
-    lines++;
+  // Deal with the last line, or an input with zero new lines in
+  int this_line_len = strlen(start_of_line);
+  if (this_line_len > *out_longest_line) {
+    *out_longest_line = this_line_len;
   }
 
-  return lines;
+  return lines + 1;
 }
 
 char **wrap_lines(char *text, int max_line_length) {

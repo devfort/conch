@@ -16,7 +16,7 @@ START_TEST(test_count_lines_and_find_length_of_longest) {
   int longest;
   int num = count_lines_and_find_length_of_longest(input, &longest);
 
-  ck_assert_int_eq(num, 4);
+  ck_assert_int_eq(num, 5);
   ck_assert_int_eq(longest, strlen("much longer line 2"));
 }
 END_TEST
@@ -39,7 +39,7 @@ START_TEST(
   int longest;
   int num = count_lines_and_find_length_of_longest(input, &longest);
 
-  ck_assert_int_eq(num, 1);
+  ck_assert_int_eq(num, 2);
   ck_assert_int_eq(longest, strlen("line 1"));
 }
 END_TEST
