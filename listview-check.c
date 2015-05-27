@@ -67,7 +67,6 @@ START_TEST(test_listview_new) {
   ASSERT_PTR_NOT_NULL(lv);
   ASSERT_PTR_NULL(lv->blasts);
   ASSERT_PTR_NULL(lv->latest_read);
-  ck_assert_int_eq(lv->blast_offset, 0);
   ck_assert_int_eq(lv->stick_to_top, false);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
 
@@ -236,7 +235,6 @@ START_TEST(test_listview_jump_to_top) {
   ck_assert_ptr_eq(bl->tail, bl->current);
   conch_listview_jump_to_top(lv);
   ck_assert_ptr_eq(bl->head, bl->current);
-  ck_assert_int_eq(lv->blast_offset, 0);
 
   conch_listview_free(lv);
   conch_blastlist_free(bl);

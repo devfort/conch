@@ -25,6 +25,10 @@ void conch_listview_update(listview *lv, blastlist *bl) {
     lv->top = lv->blasts->current;
   }
 
+  if (lv->bottom == NULL) {
+    lv->bottom = lv->blasts->current;
+  }
+
   if (lv->at_top && lv->stick_to_top) {
     conch_listview_jump_to_top(lv);
   }
