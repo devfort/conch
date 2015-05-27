@@ -18,7 +18,7 @@ window_chrome_s chrome = {
   .origin_y = 0,
   .padding_x = 1,
   .padding_y = 1,
-  .title_left_margin = 3,
+  .title_left_margin = 2,
 };
 
 // Placeholder for status message
@@ -83,12 +83,11 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
   int max_x = getmaxx(window);
 
   // The two -1s here are because ncurses co-ordinates are *inclusive*
-  winrect rect = {
-    .top = chrome.padding_y + chrome.border_width,
-    .left = chrome.padding_x + chrome.border_width,
-    .bottom = getmaxy(window) - (chrome.padding_y + chrome.border_width) - 1,
-    .right = max_x - (chrome.padding_x + chrome.border_width) - 1
-  };
+  winrect rect = {.top = chrome.padding_y + chrome.border_width,
+                  .left = chrome.border_width,
+                  .bottom = getmaxy(window) -
+                            (chrome.padding_y + chrome.border_width) - 1,
+                  .right = max_x - chrome.border_width - 1 };
 
   rect.width = rect.right - rect.left + 1;
   rect.height = rect.bottom - rect.top + 1;
