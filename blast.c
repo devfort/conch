@@ -79,6 +79,11 @@ int main(int argc, char **argv) {
   blast_options options = blast_parse_command_line_args(argc, argv);
   blast_options config_options = blast_parse_config_file(options.config_filename);
   blast_merge_options(&options, &config_options);
+
+  if (options.username == NULL) {
+    options.help = true;
+  }
+
   printf("username: %s\n", config_options.username);
 
   if (options.help || argv[optind] == NULL) {
@@ -155,18 +160,16 @@ blast_options blast_parse_command_line_args(int argc, char **argv) {
       parsed_options.help = true;
     }
   }
-
-  if (parsed_options.username == NULL) {
-    parsed_options.help = true;
-  }
   return parsed_options;
 }
 
 blast_options blast_parse_config_file(char *filename) {
   int idx;
+  char *config_path = expand_home(filename);
   blast_options options;
   lua_State *L = luaL_newstate();
-  luaL_dofile(L, filename);
+  luaL_dofile(L, config_path);
+  free(config_path);
 
   lua_getglobal(L, "username");
   idx = lua_gettop(L);
