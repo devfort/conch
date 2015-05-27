@@ -122,7 +122,7 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
   }
 
   // If we started at the bottom we should remain at the last drawn item.
-  if (at_bottom) {
+  if (at_bottom && lv->bottom) {
     lv->blasts->current = lv->bottom;
   }
 
