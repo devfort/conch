@@ -81,7 +81,7 @@ char **wrap_lines(char *text, int max_line_length) {
   }
 
   while (remaining_content && strlen(remaining_content)) {
-    char *line = calloc(1, max_line_length);
+    char *line = calloc(1, max_line_length + 1);
 
     if (strlen(remaining_content) < max_line_length) {
       remaining_content += strlen(remaining_content);

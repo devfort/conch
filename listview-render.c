@@ -33,7 +33,7 @@ char **generate_blast_lines(WINDOW *window, int available_width, int y,
   }
 
   if (blast->attachment != NULL) {
-    char *attachment = malloc(strlen(blast->attachment));
+    char *attachment = malloc(strlen(blast->attachment) + 1);
     strcpy(attachment, blast->attachment);
     wrapped_blast[blast_height] = attachment;
     blast_height++;
