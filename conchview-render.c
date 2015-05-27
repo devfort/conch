@@ -36,11 +36,19 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
   strncpy(msg + prelen, startup_msgs[choice], STATUS_MAXLEN - prelen);
 
   conch_status_set(msg);
-
   free(msg);
+
+  int max_x = rect->width;
 
   int lines = rect->height;
   int cols = rect->width;
+
+  float im_aspect = (float)i->h / (float)(i->w * 2);
+  float wi_aspect = (float)lines / (float)cols;
+
+  float conv_aspect = im_aspect / wi_aspect;
+
+  cols /= conv_aspect;
 
   caca_canvas_t *cv = caca_create_canvas(rect->top, rect->left);
   caca_add_dirty_rect(cv, 0, 0, cols, lines);
@@ -50,7 +58,9 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
   caca_set_dither_algorithm(i->dither, "none");
   caca_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
 
-  mvw_ncurses_display(w, rect->top, rect->left, cv);
+  int start_at = (max_x / 2) - (cols / 2);
+
+  mvw_ncurses_display(w, rect->top, rect->left + start_at, cv);
 
   caca_free_canvas(cv);
 }
