@@ -6,7 +6,7 @@
 
 #include "strutils.h"
 
-char *strclone(char *c) {
+char *strclone(const char *c) {
   if (c == NULL) {
     return NULL;
   }
@@ -22,7 +22,7 @@ char *strclone(char *c) {
   return target;
 }
 
-char *strcopycat(char *c, char *d) {
+char *strcopycat(const char *c, const char *d) {
   assert(c != NULL);
   assert(d != NULL);
 
