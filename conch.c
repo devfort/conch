@@ -102,6 +102,7 @@ int main(int argc, char **argv) {
   // Render conch while loading
   current_view = VIEW_CONCH;
   current_view_state = cv;
+  render_view(win, current_view, current_view_state);
 
   // Connect to postgres and fetch initial data
   conn = wait_for_connection(&config);
