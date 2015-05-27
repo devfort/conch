@@ -205,12 +205,11 @@ START_TEST(test_clears_notification_on_read) {
 
   notifications notify;
   conch_notifications_init(&notify, mp);
-  ck_assert_int_eq(0, conch_notifications_await(&notify, 500));
+  ck_assert_int_eq(0, conch_notifications_await(&notify, 200));
 
   post_or_fail(real_mp, "DRMacIver", "A test message");
-  post_or_fail(real_mp, "DRMacIver", "Another test message");
-  ck_assert_int_eq(1, conch_notifications_poll(&notify));
-  ck_assert_int_eq(0, conch_notifications_poll(&notify));
+  ck_assert_int_eq(1, conch_notifications_await(&notify, 200));
+  ck_assert_int_eq(0, conch_notifications_await(&notify, 200));
 
   conch_disconnect(mp);
 }
