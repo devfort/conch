@@ -4,6 +4,10 @@
 #include <string.h>
 #include <getopt.h>
 
+#include <lua.h>
+#include <lualib.h>
+#include <lauxlib.h>
+
 #include "strutils.h"
 #include "backend.h"
 
@@ -20,6 +24,8 @@ typedef struct {
 } blast_options;
 
 blast_options blast_parse_command_line_args(int argc, char **argv);
+blast_options blast_parse_config_file(char *filename);
+void blast_merge_options(blast_options *main, blast_options *extra);
 
 void blast_usage(char *arg0) {
   printf("Usage: %s [options] 'message'\n", arg0);
@@ -71,6 +77,9 @@ char *get_ext_msg(blast_options options) {
 int main(int argc, char **argv) {
   int exit_code = 0;
   blast_options options = blast_parse_command_line_args(argc, argv);
+  blast_options config_options = blast_parse_config_file(options.config_filename);
+  blast_merge_options(&options, &config_options);
+  printf("username: %s\n", config_options.username);
 
   if (options.help || argv[optind] == NULL) {
     blast_usage(argv[0]);
@@ -121,7 +130,9 @@ blast_options blast_parse_command_line_args(int argc, char **argv) {
   while ((opt = getopt_long(argc, argv, "c:u:a:ev", longopts, NULL)) != -1) {
     switch (opt) {
     case 'c':
-      parsed_options.config_filename = optarg;
+      if (optarg) {
+        parsed_options.config_filename = optarg;
+      }
       break;
     case 'u':
       parsed_options.username = optarg;
@@ -151,3 +162,21 @@ blast_options blast_parse_command_line_args(int argc, char **argv) {
   return parsed_options;
 }
 
+blast_options blast_parse_config_file(char *filename) {
+  int idx;
+  blast_options options;
+  lua_State *L = luaL_newstate();
+  luaL_dofile(L, filename);
+
+  lua_getglobal(L, "username");
+  idx = lua_gettop(L);
+  options.username = strclone(lua_tostring(L, idx));
+
+  return options;
+}
+
+void blast_merge_options(blast_options *main, blast_options *extra) {
+  if (!main->username) {
+    main->username = extra->username;
+  }
+}

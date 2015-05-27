@@ -26,6 +26,9 @@ endif
 # imglib2 requires this define when compiled without X11 support
 CFLAGS+=-DX_DISPLAY_MISSING=1
 
+# lua
+LDFLAGS+=-llua
+
 CFLAGS+=$(shell pkg-config --cflags $(LIBS))
 LDFLAGS+=$(shell pkg-config --libs $(LIBS))
 

@@ -1,6 +1,7 @@
 #ifndef _BACKEND_H
 #define _BACKEND_H
 
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdbool.h>
 
