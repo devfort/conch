@@ -46,6 +46,13 @@ static void render_help(WINDOW *window, char *help_text) {
   mvwaddstr(window, last_line, chrome.padding_x, help_text);
 }
 
+static void render_watermark(WINDOW *window, char *watermark_text) {
+  int max_x = getmaxx(window);
+  int max_y = getmaxy(window) - 1;
+  mvwaddstr(window, max_y, max_x - strlen(watermark_text) - chrome.padding_x,
+            watermark_text);
+}
+
 static void render_chrome(WINDOW *window, char *title_text) {
   int max_x = getmaxx(window);
   int last_line = getmaxy(window) - 1;
@@ -114,6 +121,8 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
   render_help(
       window,
       " j/k: down/up  s: stick to top  0: to top  TAB: next unread  q: quit ");
+
+  render_watermark(window, " /dev/fort 11 ");
 
   wrefresh(window);
 }
