@@ -39,6 +39,29 @@ char *strcopycat(char *c, char *d) {
   return target;
 }
 
+char* stralleycat(int count, char **strs) {
+  int i = 0, size = 0;
+  int idx = 0;
+  for(i=0; i < count; i++) {
+    size += strlen(strs[i]) + 1;
+  }
+
+  char *result = malloc(size*sizeof(char));
+  if (result == NULL) {
+    fprintf(stderr, "stralleycat: could not alloc\n");
+    abort();
+  }
+
+  for(i=0; i < count; i++) {
+    strcpy(result + idx, strs[i]);
+    idx += strlen(strs[i]);
+    result[idx] = ' ';
+    idx += 1;
+  }
+  result[idx-1] = 0;
+  return result;
+}
+
 int count_lines_and_find_length_of_longest(const char *string,
                                            int *out_longest_line) {
   *out_longest_line = 0;
