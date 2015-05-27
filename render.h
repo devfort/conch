@@ -8,7 +8,9 @@ typedef enum {
   VIEW_LIST,
 } view_type;
 
-typedef struct { unsigned int top, left, bottom, right; } winrect;
+typedef struct {
+  unsigned int top, left, bottom, right, width, height;
+} winrect;
 
 typedef struct window_chrome_s {
   int blast_height;

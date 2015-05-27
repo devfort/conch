@@ -13,8 +13,8 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
     return;
   }
 
-  int lines = rect->bottom - rect->top;
-  int cols = rect->right - rect->left;
+  int lines = rect->height;
+  int cols = rect->width;
 
   conch_status_set("Welcome to conch: reticulating splines...");
 

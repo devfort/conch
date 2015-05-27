@@ -56,8 +56,8 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
 
   int max_y = getmaxy(window);
 
-  const int usable_lines = rect->bottom - rect->top;
-  const int usable_window_width = rect->right - rect->left;
+  const int usable_lines = rect->height;
+  const int usable_window_width = rect->width;
 
   int available_y = usable_lines;
 
