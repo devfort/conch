@@ -89,6 +89,9 @@ int main(int argc, char **argv) {
       fprintf(stderr, "Fail: %s\n", result->error_message);
       exit_code = 1;
     }
+    if (options.verbose) {
+      printf("blast id: %" PRIid "\n", result->post);
+    }
     conch_blastresult_free(result);
     conch_disconnect(mp);
     free(msg);
