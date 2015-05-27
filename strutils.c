@@ -73,23 +73,23 @@ int count_lines_and_find_length_of_longest(const char *string,
   return lines;
 }
 
-char **conch_blast_lines(char *blast, int available_width) {
+char **wrap_lines(char *text, int max_line_length) {
   char **lines = malloc(1024);
   int lines_required = 0;
   char *start_of_line, *remaining_content;
-  start_of_line = remaining_content = blast;
+  start_of_line = remaining_content = text;
 
-  if (NULL == blast || 0 == strlen(blast)) {
+  if (NULL == text || 0 == strlen(text)) {
     char *empty_string = calloc(1, 1);
     lines[lines_required] = empty_string;
     lines_required++;
   }
 
   while (remaining_content && strlen(remaining_content)) {
-    char *line = calloc(1, available_width);
+    char *line = calloc(1, max_line_length);
 
-    if (available_width < strlen(remaining_content)) {
-      remaining_content += available_width;
+    if (max_line_length < strlen(remaining_content)) {
+      remaining_content += max_line_length;
 
       while (!isspace(*remaining_content)) {
         --remaining_content;
@@ -113,14 +113,14 @@ char **conch_blast_lines(char *blast, int available_width) {
   return lines;
 }
 
-void conch_blast_lines_free(char **blast_lines) {
-  if (blast_lines == NULL) {
+void wrap_lines_free(char **wrapped_lines) {
+  if (wrapped_lines == NULL) {
     return;
   }
 
-  for (int i = 0; blast_lines[i]; i++) {
-    free(blast_lines[i]);
+  for (int i = 0; wrapped_lines[i]; i++) {
+    free(wrapped_lines[i]);
   }
 
-  free(blast_lines);
+  free(wrapped_lines);
 }

@@ -44,26 +44,30 @@ START_TEST(
 }
 END_TEST
 
-START_TEST(test_blast_fits_on_one_line) {
+START_TEST(test_no_wrap_when_text_fits_on_one_line) {
   char *expected_blast_lines[1024];
   char **actual_blast_lines;
+
+  int available_width = 42;
 
   expected_blast_lines[0] = "We're going to need a bigger boat";
   expected_blast_lines[1] = NULL;
 
   actual_blast_lines =
-      conch_blast_lines("We're going to need a bigger boat", 42);
+      wrap_lines("We're going to need a bigger boat", available_width);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
 
-  conch_blast_lines_free(actual_blast_lines);
+  wrap_lines_free(actual_blast_lines);
 }
 END_TEST
 
-START_TEST(test_blast_lines_13) {
+START_TEST(test_lines_wrap_at_13) {
   char *expected_blast_lines[1024];
   char **actual_blast_lines;
+
+  int available_width = 13;
 
   expected_blast_lines[0] = "We're going";
   expected_blast_lines[1] = "to need a";
@@ -71,36 +75,40 @@ START_TEST(test_blast_lines_13) {
   expected_blast_lines[3] = NULL;
 
   actual_blast_lines =
-      conch_blast_lines("We're going to need a bigger boat", 13);
+      wrap_lines("We're going to need a bigger boat", available_width);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
 
-  conch_blast_lines_free(actual_blast_lines);
+  wrap_lines_free(actual_blast_lines);
 }
 END_TEST
 
-START_TEST(test_blast_lines_30) {
+START_TEST(test_lines_wrap_at_30) {
   char *expected_blast_lines[1024];
   char **actual_blast_lines;
+
+  int available_width = 30;
 
   expected_blast_lines[0] = "We're going to need a bigger";
   expected_blast_lines[1] = "boat";
   expected_blast_lines[2] = NULL;
 
   actual_blast_lines =
-      conch_blast_lines("We're going to need a bigger boat", 30);
+      wrap_lines("We're going to need a bigger boat", available_width);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
 
-  conch_blast_lines_free(actual_blast_lines);
+  wrap_lines_free(actual_blast_lines);
 }
 END_TEST
 
-START_TEST(test_blast_lines_multiple_spaces) {
+START_TEST(test_wrap_lines_with_multiple_spaces) {
   char *expected_blast_lines[1024];
   char **actual_blast_lines;
+
+  int available_width = 14;
 
   expected_blast_lines[0] = "We're going to";
   expected_blast_lines[1] = "need a bigger";
@@ -108,20 +116,22 @@ START_TEST(test_blast_lines_multiple_spaces) {
   expected_blast_lines[3] = NULL;
 
   actual_blast_lines =
-      conch_blast_lines("We're going to    need a bigger boat", 14);
+      wrap_lines("We're going to    need a bigger boat", available_width);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
 
-  conch_blast_lines_free(actual_blast_lines);
+  wrap_lines_free(actual_blast_lines);
 }
 END_TEST
 
 // probably ideally it would trim a trailing space
 // but for the purposes of this, it doesn't really matter
-START_TEST(test_blast_lines_lands_on_a_space) {
+START_TEST(test_wrap_lines_lands_on_a_space) {
   char *expected_blast_lines[1024];
   char **actual_blast_lines;
+
+  int available_width = 15;
 
   expected_blast_lines[0] = "We're going to "; // note the trailing space
   expected_blast_lines[1] = "need a bigger";
@@ -129,50 +139,54 @@ START_TEST(test_blast_lines_lands_on_a_space) {
   expected_blast_lines[3] = NULL;
 
   actual_blast_lines =
-      conch_blast_lines("We're going to    need a bigger boat", 15);
+      wrap_lines("We're going to    need a bigger boat", available_width);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
 
-  conch_blast_lines_free(actual_blast_lines);
+  wrap_lines_free(actual_blast_lines);
 }
 END_TEST
 
-START_TEST(test_blast_lines_empty_blast) {
+START_TEST(test_wrap_lines_empty_text) {
   char *expected_blast_lines[1024];
   char **actual_blast_lines;
+
+  int available_width = 15;
 
   expected_blast_lines[0] = "";
   expected_blast_lines[1] = NULL;
 
-  actual_blast_lines = conch_blast_lines("", 15);
+  actual_blast_lines = wrap_lines("", available_width);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
 
-  conch_blast_lines_free(actual_blast_lines);
+  wrap_lines_free(actual_blast_lines);
 }
 END_TEST
 
-START_TEST(test_blast_lines_null_blast) {
+START_TEST(test_wrap_lines_null_text) {
   char *expected_blast_lines[1024];
   char **actual_blast_lines;
+
+  int available_width = 15;
 
   expected_blast_lines[0] = "";
   expected_blast_lines[1] = NULL;
 
-  actual_blast_lines = conch_blast_lines(NULL, 15);
+  actual_blast_lines = wrap_lines(NULL, available_width);
   for (int i = 0; expected_blast_lines[i]; i++) {
     ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
   }
 
-  conch_blast_lines_free(actual_blast_lines);
+  wrap_lines_free(actual_blast_lines);
 }
 END_TEST
 
-START_TEST(test_blast_lines_free_null) {
+START_TEST(test_wrap_lines_free) {
   char **actual_blast_lines = NULL;
-  conch_blast_lines_free(actual_blast_lines);
+  wrap_lines_free(actual_blast_lines);
 }
 END_TEST
 
@@ -184,14 +198,14 @@ Suite *strutils_suite(void) {
   ADD_TEST_CASE(
       s,
       test_count_lines_and_find_length_of_longest_with_one_line_with_trailing_new_line);
-  ADD_TEST_CASE(s, test_blast_fits_on_one_line);
-  ADD_TEST_CASE(s, test_blast_lines_13);
-  ADD_TEST_CASE(s, test_blast_lines_30);
-  ADD_TEST_CASE(s, test_blast_lines_multiple_spaces);
-  ADD_TEST_CASE(s, test_blast_lines_lands_on_a_space);
-  ADD_TEST_CASE(s, test_blast_lines_empty_blast);
-  ADD_TEST_CASE(s, test_blast_lines_null_blast);
-  ADD_TEST_CASE(s, test_blast_lines_free_null);
+  ADD_TEST_CASE(s, test_no_wrap_when_text_fits_on_one_line);
+  ADD_TEST_CASE(s, test_lines_wrap_at_13);
+  ADD_TEST_CASE(s, test_lines_wrap_at_30);
+  ADD_TEST_CASE(s, test_wrap_lines_with_multiple_spaces);
+  ADD_TEST_CASE(s, test_wrap_lines_lands_on_a_space);
+  ADD_TEST_CASE(s, test_wrap_lines_empty_text);
+  ADD_TEST_CASE(s, test_wrap_lines_null_text);
+  ADD_TEST_CASE(s, test_wrap_lines_free);
 
   return s;
 }
