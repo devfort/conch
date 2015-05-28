@@ -86,10 +86,12 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
     fatal_error("conch_detailview_render: Could not create vertical pad");
   }
 
+  const bool display_extended_markers = false;
   // Render the blast at 0,0 on the pad
   int blast_height;
-  drawlist *dl = conch_blast_prepare(
-      v->blastlist->current, rect->width - line_no_width, &blast_height);
+  drawlist *dl =
+      conch_blast_prepare(v->blastlist->current, rect->width - line_no_width,
+                          &blast_height, display_extended_markers);
   conch_blast_render(pad, dl, blast_height, 0, line_no_width, blast_height,
                      false);
   conch_drawlist_free(dl);

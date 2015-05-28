@@ -57,7 +57,8 @@ unsigned int conch_blast_render(WINDOW *window, drawlist *l,
   return rendered_lines;
 }
 
-drawlist *conch_blast_prepare(blast *blast, int width, int *nlines) {
+drawlist *conch_blast_prepare(blast *blast, int width, int *nlines,
+                              bool display_marker) {
   *nlines = 0;
 
   if (blast == NULL) {
@@ -70,7 +71,7 @@ drawlist *conch_blast_prepare(blast *blast, int width, int *nlines) {
   // Even though the "[...]" marker is going to be printed in a different
   // colour, passing it in to wrap_lines is the easiest way of working out
   // where it needs to be printed.
-  if (blast->extended) {
+  if (display_marker && blast->extended) {
     message = strcopycat(blast->content, BLAST_EXTENDED_MARKER_WITH_SPACE);
   } else {
     message = blast->content;
@@ -84,7 +85,7 @@ drawlist *conch_blast_prepare(blast *blast, int width, int *nlines) {
   }
 
   // We've now wrapped the lines, find the marker on the last line.
-  if (blast->extended) {
+  if (display_marker && blast->extended) {
     free(message);
     instructions->has_marker = true;
 

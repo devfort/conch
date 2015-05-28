@@ -117,6 +117,7 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
 
   int blast_lines;
   int rendered_blast_lines;
+  const bool display_extended_markers = true;
 
   while (1) {
     // maxlines is the maximum number of lines of blast that we are now allowed
@@ -126,7 +127,8 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
       maxlines = cursor_y - blast_area_top + 1;
     }
 
-    drawlist *dl = conch_blast_prepare(blast, blast_width, &blast_lines);
+    drawlist *dl = conch_blast_prepare(blast, blast_width, &blast_lines,
+                                       display_extended_markers);
     rendered_blast_lines =
         conch_blast_render(window, dl, blast_lines, cursor_y, cursor_x,
                            maxlines, lv->render_from_bottom);
