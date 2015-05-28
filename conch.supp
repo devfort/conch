@@ -1,11 +1,47 @@
 {
-   ignore_cond_error_from_libssl_sadface
-   Memcheck:Cond
+   libpq leaks getpwuid
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:calloc
    ...
-   fun:ssl3_send_client_key_exchange
-   fun:ssl3_connect
+   fun:getpwuid_r
+   obj:*/libpq.*
    ...
+}
 
+{
+   <libpq leaks like a sieve>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:strdup
+   ...
+   obj:*/libpq.*
+   ...
+}
+
+{
+   <libpq makes openssl leaks like a sieve>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   ...
+   obj:*/libcrypto.*
+   ...
+   obj:*/libpq.*
+   ...
+}
+
+{
+   <libpq makes openssl leaks like a sieve>
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   ...
+   obj:*/libcrypto.*
+   ...
+   obj:*/libpq.*
+   ...
 }
 
 {
@@ -15,60 +51,30 @@
    fun:ssl3_send_client_key_exchange
    fun:ssl3_connect
    ...
+   obj:*/libpq.*
+   ...
 }
+
 {
-   <insert_a_suppression_name_here>
+   libpq doesn't make libssl happy
+   Memcheck:Cond
+   ...
+   fun:ssl3_send_client_key_exchange
+   fun:ssl3_connect
+   ...
+   obj:*/libpq.*
+   ...
+}
+
+{
+   ASN1_OBJECT leaves things unreachable
    Memcheck:Leak
-   match-leak-kinds: reachable
+   match-leak-kinds: indirect
    fun:malloc
-   fun:CRYPTO_malloc
-   fun:c2i_ASN1_OBJECT
-   fun:asn1_ex_c2i
-   fun:asn1_d2i_ex_primitive
-   fun:ASN1_item_ex_d2i
-   fun:asn1_template_noexp_d2i
-   fun:asn1_template_ex_d2i
-   fun:ASN1_item_ex_d2i
-   fun:asn1_template_noexp_d2i
-   fun:asn1_template_ex_d2i
-   fun:ASN1_item_ex_d2i
-}
-
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: indirect
    ...
-   fun:pqsecure_initialize
+   obj:*/libcrypto.*
    ...
 }
-
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: indirect
-   ...
-   fun:ssl3_connect
-   ...
-}
-
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   ...
-   fun:ssl3_connect
-   ...
-}
-
-{
-   <insert_a_suppression_name_here>
-   Memcheck:Leak
-   match-leak-kinds: reachable
-   ...
-   fun:ASN1_*
-}
-
 
 {
    <insert_a_suppression_name_here>
@@ -88,7 +94,6 @@
    ...
 }
 
-
 {
    imlib Loaders can never be freed
    Memcheck:Leak
@@ -97,10 +102,29 @@
    fun:__imlib_LoadImage
    ...
 }
+
+{
+   imlib cant free anything
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   fun:__imlib_LoadImage
+   ...
+}
+
 {
    <insert_a_suppression_name_here>
    Memcheck:Leak
    match-leak-kinds: reachable
    ...
    fun:setlocale
+}
+
+{
+   Something in system info ...
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:*alloc
+   ...
+   fun:dispatch_once_f
 }
