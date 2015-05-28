@@ -6,19 +6,12 @@
 #include "blast-render.h"
 #include "strutils.h"
 
-#define BLAST_MARGIN_LEFT 1
-
-void conch_blast_render(WINDOW *window, char **blast_lines, int y, int gutter_x,
-                        chtype highlight) {
-  // Gutter is 1 character wide because we use mvwvline
-  const int gutter_width = 1;
-  const int blast_x = gutter_x + gutter_width + BLAST_MARGIN_LEFT;
+int conch_blast_render(WINDOW *window, char **blast_lines, int y, int x) {
   int i;
-  for (i = 0; blast_lines[i]; i++) {
-    mvwaddnstr(window, y + i, blast_x, blast_lines[i], strlen(blast_lines[i]));
+  for (i = 0; blast_lines[i] != NULL; i++) {
+    mvwaddnstr(window, y + i, x, blast_lines[i], strlen(blast_lines[i]));
   }
-  int number_of_blast_lines = i;
-  mvwvline(window, y, gutter_x, highlight, number_of_blast_lines);
+  return i;
 }
 
 char **conch_generate_wrapped_blast(blast *blast, int max_line_length) {

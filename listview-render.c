@@ -11,13 +11,9 @@
 #include "blast-render.h"
 #include "render.h"
 
-static int blast_highlight(blast *blast, listview *lv) {
-  if (blast == lv->blasts->current) {
-    return ' ' | COLOR_PAIR(SELECTED_COLOR);
-  } else {
-    return ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR);
-  }
-}
+#define BLAST_THREAD_WIDTH 1 /* Drawn by mvwvline as single char wide line */
+#define BLAST_PADDING_LEFT 1
+#define BLAST_PADDING_BOTTOM 2
 
 void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
   if (conch_listview_has_unread_blasts(lv)) {
@@ -52,30 +48,33 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
   }
 
   // Loop until we run out of screen space or blasts
-  int blast_x = rect->left;
+  int blast_width = rect->width - BLAST_THREAD_WIDTH - BLAST_PADDING_LEFT;
+  int blast_x = rect->left + BLAST_THREAD_WIDTH + BLAST_PADDING_LEFT;
   int blast_y = rect->top + TIMELINE_INDICATOR_HEIGHT;
   int available_y = rect->height - 2 * TIMELINE_INDICATOR_HEIGHT;
 
   char **wrapped_blast;
 
   while (1) {
-    wrapped_blast = conch_generate_wrapped_blast(blast, rect->width);
-    conch_blast_render(window, wrapped_blast, blast_y, blast_x,
-                       blast_highlight(blast, lv));
-    int blast_height = 0;
-    for (int i = 0; wrapped_blast[i]; i++) {
-      blast_height++;
+    wrapped_blast = conch_generate_wrapped_blast(blast, blast_width);
+    int blast_lines =
+        conch_blast_render(window, wrapped_blast, blast_y, blast_x);
+
+    // Draw highlight
+    if (blast == lv->blasts->current) {
+      mvwvline(window, blast_y, rect->left, ' ' | COLOR_PAIR(SELECTED_COLOR),
+               blast_lines);
     }
     wrap_lines_free(wrapped_blast);
 
-    blast_y += BLAST_PADDING + blast_height;
-    available_y -= BLAST_PADDING + blast_height;
+    blast_y += BLAST_PADDING_BOTTOM + blast_lines;
+    available_y -= BLAST_PADDING_BOTTOM + blast_lines;
 
     // See if we hit the end of the screen and exit if we did
     if (available_y <= 0) {
       // If we did, discount the padding so that you can still select the last
       // element on screen
-      available_y += BLAST_PADDING;
+      available_y += BLAST_PADDING_BOTTOM;
       break;
     }
 

@@ -51,13 +51,9 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   // Number of chars used to display line numbers
   const int line_no_width = 4;
 
-  // Offset the blast summary by 2 columns so that it lines up with rendered
-  // code pad
-  const int summary_offset = 2;
-
   // TODO: rename this method call vv
   int summary_height = calculate_summary_blast_height(
-      v->blastlist->current, rect->width - summary_offset);
+      v->blastlist->current, rect->width - line_no_width);
 
   int code_height = 0, code_width = 0;
   if (v->blastlist->current->extended) {
@@ -91,8 +87,8 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
 
   // Render the blast at 0,0 on the pad
   char **blast_lines = conch_generate_wrapped_blast(
-      v->blastlist->current, rect->width - summary_offset);
-  conch_blast_render(pad, blast_lines, 0, summary_offset, ' ');
+      v->blastlist->current, rect->width - line_no_width);
+  conch_blast_render(pad, blast_lines, 0, line_no_width);
   wrap_lines_free(blast_lines);
 
   // Flush renders to ncurses internal state.
