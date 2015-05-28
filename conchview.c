@@ -12,7 +12,7 @@ conchview *conch_conchview_new(conch_cli_options const *opts) {
   v->wand = NewMagickWand();
   assert(v->wand);
 
-  MagickBooleanType ret = MagickReadImage(v->wand, "rsrc/conch.png");
+  MagickBooleanType ret = MagickReadImage(v->wand, "rsrc/test.gif");
   assert(ret == MagickTrue);
 
   return v;

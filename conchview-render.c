@@ -18,7 +18,7 @@ static char const *startup_msgs[] = {
   "approaching aural passages...", "monitoring plutonium phase changes...",
 };
 
-double difftimems(struct timeval*a, struct timeval*b) {
+double difftimems(struct timeval *a, struct timeval *b) {
   // Compute the number of ms between the two timespecs
   double sec_diff = difftime(a->tv_sec, b->tv_sec);
   double usec_diff = a->tv_usec - b->tv_usec;
