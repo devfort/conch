@@ -29,8 +29,6 @@ conch_cli_options conch_parse_command_line_args(int argc, char **argv) {
       break;
     }
   }
-  argc -= optind;
-  argv += optind;
 
   return parsed_options;
 }
