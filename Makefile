@@ -90,11 +90,11 @@ PG_BIN_DIR=$(shell pg_config --bindir)
 	touch .testdb
 
 .expectdb: rsrc/schema.sql rsrc/data.sql rsrc/add-trigger.sql
-	tools/createdb bugle_test
+	tools/createdb bugle_expect
 	touch .expectdb
 
 clean:
-	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST) .testdb venv logs
+	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST) .testdb .expectdb venv logs
 
 reformat: *.c *.h
 	clang-format -i *.h *.c
