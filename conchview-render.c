@@ -85,7 +85,7 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
       bpp, im_cols, im_rows, depth * im_cols, rmask, gmask, bmask, amask);
 
   char *pixels = calloc(im_cols * im_rows, 4);
-  MagickExportImagePixels(v->wand, 0, 0, im_cols, im_rows, "ARGB", CharPixel,
+  MagickExportImagePixels(v->wand, 0, 0, im_cols, im_rows, "BGRA", CharPixel,
                           pixels);
 
   caca_canvas_t *cv = caca_create_canvas(rect->top, rect->left);
