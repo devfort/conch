@@ -3,6 +3,7 @@
 *.gcno
 *.gcda
 *.gch
+*.pyc
 /*-check
 /rsrc/config/no-read.lua
 /.deps
