@@ -4,6 +4,7 @@
 *.gcda
 *.gch
 /*-check
+/rsrc/config/no-read.lua
 /.deps
 /conch
 /blast

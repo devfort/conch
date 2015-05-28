@@ -30,7 +30,10 @@ static void parse_config(const char *filename, settings *settings) {
 
     lua_getglobal(L, "page_size");
     idx = lua_gettop(L);
-    settings->page_size = atoi(lua_tostring(L, idx));
+    const char *page_size = lua_tostring(L, idx);
+    if (page_size != NULL) {
+      settings->page_size = atoi(page_size);
+    }
   }
 }
 

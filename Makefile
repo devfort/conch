@@ -63,6 +63,7 @@ conch: \
   detailview-render.o \
   detailview-keys.o \
   render.o \
+	config.o \
   cli.o \
   backend.o \
   keys.o \
@@ -77,6 +78,7 @@ backend-check: backend.o strutils.o .testdb
 wordwrap-check: wordwrap.o
 listview-check: listview.o blastlist.o strutils.o keys.o listview-keys.o detailview-keys.o detailview.o
 strutils-check: strutils.o
+config-check: config.o backend.o strutils.o
 
 logs:
 	mkdir -p logs

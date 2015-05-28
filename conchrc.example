@@ -7,3 +7,4 @@ database = "bugle"
 -- the subversion user should always exist
 -- as it's created by the django migrations
 username = "subversion"
+page_size = 42
