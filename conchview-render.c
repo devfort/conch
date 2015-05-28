@@ -18,9 +18,15 @@ static char const *startup_msgs[] = {
   "approaching aural passages...", "monitoring plutonium phase changes...",
 };
 
+double difftimems(struct timeval*a, struct timeval*b) {
+  // Compute the number of ms between the two timespecs
+  double sec_diff = difftime(a->tv_sec, b->tv_sec);
+  double usec_diff = a->tv_usec - b->tv_usec;
+  return (sec_diff * 1000.0) + (usec_diff / 1000.0);
+}
+
 void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
   struct timeval now;
-
   gettimeofday(&now, NULL);
 
   if (!v->started) {
@@ -38,6 +44,19 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
 
     conch_status_set(msg);
     free(msg);
+  }
+
+  int frame_delay = MagickGetImageDelay(v->wand) || 1;
+  double frame_delta = difftimems(&now, &v->last_render);
+
+  if (v->last_render.tv_sec == 0 || frame_delta >= frame_delay) {
+    if (MagickHasNextImage(v->wand)) {
+      MagickNextImage(v->wand);
+    } else {
+      MagickResetIterator(v->wand);
+    }
+
+    v->last_render = now;
   }
 
   size_t im_cols = MagickGetImageWidth(v->wand);
