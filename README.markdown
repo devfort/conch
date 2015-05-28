@@ -68,3 +68,11 @@ For example:
     sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-3.6 10
 
 (The last argument is a priority number; arbitrary but necessary.)
+
+## Vagrant
+
+There is also a rudimentary Vagrantfile. This brings up a machine will all the required packages installed. There are some manual steps to be taken at the end which I've not yet automated.
+
+Make sure you look at the Vagrantfile before using, as a few lines need commenting in or out depending on whether you are on a fort and what vagrant boxes you have locally.
+
+`make`, and `./conch`, will work straightaway; `make check` requires the extra manual setup.
