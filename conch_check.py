@@ -4,22 +4,40 @@ import unittest
 import pexpect
 import time
 import sys
+import psycopg2
 
 
 class TestConchCommand(unittest.TestCase):
-    def setUp(self):
-        name = self._testMethodName
+    @property
+    def child(self):
+        """We lazily launch the child process on first use.
 
-        self.child = pexpect.spawn((
-            'valgrind --log-file=logs/%(name)s-valgrind.log '
-            './conch --host=localhost --database=bugle_expect '
-            ) % {'name': name}
+        This lets us test both the case where we've started with some
+        data in the database and also the empty case.
+
+        """
+        if self.__child is None:
+            self.__child = pexpect.spawn(
+                './conch --host=localhost --database=bugle_expect')
+            self.update_screen()
+            time.sleep(1)
+            self.read_all_available()
+            assert self.__child.isalive()
+        return self.__child
+
+    def setUp(self):
+        self.__child = None
+        self.connection = psycopg2.connect(
+            'host=localhost dbname=bugle_expect user=bugle'
         )
-        time.sleep(0.5)
-        self.read_all_available()
-        assert self.child.isalive()
+        self.__child = None
+        cursor = self.connection.cursor()
+        cursor.execute('truncate table bugle_blast cascade')
+        cursor.execute("select setval('bugle_blast_id_seq', 1);")
+        self.connection.commit()
 
     def tearDown(self):
+        self.connection.close()
         assert self.child.isalive()
         self.child.send('q')
         start = time.time()
