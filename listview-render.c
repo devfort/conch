@@ -10,7 +10,7 @@
 
 #include "render.h"
 
-static void render_blast(WINDOW *window, char **blast_lines, int y,
+void render_blast(WINDOW *window, char **blast_lines, int y,
                          int gutter_x, chtype highlight) {
   // Gutter is 1 character wide because we use mvwvline
   const int gutter_width = 1;
@@ -51,7 +51,6 @@ char **generate_blast_lines(WINDOW *window, int available_width, int y,
   blast_height++;
 
   wrapped_blast[blast_height] = NULL;
-  render_blast(window, wrapped_blast, y, gutter_x, highlight);
 
   return wrapped_blast;
 }
@@ -109,6 +108,7 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
         generate_blast_lines(window, usable_window_width, blast_y, blast_x,
                              blast, blast_highlight(blast, lv));
 
+    render_blast(window, wrapped_blast, blast_y, blast_x, blast_highlight(blast, lv));
     int blast_height = 0;
     for (int i = 0; wrapped_blast[i]; i++) {
       blast_height++;
