@@ -11,11 +11,7 @@
 #include "detailview-render.h"
 
 window_chrome_s chrome = {
-  .border_width = 1,
-  .origin_x = 0,
-  .origin_y = 0,
-  .padding_x = 1,
-  .title_left_margin = 2,
+  .border_width = 1, .origin_x = 0, .origin_y = 0, .padding_x = 1,
 };
 
 // Placeholder for status message
@@ -73,7 +69,7 @@ static void render_chrome(WINDOW *window, char *title_text) {
   mvwhline(window, chrome.origin_y, chrome.origin_x, ACS_HLINE, max_x);
   mvwhline(window, last_line, chrome.origin_x, ACS_HLINE, max_x);
 
-  mvwaddstr(window, chrome.origin_y, chrome.title_left_margin, title_text);
+  mvwaddstr(window, chrome.origin_y, chrome.padding_x, title_text);
 }
 
 void conch_status_clear() { status[0] = '\0'; }

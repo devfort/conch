@@ -19,7 +19,6 @@ typedef struct window_chrome_s {
   int origin_y;
   int padding_x;
   int padding_y;
-  int title_left_margin;
 } window_chrome_s;
 extern window_chrome_s chrome;
 
