@@ -7,7 +7,7 @@
 #include "detailview.h"
 
 // Maximum time to wait for a keypress (tenths of a second)
-#define KEY_DELAY 2
+#define KEY_DELAY 1
 
 typedef enum {
   CONCH_NOP,

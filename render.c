@@ -48,13 +48,61 @@ static void render_watermark(WINDOW *window, bool spin) {
   int max_x = getmaxx(window);
   int max_y = getmaxy(window) - 1;
   static unsigned int spinner_state;
+
+  // Forgive me father, for I have sinned.
+  //
+  // - NS 2015-0528
+  //
+  // clang-format off
   static char const *spinner[] = {
-    "              ",   "              ", "              ", "1             ",
-    "11            ",   " 11           ", "t 11          ", "rt 11         ",
-    "ort 11        ",   "fort 11       ", "/fort 11      ", "v-fort 11     ",
-    "ev\\fort 11    ",  "dev|fort 11   ", "/dev/fort 11  ", " -dev-fort 11 ",
-    " \\dev\\fort 11 ", " |dev|fort 11 ", " /dev/fort 11 ",
+    "              ",
+    "              ",
+    "              ",
+    "             \\",
+    "             -",
+    "             /",
+    "            |d",
+    "            \\d",
+    "            -d",
+    "           /de",
+    "           |de",
+    "           \\de",
+    "          -dev",
+    "          /dev",
+    "          |dev",
+    "         \\dev\\",
+    "         -dev-",
+    "         /dev/",
+    "        |dev|f",
+    "        \\dev\\f",
+    "        -dev-f",
+    "       /dev/fo",
+    "       |dev|fo",
+    "       \\dev\\fo",
+    "      -dev-for",
+    "      /dev/for",
+    "      |dev|for",
+    "     \\dev\\fort",
+    "     -dev-fort",
+    "     /dev/fort",
+    "    |dev|fort ",
+    "    \\dev\\fort ",
+    "    -dev-fort ",
+    "   /dev/fort 1",
+    "   |dev|fort 1",
+    "   \\dev\\fort 1",
+    "  -dev-fort 11",
+    "  /dev/fort 11",
+    "  |dev|fort 11",
+    " \\dev\\fort 11 ",
+    " -dev-fort 11 ",
+    " /dev/fort 11 ",
+    " |dev|fort 11 ",
+    " \\dev\\fort 11 ",
+    " -dev-fort 11 ",
+    " /dev/fort 11 ",
   };
+  // clang-format on
 
   // Spin, either if we've been explicitly instructed to spin, or if we have not
   // completed a whole revolution of the spinner.
