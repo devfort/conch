@@ -101,4 +101,6 @@ void mvw_ncurses_display(WINDOW *window, int y, int x, caca_canvas_t *canvas) {
       cvattrs += caca_get_canvas_width(canvas) - dw;
     }
   }
+
+  wstandend(window);
 }
