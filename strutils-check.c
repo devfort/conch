@@ -228,6 +228,44 @@ START_TEST(test_wrap_lines_free) {
 }
 END_TEST
 
+START_TEST(test_lines_wrap_zero_length_passed) {
+  char *expected_blast_lines[1024];
+  char **actual_blast_lines;
+
+  int available_width = 0;
+
+  expected_blast_lines[0] = "";
+  expected_blast_lines[1] = NULL;
+
+  actual_blast_lines =
+      wrap_lines("We're going to need a bigger boat", available_width);
+  for (int i = 0; expected_blast_lines[i]; i++) {
+    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
+  }
+
+  wrap_lines_free(actual_blast_lines);
+}
+END_TEST
+
+START_TEST(test_lines_wrap_negative_length_passed) {
+  char *expected_blast_lines[1024];
+  char **actual_blast_lines;
+
+  int available_width = -5;
+
+  expected_blast_lines[0] = "";
+  expected_blast_lines[1] = NULL;
+
+  actual_blast_lines =
+      wrap_lines("We're going to need a bigger boat", available_width);
+  for (int i = 0; expected_blast_lines[i]; i++) {
+    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
+  }
+
+  wrap_lines_free(actual_blast_lines);
+}
+END_TEST
+
 Suite *strutils_suite(void) {
   Suite *s = suite_create("strutils");
 
@@ -246,6 +284,8 @@ Suite *strutils_suite(void) {
   ADD_TEST_CASE(s, test_wrap_lines_free);
   ADD_TEST_CASE(s, test_wrap_lines_with_no_spaces);
   ADD_TEST_CASE(s, test_wrap_lines_with_odd_unicode_doesnt_explode);
+  ADD_TEST_CASE(s, test_lines_wrap_zero_length_passed);
+  ADD_TEST_CASE(s, test_lines_wrap_negative_length_passed);
 
   return s;
 }

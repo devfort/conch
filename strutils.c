@@ -74,13 +74,14 @@ char **wrap_lines(char *text, int max_line_length) {
   char *start_of_line, *remaining_content;
   start_of_line = remaining_content = text;
 
-  if (NULL == text || 0 == strlen(text)) {
+  if (NULL == text || 0 == strlen(text) || max_line_length <= 0) {
     char *empty_string = calloc(1, 1);
     lines[lines_required] = empty_string;
     lines_required++;
   }
 
-  while (remaining_content && strlen(remaining_content)) {
+  while ((0 < max_line_length) && remaining_content &&
+         strlen(remaining_content)) {
     char *line = calloc(1, max_line_length + 1);
 
     if (strlen(remaining_content) < max_line_length) {
