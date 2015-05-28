@@ -9,7 +9,6 @@
 #include "caca-driver.h"
 #include "conchview-render.h"
 #include "conchview.h"
-#include "common-image.h"
 
 #define CHARACTER_ASPECT_RATIO 2
 #define STATUS_MAXLEN 64

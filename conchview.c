@@ -4,7 +4,6 @@
 
 #include "cli.h"
 #include "conchview.h"
-#include "common-image.h"
 
 conchview *conch_conchview_new(conch_cli_options const *opts) {
   conchview *v = calloc(1, sizeof(conchview));
