@@ -108,8 +108,8 @@ int main(int argc, char **argv) {
     .page_size = 42,
   };
 
-  win = init_screen();
   opts = conch_parse_command_line_args(argc, argv);
+  win = init_screen();
   config.host = opts.host;
   config.database = opts.database;
 

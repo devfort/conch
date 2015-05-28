@@ -27,6 +27,8 @@ conch_cli_options conch_parse_command_line_args(int argc, char **argv) {
     case 'd':
       parsed_options.database = optarg;
       break;
+    default:
+      exit(1);
     }
   }
   argc -= optind;
