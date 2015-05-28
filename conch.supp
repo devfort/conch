@@ -1,24 +1,30 @@
 {
-   libpq leaks getpwuid
+   <libpq leaks like a sieve>
    Memcheck:Leak
-   match-leak-kinds: reachable
-   fun:calloc
+   ...
+   fun:PQsetdbLogin
+}
+{
+   <libpq leaks like a sieve>
+   Memcheck:Leak
+   ...
+   fun:connectDB
+}
+{
+   <libpq leaks like a sieve>
+   Memcheck:Leak
+   ...
+   fun:connectDBStart
+}
+{
+   <libpq leaks like a sieve>
+   Memcheck:Leak
    ...
    fun:getpwuid_r
    obj:*/libpq.*
    ...
 }
 
-{
-   <libpq leaks like a sieve>
-   Memcheck:Leak
-   match-leak-kinds: indirect
-   fun:malloc
-   fun:strdup
-   ...
-   obj:*/libpq.*
-   ...
-}
 
 {
    <libpq makes openssl leaks like a sieve>
@@ -92,6 +98,13 @@
    ...
    obj:/usr/lib/libobjc.A.dylib
    ...
+}
+
+{
+   ignore dyld
+   Memcheck:Leak
+   ...
+   obj:/usr/lib/dyld
 }
 
 {
