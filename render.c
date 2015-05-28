@@ -101,18 +101,26 @@ static void render_status_message(WINDOW *window) {
 
 void render_view(WINDOW *window, view_type current_view, void *view_state) {
   int max_x = getmaxx(window);
+  int max_y = getmaxy(window);
+
+  werase(window);
+
+  if (max_y < 2 * (chrome.border_width + chrome.padding_y)) {
+    mvwaddstr(window, 0, 0, "Window too small! Embiggen!");
+    wrefresh(window);
+    return;
+  }
 
   // The two -1s here are because ncurses co-ordinates are *inclusive*
   winrect rect = {.top = chrome.padding_y + chrome.border_width,
                   .left = chrome.border_width,
-                  .bottom = getmaxy(window) -
-                            (chrome.padding_y + chrome.border_width) - 1,
+                  .bottom =
+                      max_y - (chrome.padding_y + chrome.border_width) - 1,
                   .right = max_x - chrome.border_width - 1 };
 
   rect.width = rect.right - rect.left + 1;
   rect.height = rect.bottom - rect.top + 1;
 
-  werase(window);
   conch_spinner_hide();
   conch_status_clear();
 
