@@ -73,23 +73,27 @@ wordwrap-check: wordwrap.o
 listview-check: listview.o blastlist.o strutils.o keys.o listview-keys.o detailview-keys.o detailview.o
 strutils-check: strutils.o
 
-check: $(BINS_TEST)
-	$(SILENT)./tools/runtests $^
+logs:
+	mkdir -p logs
+
+conch-check: conch pexpect .expectdb logs conch_check.py
+	venv/bin/python conch_check.py
+
+check: $(BINS_TEST) conch-check
+	$(SILENT)./tools/runtests $(BINS_TEST) 
 
 PG_BIN_DIR=$(shell pg_config --bindir)
 
 .testdb: rsrc/schema.sql rsrc/data.sql rsrc/add-trigger.sql
-	$(PG_BIN_DIR)/dropdb -h localhost bugle_test 2>/dev/null || true
-	$(PG_BIN_DIR)/dropuser -h localhost bugle 2>/dev/null || true
-	$(PG_BIN_DIR)/createuser -h localhost -SDR bugle
-	$(PG_BIN_DIR)/createdb -h localhost bugle_test --owner=bugle
-	psql -h localhost bugle_test < rsrc/schema.sql
-	psql -h localhost bugle_test < rsrc/data.sql
-	psql -h localhost bugle_test < rsrc/add-trigger.sql
+	tools/createdb bugle_test
 	touch .testdb
 
+.expectdb: rsrc/schema.sql rsrc/data.sql rsrc/add-trigger.sql
+	tools/createdb bugle_test
+	touch .expectdb
+
 clean:
-	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST) .testdb
+	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST) .testdb venv logs
 
 reformat: *.c *.h
 	clang-format -i *.h *.c
@@ -115,6 +119,14 @@ $(BINS): %: %.o
 	@echo "LD  $@"
 	$(SILENT)$(CC) -o $@ $^ $(LDFLAGS)
 
+venv:
+	virtualenv venv --python=python2.7
+
+venv/lib/python2.7/site-packages/pexpect: venv
+	venv/bin/pip install -i http://pypi.fort/web/simple pexpect --trusted-host=pypi.fort
+
+pexpect: venv/lib/python2.7/site-packages/pexpect
+
 -include .deps/*.d
 
-.PHONY: all clean reformat check $(CHECKTASKS)
+.PHONY: all clean reformat check $(CHECKTASKS) pexpect

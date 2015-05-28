@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -e -x
+
+PG_BIN_DIR=$(pg_config --bindir)
+DATABASE=$1
+
+$PG_BIN_DIR/dropdb -h localhost $DATABASE || true
+$PG_BIN_DIR/createuser -h localhost -SDR bugle || true
+$PG_BIN_DIR/createdb -h localhost $DATABASE --owner=bugle
+$PG_BIN_DIR/psql -h localhost $DATABASE < rsrc/schema.sql
+$PG_BIN_DIR/psql -h localhost $DATABASE < rsrc/data.sql
+$PG_BIN_DIR/psql -h localhost $DATABASE < rsrc/add-trigger.sql
