@@ -5,7 +5,6 @@
 
 #include "blastlist.h"
 
-#define BLAST_MARGIN_LEFT 1
 #define BLAST_PADDING 2
 
 void conch_blast_render(WINDOW *window, char **blast_lines, int y, int gutter_x,
