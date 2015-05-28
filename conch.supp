@@ -51,6 +51,13 @@
 }
 
 {
+   Ignore libssl ERR strings
+   Memcheck:Leak
+   ...
+   fun:ERR_load_ERR_strings
+}
+
+{
    ignore_value8_error_from_libssl_sadface
    Memcheck:Value8
    ...
@@ -140,4 +147,87 @@
    fun:*alloc
    ...
    fun:dispatch_once_f
+}
+
+{
+   <libcheck when run in forking mode is not safe>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   ...
+   obj:*/libcheck.*
+   fun:check_list_*
+}
+
+{
+   <libcheck when run in forking mode is not safe>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:emalloc
+   fun:srunner_create
+}
+
+{
+   <libcheck when run in forking mode is not safe>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:emalloc
+   fun:suite_create
+}
+{
+   <libcheck when run in forking mode is not safe>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:emalloc
+   fun:srunner_register_lfun
+}
+{
+   <libcheck when run in forking mode is not safe>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:emalloc
+   fun:_tcase_add_test
+}
+{
+   <libcheck when run in forking mode is not safe>
+   Memcheck:Leak
+   match-leak-kinds: reachable
+   fun:malloc
+   fun:emalloc
+   fun:tcase_create
+}
+{
+   <libcheck when run in forking mode is not safe>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:fprintf
+   fun:srunner_send_evt
+}
+{
+   <libcheck when run in forking mode is not safe>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:srunner_run_setup
+}
+
+
+{
+   <libcheck when run in forking mode is not safe>
+   Memcheck:Leak
+   fun:malloc
+   fun:strdup
+   fun:srunner_run
+}
+{
+   <libcheck when run in forking mode is not safe>
+   Memcheck:Leak
+   fun:malloc
+   ...
+   fun:receive_test_result
+   fun:srunner_run
 }

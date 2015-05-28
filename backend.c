@@ -167,14 +167,15 @@ static resultset *pg_result_to_resultset(mouthpiece *mp,
       if (!PQgetlength(query_result, i, attachment_column)) {
         blast->attachment = NULL;
       } else {
-        blast->attachment = strcopycat(
-            "http://bugle.fort/uploads/",
-            PQgetvalue(query_result, i, attachment_column));
+        blast->attachment =
+            strcopycat("http://bugle.fort/uploads/",
+                       PQgetvalue(query_result, i, attachment_column));
       }
       if (!PQgetlength(query_result, i, extended_column)) {
         blast->extended = NULL;
       } else {
-        blast->extended = strclone(PQgetvalue(query_result, i, extended_column));
+        blast->extended =
+            strclone(PQgetvalue(query_result, i, extended_column));
       }
     }
   }
