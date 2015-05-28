@@ -1,0 +1,3 @@
+--trace-children=yes
+--suppressions=./conch.supp
+--error-limit=no
