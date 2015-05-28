@@ -10,9 +10,8 @@
 #include "listview-render.h"
 #include "detailview-render.h"
 
-window_chrome_s chrome = {
-  .border_width = 1, .padding_x = 1,
-};
+#define CHROME_BORDER_HEIGHT 1
+#define CHROME_PADDING_X 1
 
 // Placeholder for status message
 #define STATUS_MAXLEN 64
@@ -26,7 +25,7 @@ static bool show_spinner = false;
 
 static void render_clock(WINDOW *window, char *clock_text) {
   int max_x = getmaxx(window);
-  mvwaddstr(window, 0, max_x - strlen(clock_text) - chrome.padding_x,
+  mvwaddstr(window, 0, max_x - strlen(clock_text) - CHROME_PADDING_X,
             clock_text);
 }
 
@@ -39,7 +38,7 @@ static void generate_clock_text(WINDOW *window, int time_str_limit,
 
 static void render_help(WINDOW *window, char *help_text) {
   int last_line = getmaxy(window) - 1;
-  mvwaddstr(window, last_line, chrome.padding_x, help_text);
+  mvwaddstr(window, last_line, CHROME_PADDING_X, help_text);
 }
 
 static void render_watermark(WINDOW *window, bool spin) {
@@ -58,7 +57,7 @@ static void render_watermark(WINDOW *window, bool spin) {
   }
 
   mvwaddstr(window, max_y,
-            max_x - strlen(spinner[spinner_state]) - chrome.padding_x,
+            max_x - strlen(spinner[spinner_state]) - CHROME_PADDING_X,
             spinner[spinner_state]);
 }
 
@@ -69,7 +68,7 @@ static void render_chrome(WINDOW *window, char *title_text) {
   mvwhline(window, 0, 0, ACS_HLINE, max_x);
   mvwhline(window, last_line, 0, ACS_HLINE, max_x);
 
-  mvwaddstr(window, 0, chrome.padding_x, title_text);
+  mvwaddstr(window, 0, CHROME_PADDING_X, title_text);
 }
 
 void conch_status_clear() { status[0] = '\0'; }
@@ -94,7 +93,7 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
 
   werase(window);
 
-  if (max_y < 2 * chrome.border_width) {
+  if (max_y < 2 * CHROME_BORDER_HEIGHT) {
     mvwaddstr(window, 0, 0, "Window too small! Embiggen!");
     wrefresh(window);
     return;
@@ -102,12 +101,12 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
 
   // The two -1s here are because ncurses co-ordinates are *inclusive*
   winrect rect = {
-    .top = chrome.border_width,
+    .top = CHROME_BORDER_HEIGHT,
     .left = 0,
-    .bottom = max_y - chrome.border_width - 1,
+    .bottom = max_y - CHROME_BORDER_HEIGHT - 1,
     .right = max_x - 1,
     .width = max_x,
-    .height = max_y - 2 * chrome.border_width,
+    .height = max_y - 2 * CHROME_BORDER_HEIGHT,
   };
 
   conch_spinner_hide();
