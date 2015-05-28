@@ -96,6 +96,7 @@ int main(int argc, char **argv) {
     }
     if (options.verbose) {
       printf("posting as: %s\n", options.username);
+      printf("posting to: %s\n", config.host);
       printf("blast id: %" PRIid "\n", result->post);
     }
     conch_blastresult_free(result);
