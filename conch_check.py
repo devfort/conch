@@ -21,7 +21,7 @@ class TestConchCommand(unittest.TestCase):
             name=self.session_name,
             command=(
                 './conch --host=localhost '
-                '--database=bugle_expect && echo Hurrah && sleep 5'
+                '--database=bugle_expect && echo Hurrah; sleep 5'
             )
         )
         assert len(self.tmux.sessions()) == 2
@@ -143,6 +143,10 @@ class TestConchCommand(unittest.TestCase):
         self.await(
             lambda screen: marker not in screen, timeout=1
         )
+
+    def test_does_not_crash_if_you_press_n_without_search(self):
+        self.wait_for_loading_screen()
+        self.press("n")
 
 
 if __name__ == '__main__':

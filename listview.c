@@ -163,7 +163,9 @@ bool conch_listview_search_forward(listview *lv) {
 }
 
 bool conch_listview_repeat_search_forward(listview *lv) {
-  conch_listview_find_and_select_blast(lv, lv->search_term);
+  if (lv->search_term != NULL) {
+    conch_listview_find_and_select_blast(lv, lv->search_term);
+  }
   return true;
 }
 
