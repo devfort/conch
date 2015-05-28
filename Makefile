@@ -80,7 +80,7 @@ logs:
 conch-check: conch psycopg2 pexpect .expectdb logs conch_check.py
 	LD_LIBRARY_PATH=$(shell pg_config --libdir) venv/bin/python conch_check.py
 
-check: $(BINS_TEST) conch-check
+check: $(BINS_TEST)
 	$(SILENT)./tools/runtests $(BINS_TEST) 
 
 PG_BIN_DIR=$(shell pg_config --bindir)

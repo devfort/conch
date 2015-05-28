@@ -9,3 +9,6 @@
 /blast
 .testdb
 *.swp
+.expectdb
+venv/
+log
