@@ -42,9 +42,6 @@ void conch_default_input_config() {
   // Turn terminal local keypress echo off
   noecho();
 
-  // Ask ncurses to give us KEY_LEFT etc, not escape followed by some more keys
-  keypad(curscr, true);
-
   // Turn on "half delay" mode, in which getch functions will block for up to n
   // tenths of a second before returning ERR.
   halfdelay(KEY_DELAY);

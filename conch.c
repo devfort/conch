@@ -39,6 +39,9 @@ WINDOW *init_screen() {
 
   conch_default_input_config();
 
+  // Ask ncurses to give us KEY_LEFT etc, not escape followed by some more keys
+  keypad(window, true);
+
   wrefresh(window);
 
   return window;
