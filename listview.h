@@ -26,4 +26,6 @@ bool conch_listview_has_unread_blasts(listview *lv);
 bool conch_listview_search_forward(listview *lv);
 void conch_listview_free(listview *lv);
 
+blast *conch_listview_find_and_select_blast(listview *lv, const char *term);
+
 #endif /* _LISTVIEW_H */

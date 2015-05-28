@@ -101,7 +101,7 @@ bool conch_listview_has_unread_blasts(listview *lv) {
   return (lv->latest_read != NULL && lv->latest_read->prev != NULL);
 }
 
-blast *find_and_select_blast(listview *lv, const char *term) {
+blast *conch_listview_find_and_select_blast(listview *lv, const char *term) {
   blast *cur = lv->blasts->current;
   bool past_bottom = false;
 
@@ -149,7 +149,7 @@ bool conch_listview_search_forward(listview *lv) {
   getstr(term);
   noecho();
 
-  find_and_select_blast(lv, term);
+  conch_listview_find_and_select_blast(lv, term);
 
   return true;
 }

@@ -1,8 +1,12 @@
+#include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <inttypes.h>
 
 #include "checkrunner.h"
+
+#include "backend.h"
 
 #include "blastlist.h"
 #include "cli.h"
@@ -23,6 +27,10 @@ blast *blast_fixture_new(id id) {
   }
 
   b->id = id;
+  b->content = calloc(21, sizeof(blast));
+
+  int ret = snprintf(b->content, 21, "%" PRIid, b->id);
+  assert(ret > 0);
 
   return b;
 }
@@ -388,6 +396,29 @@ START_TEST(test_listview_jump_to_next_unread) {
 }
 END_TEST
 
+START_TEST(test_listview_search_forward) {
+  blastlist *bl = blastlist_fixture_new(3);
+
+  conch_cli_options opts = {.stick_to_top = false };
+  listview *lv = conch_listview_new(&opts);
+  conch_listview_update(lv, bl);
+
+  lv->bottom = lv->blasts->head->next;
+
+  blast *found = conch_listview_find_and_select_blast(lv, "1");
+  ck_assert_ptr_eq(found, lv->blasts->current);
+  ck_assert_ptr_eq(found, lv->blasts->head->next);
+
+  found = conch_listview_find_and_select_blast(lv, "2");
+  ck_assert_ptr_eq(found, lv->blasts->current);
+  ck_assert_ptr_eq(found, lv->blasts->tail);
+  ck_assert_ptr_eq(found, lv->top);
+
+  conch_listview_free(lv);
+  conch_blastlist_free(bl);
+}
+END_TEST
+
 Suite *listview_suite(void) {
   Suite *s = suite_create("listview");
 
@@ -404,6 +435,7 @@ Suite *listview_suite(void) {
   ADD_TEST_CASE(s, test_listview_jump_to_next_unread);
   ADD_TEST_CASE(s, test_listview_cursor_movement_scroll_down);
   ADD_TEST_CASE(s, test_listview_cursor_movement_scroll_up);
+  ADD_TEST_CASE(s, test_listview_search_forward);
   return s;
 }
 
