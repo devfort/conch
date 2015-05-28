@@ -69,7 +69,7 @@ int count_lines_and_find_length_of_longest(const char *string,
 }
 
 char **wrap_lines(char *text, int max_line_length) {
-  char **lines = malloc(1024);
+  char **lines = malloc(1024 * sizeof(char*));
   int lines_required = 0;
   char *start_of_line, *remaining_content;
   start_of_line = remaining_content = text;
