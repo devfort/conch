@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define __USE_XOPEN_EXTENDED
 #include <unistd.h>
 
 #include "backend-internal.h"
