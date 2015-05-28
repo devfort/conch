@@ -1,7 +1,9 @@
+#define _GNU_SOURCE
 #include <assert.h>
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <inttypes.h>
 
 #include "checkrunner.h"
@@ -28,6 +30,7 @@ blast *blast_fixture_new(id id) {
 
   b->id = id;
   b->content = calloc(21, sizeof(blast));
+  b->user = strdup("conch");
 
   int ret = snprintf(b->content, 21, "%" PRIid, b->id);
   assert(ret > 0);
