@@ -23,6 +23,7 @@ void conch_listview_jump_to_next_unread(listview *lv);
 void conch_listview_select_next_blast(listview *lv);
 void conch_listview_select_prev_blast(listview *lv);
 bool conch_listview_has_unread_blasts(listview *lv);
+bool conch_listview_search_forward(listview *lv);
 void conch_listview_free(listview *lv);
 
 #endif /* _LISTVIEW_H */

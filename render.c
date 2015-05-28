@@ -140,7 +140,7 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
 
   render_help(
       window,
-      " j/k: down/up  s: stick to top  0: to top  TAB: next unread  q: quit ");
+      " j/k: down/up  s: stick to top  0: to top  TAB: next unread  /: search  q: quit ");
 
   render_watermark(window, show_spinner);
 

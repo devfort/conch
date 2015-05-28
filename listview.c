@@ -1,4 +1,6 @@
 #include <stdlib.h>
+#include <readline/readline.h>
+#include <curses.h>
 
 #include "listview.h"
 
@@ -97,6 +99,45 @@ void conch_listview_select_prev_blast(listview *lv) {
 
 bool conch_listview_has_unread_blasts(listview *lv) {
   return (lv->latest_read != NULL && lv->latest_read->prev != NULL);
+}
+
+bool conch_listview_search_forward(listview *lv) {
+  char *term = calloc(1024, 1);
+  int max_y = getmaxy(curscr);
+  int max_x = getmaxx(curscr);
+
+  mvhline(max_y - 1, 0, ' ', max_x);
+  move(max_y - 1, 0);
+  wrefresh(curscr);
+
+  echo();
+  curs_set(1);
+  getstr(term);
+  noecho();
+
+  blast *cur = lv->blasts->current;
+
+  if (cur->next) {
+    cur = cur->next;
+  } else {
+    return true;
+  }
+
+  while (cur) {
+    char *search = strstr(cur->content, term);
+
+    if (search != NULL) {
+      break;
+    }
+
+    cur = cur->next;
+  }
+
+  if (cur) {
+    lv->blasts->current = cur;
+  }
+
+  return true;
 }
 
 void conch_listview_free(listview *lv) { free(lv); }
