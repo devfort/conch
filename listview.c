@@ -101,29 +101,15 @@ bool conch_listview_has_unread_blasts(listview *lv) {
   return (lv->latest_read != NULL && lv->latest_read->prev != NULL);
 }
 
-bool conch_listview_search_forward(listview *lv) {
-  char *term = calloc(1024, 1);
-  int max_y = getmaxy(curscr);
-  int max_x = getmaxx(curscr);
-
-  mvhline(max_y - 1, 0, ' ', max_x);
-  move(max_y - 1, 0);
-  wrefresh(curscr);
-
-  echo();
-  curs_set(1);
-  getstr(term);
-  noecho();
-
+blast *find_and_select_blast(listview *lv, const char *term) {
   blast *cur = lv->blasts->current;
+  bool past_bottom = false;
 
   if (cur->next) {
     cur = cur->next;
   } else {
-    return true;
+    return false;
   }
-
-  bool past_bottom = false;
 
   while (cur) {
     char *search = strstr(cur->content, term);
@@ -145,6 +131,25 @@ bool conch_listview_search_forward(listview *lv) {
     }
     lv->blasts->current = cur;
   }
+
+  return cur;
+}
+
+bool conch_listview_search_forward(listview *lv) {
+  char *term = calloc(1024, 1);
+  int max_y = getmaxy(curscr);
+  int max_x = getmaxx(curscr);
+
+  mvhline(max_y - 1, 0, ' ', max_x);
+  move(max_y - 1, 0);
+  wrefresh(curscr);
+
+  echo();
+  curs_set(1);
+  getstr(term);
+  noecho();
+
+  find_and_select_blast(lv, term);
 
   return true;
 }
