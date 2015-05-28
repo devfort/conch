@@ -40,7 +40,7 @@ Be very afraid.
 
 On Linux you'll need to install
 
-  sudo apt-get install libimlib2-dev libcaca-dev libncurses5
+  sudo apt-get install libimlib2-dev libcaca-dev libncurses5 liblualib50-dev
 
 On OS X you'll need to install
 
