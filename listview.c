@@ -123,8 +123,14 @@ bool conch_listview_search_forward(listview *lv) {
     return true;
   }
 
+  bool past_bottom = false;
+
   while (cur) {
     char *search = strstr(cur->content, term);
+
+    if (lv->bottom && cur == lv->bottom->next) {
+      past_bottom = true;
+    }
 
     if (search != NULL) {
       break;
@@ -134,6 +140,9 @@ bool conch_listview_search_forward(listview *lv) {
   }
 
   if (cur) {
+    if (past_bottom) {
+      lv->top = cur;
+    }
     lv->blasts->current = cur;
   }
 
