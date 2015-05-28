@@ -27,7 +27,9 @@ endif
 CFLAGS+=-DX_DISPLAY_MISSING=1
 
 # lua
-LDFLAGS+=-llua
+CFLAGS+=-I/usr/include/lua5.2
+# I'm so sorry, apt puts the library in a strange place and pkg-config doesn't find it
+LDFLAGS+=$(shell [ -f "/usr/lib/x86_64-linux-gnu/liblua5.2.a" ] && echo "-llua5.2" || echo "-llua")
 
 CFLAGS+=$(shell pkg-config --cflags $(LIBS))
 LDFLAGS+=$(shell pkg-config --libs $(LIBS))
