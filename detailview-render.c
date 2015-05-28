@@ -8,6 +8,9 @@
 #include "wordwrap.h"
 #include "strutils.h"
 
+#define PADDING_TOP 1
+#define PADDING_BOTTOM 1
+
 extern char **generate_wrapped_blast(blast *blast, int max_line_length);
 
 extern void render_blast(WINDOW *window, char **blast_lines, int y,
@@ -44,6 +47,10 @@ void fatal_error(const char *fmt, ...) {
 }
 
 void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
+  // Where to put the pad on screen
+  const int pad_screen_top = rect->top + PADDING_TOP;
+  const int pad_screen_bottom = rect->bottom - PADDING_BOTTOM;
+  const int pad_screen_height = rect->height - PADDING_TOP - PADDING_BOTTOM;
 
   // Number of chars used to display line numbers
   const int line_no_width = 4;
@@ -74,8 +81,8 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
     }
   }
 
-  if (v->line_offset + rect->height > summary_height + code_height) {
-    v->line_offset = summary_height + code_height - rect->height;
+  if (v->line_offset + pad_screen_height > summary_height + code_height) {
+    v->line_offset = summary_height + code_height - pad_screen_height;
   }
   if (v->line_offset < 0) {
     v->line_offset = 0;
@@ -105,8 +112,8 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   // This pnoutrefresh splits the `if blast->extended` because we need to
   // output the linenumbers (which pnoutrefreshdoes) before we render the code
   // lines which need to overlay.
-  if (pnoutrefresh(pad, v->line_offset, 0, rect->top, rect->left, rect->bottom,
-                   rect->right) == ERR) {
+  if (pnoutrefresh(pad, v->line_offset, 0, pad_screen_top, rect->left,
+                   pad_screen_bottom, rect->right) == ERR) {
     fatal_error("conch_detailview_render: Could not output pad to screen");
   }
 
@@ -141,19 +148,20 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
 
     // Where the top of the code pad should be drawn to - if we have scrolled
     // up this could be < 0
-    int code_pad_top = rect->top + summary_height - v->line_offset,
+    int code_pad_top = pad_screen_top + summary_height - v->line_offset,
         code_scroll_top = 0;
 
     // rect is unsigned, so we need to force it to signed so the comparison
     // makes sense
-    if (code_pad_top < (int)rect->top) {
-      code_scroll_top = rect->top - code_pad_top;
-      code_pad_top = rect->top;
+    if (code_pad_top < pad_screen_top) {
+      code_scroll_top = pad_screen_top - code_pad_top;
+      code_pad_top = pad_screen_top;
     }
 
     int left = rect->left + line_no_width;
     if (pnoutrefresh(code_pad, code_scroll_top, v->code_column_offset,
-                     code_pad_top, left, rect->bottom, rect->right) == ERR) {
+                     code_pad_top, left, pad_screen_bottom,
+                     rect->right) == ERR) {
       fatal_error("Could not output codepad");
     }
     delwin(code_pad);

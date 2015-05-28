@@ -15,7 +15,6 @@ window_chrome_s chrome = {
   .origin_x = 0,
   .origin_y = 0,
   .padding_x = 1,
-  .padding_y = 1,
   .title_left_margin = 2,
 };
 
@@ -89,7 +88,7 @@ static void render_status_message(WINDOW *window) {
   if (len == 0) {
     return;
   }
-  int center_offset = (getmaxx(window) - len + 2) / 2;
+  int center_offset = (getmaxx(window) - len + 2 /* whitespace padding */) / 2;
   mvwprintw(window, chrome.origin_y, center_offset, " %s ", status);
 }
 
@@ -99,20 +98,21 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
 
   werase(window);
 
-  if (max_y < 2 * (chrome.border_width + chrome.padding_y)) {
+  if (max_y < 2 * chrome.border_width) {
     mvwaddstr(window, 0, 0, "Window too small! Embiggen!");
     wrefresh(window);
     return;
   }
 
   // The two -1s here are because ncurses co-ordinates are *inclusive*
-  winrect rect = {.top = chrome.padding_y + chrome.border_width,
-                  .left = chrome.padding_x,
-                  .bottom = max_y - chrome.padding_y - chrome.border_width - 1,
-                  .right = max_x - chrome.padding_x - 1 };
-
-  rect.width = rect.right - rect.left + 1;
-  rect.height = rect.bottom - rect.top + 1;
+  winrect rect = {
+    .top = chrome.border_width,
+    .left = 0,
+    .bottom = max_y - chrome.border_width - 1,
+    .right = max_x - 1,
+    .width = max_x,
+    .height = max_y - 2 * chrome.border_width,
+  };
 
   conch_spinner_hide();
   conch_status_clear();
