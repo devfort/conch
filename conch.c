@@ -168,7 +168,7 @@ int main(int argc, char **argv) {
 
     render_view(win, current_view, current_view_state);
 
-    if (bl->current != NULL && bl->current->next == NULL) {
+    if (bl->current != NULL && lv->bottom != NULL && lv->bottom->next == NULL) {
       update_old_blasts(conn, bl);
     }
 
