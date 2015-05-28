@@ -17,15 +17,20 @@ static void parse_config(const char *filename, settings *settings) {
   if(luaL_dofile(L, filename)) {
     fprintf(stderr, "Couldn't read config file %s\n", filename);
   } else {
-    lua_getglobal(L, "username");
+    struct { char* var; char **dest; } vars[] = {
+      {"username", &settings->username},
+      {"host", &settings->host},
+      {"database", &settings->database},
+    };
+    for(int i=0; i<3; i++) {
+      lua_getglobal(L, vars[i].var);
+      idx = lua_gettop(L);
+      *vars[i].dest = strclone(lua_tostring(L, idx));
+    }
+
+    lua_getglobal(L, "page_size");
     idx = lua_gettop(L);
-    settings->username = strclone(lua_tostring(L, idx));
-    lua_getglobal(L, "host");
-    idx = lua_gettop(L);
-    settings->host = strclone(lua_tostring(L, idx));
-    lua_getglobal(L, "database");
-    idx = lua_gettop(L);
-    settings->database = strclone(lua_tostring(L, idx));
+    settings->page_size = atoi(lua_tostring(L, idx));
   }
 }
 
