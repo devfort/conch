@@ -21,9 +21,6 @@
 // Approximate time to wait between requests to the database (seconds)
 #define DB_POLL_INTERVAL 10
 
-// Maximum time to wait for a keypress (tenths of a second)
-#define KEY_DELAY 2
-
 // Duration to show splash screen at startup (tenths of a second)
 #define SPLASH_DELAY 20
 
@@ -32,8 +29,6 @@ static bool toggle_conchview;
 WINDOW *init_screen() {
   setlocale(LC_ALL, "");
   initscr();
-  cbreak();
-  noecho();
   refresh();
 
   conch_init_colors();
@@ -42,12 +37,7 @@ WINDOW *init_screen() {
   // get initial screen setup while we wait for connections
   WINDOW *window = newwin(0, 0, 0, 0);
 
-  // Ask ncurses to give us KEY_LEFT etc, not escape followed by some more keys
-  keypad(window, true);
-
-  // Turn on "half delay" mode, in which getch functions will block for up to n
-  // tenths of a second before returning ERR.
-  halfdelay(KEY_DELAY);
+  conch_default_input_config();
 
   wrefresh(window);
 
@@ -168,7 +158,7 @@ int main(int argc, char **argv) {
 
     render_view(win, current_view, current_view_state);
 
-    if (bl->current != NULL && lv->bottom != NULL && lv->bottom->next == NULL) {
+    if (lv->bottom != NULL && lv->bottom->next == NULL) {
       update_old_blasts(conn, bl);
     }
 

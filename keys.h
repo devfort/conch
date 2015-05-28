@@ -6,6 +6,9 @@
 #include "listview.h"
 #include "detailview.h"
 
+// Maximum time to wait for a keypress (tenths of a second)
+#define KEY_DELAY 2
+
 typedef enum {
   CONCH_NOP,
   CONCH_CONCH,
@@ -16,5 +19,7 @@ typedef enum {
 
 keypress_result conch_keypress_dispatch(const int key, view_type current_view,
                                         void *view_state);
+void conch_default_input_config();
+void conch_getstr_input_config();
 
 #endif /* _KEYS_H */

@@ -4,6 +4,7 @@
 #include <curses.h>
 
 #include "listview.h"
+#include "keys.h"
 
 listview *conch_listview_new(conch_cli_options const *opts) {
   listview *lv = calloc(1, sizeof(listview));
@@ -148,10 +149,11 @@ bool conch_listview_search_forward(listview *lv) {
   move(max_y - 1, 1);
   wrefresh(curscr);
 
-  echo();
-  curs_set(1);
+  conch_getstr_input_config();
+
   getstr(term);
-  noecho();
+
+  conch_default_input_config();
 
   // if search is empty, use the previous one
   if (strlen(term) == 0) {

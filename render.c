@@ -78,9 +78,6 @@ static void render_chrome(WINDOW *window, char *title_text) {
   mvwhline(window, last_line, chrome.origin_x, ACS_HLINE, max_x);
 
   mvwaddstr(window, chrome.origin_y, chrome.title_left_margin, title_text);
-
-  const int cursor_invisible = 0;
-  curs_set(cursor_invisible);
 }
 
 void conch_status_clear() { status[0] = '\0'; }
