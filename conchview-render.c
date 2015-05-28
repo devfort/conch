@@ -80,6 +80,6 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
 
   mvw_ncurses_display(w, rect->top + start_y, rect->left + start_x, cv);
 
-  free(pixels);
   caca_free_canvas(cv);
+  free(pixels);
 }
