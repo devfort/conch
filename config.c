@@ -11,7 +11,7 @@
 #include "config.h"
 #include "strutils.h"
 
-void parse_config(const char *filename, settings *settings) {
+static void parse_config(const char *filename, settings *settings) {
   lua_State *L = luaL_newstate();
   if(luaL_dofile(L, filename)) {
     fprintf(stderr, "Couldn't read config file %s\n", filename);
@@ -22,7 +22,7 @@ void parse_config(const char *filename, settings *settings) {
   }
 }
 
-bool use_config(const char *filename) {
+static bool use_config(const char *filename) {
   struct stat buf;
   if(stat(filename, &buf) == 0) {
     return true;
