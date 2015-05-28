@@ -56,9 +56,9 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
   char **wrapped_blast;
 
   while (1) {
-    wrapped_blast = conch_generate_wrapped_blast(blast, blast_width);
-    int blast_lines =
-        conch_blast_render(window, wrapped_blast, blast_y, blast_x);
+    int blast_lines;
+    wrapped_blast = conch_blast_prepare(blast, blast_width, &blast_lines);
+    blast_lines = conch_blast_render(window, wrapped_blast, blast_y, blast_x);
 
     // Draw highlight
     if (blast == lv->blasts->current) {

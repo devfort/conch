@@ -86,8 +86,9 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   }
 
   // Render the blast at 0,0 on the pad
-  char **blast_lines = conch_generate_wrapped_blast(
-      v->blastlist->current, rect->width - line_no_width);
+  int blast_height;
+  char **blast_lines = conch_blast_prepare(
+      v->blastlist->current, rect->width - line_no_width, &blast_height);
   conch_blast_render(pad, blast_lines, 0, line_no_width);
   wrap_lines_free(blast_lines);
 

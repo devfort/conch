@@ -14,27 +14,35 @@ int conch_blast_render(WINDOW *window, char **blast_lines, int y, int x) {
   return i;
 }
 
-char **conch_generate_wrapped_blast(blast *blast, int max_line_length) {
-  int line = 0;
-  char **wrapped_blast = wrap_lines(blast->content, max_line_length);
+char **conch_blast_prepare(blast *blast, int width, int *nlines) {
+  *nlines = 0;
+
+  if (blast == NULL) {
+    return NULL;
+  }
+
+  char **wrapped_blast = wrap_lines(blast->content, width);
 
   // Find NULL at end of lines
-  while (wrapped_blast[line]) {
-    line++;
+  while (wrapped_blast[*nlines]) {
+    (*nlines)++;
   }
 
   if (blast->attachment != NULL) {
-    wrapped_blast[line++] = strclone(blast->attachment);
+    // TODO: wrap this
+    wrapped_blast[(*nlines)++] = strclone(blast->attachment);
   }
 
-  char const *const attachment_marker = blast->extended ? "[@]" : "   ";
+  char const *const extended_marker =
+      blast->extended ? BLAST_EXTENDED_MARKER : "";
   char *attribution = malloc(1024 * sizeof(char));
+  // TODO: wrap/truncate this
   snprintf(attribution, 1024, "—%s at %s %s", blast->user, blast->posted_at,
-           attachment_marker);
-  wrapped_blast[line++] = attribution;
+           extended_marker);
+  wrapped_blast[(*nlines)++] = attribution;
 
   // Terminate the blast lines
-  wrapped_blast[line++] = NULL;
+  wrapped_blast[*nlines] = NULL;
 
   return wrapped_blast;
 }
