@@ -1,6 +1,3 @@
-/* Enable sigaction macros on Linux (occasionally) */
-#define _XOPEN_SOURCE 600
-
 #include <curses.h>
 #include <locale.h>
 #include <stdlib.h>

@@ -3,7 +3,7 @@ CFLAGS?=
 LDFLAGS?=
 DEPS=.deps
 
-CFLAGS+=$(CDEBUG) --std=c99 -Wall -Wformat -Werror --pedantic
+CFLAGS+=$(CDEBUG) --std=c99 -Wall -Wformat -Werror --pedantic -D_XOPEN_SOURCE=600
 
 BINS=conch blast
 BINS_TEST=$(patsubst %.c,%,$(wildcard *-check.c))
