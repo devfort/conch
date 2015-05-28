@@ -12,13 +12,20 @@
 #include "strutils.h"
 
 static void parse_config(const char *filename, settings *settings) {
+  int idx;
   lua_State *L = luaL_newstate();
   if(luaL_dofile(L, filename)) {
     fprintf(stderr, "Couldn't read config file %s\n", filename);
   } else {
     lua_getglobal(L, "username");
-    int idx = lua_gettop(L);
+    idx = lua_gettop(L);
     settings->username = strclone(lua_tostring(L, idx));
+    lua_getglobal(L, "host");
+    idx = lua_gettop(L);
+    settings->host = strclone(lua_tostring(L, idx));
+    lua_getglobal(L, "database");
+    idx = lua_gettop(L);
+    settings->database = strclone(lua_tostring(L, idx));
   }
 }
 
