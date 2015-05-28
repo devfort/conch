@@ -6,7 +6,7 @@
 
 conchview *conch_conchview_new(conch_cli_options const *opts) {
   conchview *v = calloc(1, sizeof(conchview));
-  v->imdata = load_image("rsrc/conch.png");
+  v->imdata = load_image("rsrc/conch.jpg");
   return v;
 }
 
