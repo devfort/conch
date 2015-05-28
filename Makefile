@@ -47,6 +47,7 @@ release_the_kraken: conch check
 
 conch: \
   blastlist.o \
+  blast-render.o \
   caca-driver.o \
   colors.o \
   common-image.o \

@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "blast-render.h"
 #include "detailview-render.h"
 #include "listview.h"
 #include "listview-render.h"
@@ -10,11 +11,6 @@
 
 #define PADDING_TOP 1
 #define PADDING_BOTTOM 1
-
-extern char **generate_wrapped_blast(blast *blast, int max_line_length);
-
-extern void render_blast(WINDOW *window, char **blast_lines, int y,
-                         int gutter_x, chtype highlight);
 
 int calculate_summary_blast_height(blast *blast, int usable_window_width) {
   wordwrap_s wrap;
@@ -94,9 +90,9 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   }
 
   // Render the blast at 0,0 on the pad
-  char **blast_lines =
-      generate_wrapped_blast(v->blastlist->current, rect->width - summary_offset);
-  render_blast(pad, blast_lines, 0, summary_offset, ' ');
+  char **blast_lines = conch_generate_wrapped_blast(
+      v->blastlist->current, rect->width - summary_offset);
+  conch_blast_render(pad, blast_lines, 0, summary_offset, ' ');
   wrap_lines_free(blast_lines);
 
   // Flush renders to ncurses internal state.
