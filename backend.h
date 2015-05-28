@@ -38,6 +38,7 @@ typedef struct {
   uint16_t page_size;
   char *host;
   char *database;
+  char *username;
 } settings;
 
 typedef struct mouthpiece mouthpiece;

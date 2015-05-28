@@ -69,7 +69,7 @@ conch: \
   strutils.o \
   wordwrap.o
 
-blast: blast.o backend.o strutils.o
+blast: blast.o backend.o strutils.o config.o
 
 blast-render-check: blast-render.o blastlist.o strutils.o
 blastlist-check: blastlist.o backend.o strutils.o

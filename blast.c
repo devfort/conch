@@ -4,11 +4,8 @@
 #include <string.h>
 #include <getopt.h>
 
-#include <lua.h>
-#include <lualib.h>
-#include <lauxlib.h>
-
 #include "strutils.h"
+#include "config.h"
 #include "backend.h"
 
 #define READ_BUFFER_SIZE 1000
@@ -24,8 +21,7 @@ typedef struct {
 } blast_options;
 
 blast_options blast_parse_command_line_args(int argc, char **argv);
-blast_options blast_parse_config_file(char *filename);
-void blast_merge_options(blast_options *main, blast_options *extra);
+void blast_merge_options(blast_options *main, settings *extra);
 
 void blast_usage(char *arg0) {
   printf("Usage: %s [options] 'message'\n", arg0);
@@ -77,23 +73,18 @@ char *get_ext_msg(blast_options options) {
 int main(int argc, char **argv) {
   int exit_code = 0;
   blast_options options = blast_parse_command_line_args(argc, argv);
-  blast_options config_options = blast_parse_config_file(options.config_filename);
-  blast_merge_options(&options, &config_options);
+  settings config = conch_load_config(options.config_filename);
+  blast_merge_options(&options, &config);
 
   if (options.username == NULL) {
     options.help = true;
   }
-
-  printf("username: %s\n", config_options.username);
 
   if (options.help || argv[optind] == NULL) {
     blast_usage(argv[0]);
     exit_code = 1;
   } else {
     char *msg = stralleycat(argc - optind, argv + optind);
-    settings config = {
-      .page_size = 1,
-    };
     mouthpiece *mp = conch_connect(config);
 
     char *ext_msg = get_ext_msg(options);
@@ -104,6 +95,7 @@ int main(int argc, char **argv) {
       exit_code = 1;
     }
     if (options.verbose) {
+      printf("posting as: %s\n", options.username);
       printf("blast id: %" PRIid "\n", result->post);
     }
     conch_blastresult_free(result);
@@ -117,7 +109,7 @@ int main(int argc, char **argv) {
 
 blast_options blast_parse_command_line_args(int argc, char **argv) {
   blast_options parsed_options = {
-    .config_filename = "~/.conchrc",
+    .config_filename = DEFAULT_CONFIG_LOCATION,
     .extended = false,
     .help = false
   };
@@ -163,22 +155,7 @@ blast_options blast_parse_command_line_args(int argc, char **argv) {
   return parsed_options;
 }
 
-blast_options blast_parse_config_file(char *filename) {
-  int idx;
-  char *config_path = expand_home(filename);
-  blast_options options;
-  lua_State *L = luaL_newstate();
-  luaL_dofile(L, config_path);
-  free(config_path);
-
-  lua_getglobal(L, "username");
-  idx = lua_gettop(L);
-  options.username = strclone(lua_tostring(L, idx));
-
-  return options;
-}
-
-void blast_merge_options(blast_options *main, blast_options *extra) {
+void blast_merge_options(blast_options *main, settings *extra) {
   if (!main->username) {
     main->username = extra->username;
   }
