@@ -15,8 +15,6 @@ typedef struct {
 
 typedef struct window_chrome_s {
   int border_width;
-  int origin_x;
-  int origin_y;
   int padding_x;
 } window_chrome_s;
 extern window_chrome_s chrome;

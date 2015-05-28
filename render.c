@@ -11,7 +11,7 @@
 #include "detailview-render.h"
 
 window_chrome_s chrome = {
-  .border_width = 1, .origin_x = 0, .origin_y = 0, .padding_x = 1,
+  .border_width = 1, .padding_x = 1,
 };
 
 // Placeholder for status message
@@ -26,8 +26,8 @@ static bool show_spinner = false;
 
 static void render_clock(WINDOW *window, char *clock_text) {
   int max_x = getmaxx(window);
-  mvwaddstr(window, chrome.origin_y,
-            max_x - strlen(clock_text) - chrome.padding_x, clock_text);
+  mvwaddstr(window, 0, max_x - strlen(clock_text) - chrome.padding_x,
+            clock_text);
 }
 
 static void generate_clock_text(WINDOW *window, int time_str_limit,
@@ -66,10 +66,10 @@ static void render_chrome(WINDOW *window, char *title_text) {
   int max_x = getmaxx(window);
   int last_line = getmaxy(window) - 1;
 
-  mvwhline(window, chrome.origin_y, chrome.origin_x, ACS_HLINE, max_x);
-  mvwhline(window, last_line, chrome.origin_x, ACS_HLINE, max_x);
+  mvwhline(window, 0, 0, ACS_HLINE, max_x);
+  mvwhline(window, last_line, 0, ACS_HLINE, max_x);
 
-  mvwaddstr(window, chrome.origin_y, chrome.padding_x, title_text);
+  mvwaddstr(window, 0, chrome.padding_x, title_text);
 }
 
 void conch_status_clear() { status[0] = '\0'; }
@@ -85,7 +85,7 @@ static void render_status_message(WINDOW *window) {
     return;
   }
   int center_offset = (getmaxx(window) - len + 2 /* whitespace padding */) / 2;
-  mvwprintw(window, chrome.origin_y, center_offset, " %s ", status);
+  mvwprintw(window, 0, center_offset, " %s ", status);
 }
 
 void render_view(WINDOW *window, view_type current_view, void *view_state) {
