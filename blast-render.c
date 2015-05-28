@@ -3,24 +3,26 @@
 #include <string.h>
 
 #include "blastlist.h"
+#include "colors.h"
 #include "blast-render.h"
 #include "strutils.h"
 
-int conch_blast_render(WINDOW *window, char **blast_lines, int y, int x) {
+int conch_blast_render(WINDOW *window, drawlist *l, int y, int x) {
   int i;
-  for (i = 0; blast_lines[i] != NULL; i++) {
-    mvwaddnstr(window, y + i, x, blast_lines[i], strlen(blast_lines[i]));
+  for (i = 0; l->content[i] != NULL; i++) {
+    mvwaddnstr(window, y + i, x, l->content[i], strlen(l->content[i]));
   }
   return i;
 }
 
-char **conch_blast_prepare(blast *blast, int width, int *nlines) {
+drawlist *conch_blast_prepare(blast *blast, int width, int *nlines) {
   *nlines = 0;
 
   if (blast == NULL) {
     return NULL;
   }
 
+  drawlist *instructions = calloc(1, sizeof(drawlist));
   char *message;
   if (blast->extended) {
     message = strcopycat(blast->content, BLAST_EXTENDED_MARKER);
@@ -52,5 +54,14 @@ char **conch_blast_prepare(blast *blast, int width, int *nlines) {
   // Terminate the blast lines
   wrapped_blast[*nlines] = NULL;
 
-  return wrapped_blast;
+  instructions->content = wrapped_blast;
+
+  return instructions;
+}
+
+void conch_drawlist_free(drawlist *l) {
+  if (l != NULL) {
+    wrap_lines_free(l->content);
+  }
+  free(l);
 }

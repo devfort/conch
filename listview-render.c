@@ -53,19 +53,19 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
   int blast_y = rect->top + TIMELINE_INDICATOR_HEIGHT;
   int available_y = rect->height - 2 * TIMELINE_INDICATOR_HEIGHT;
 
-  char **wrapped_blast;
+  drawlist *dl;
 
   while (1) {
     int blast_lines;
-    wrapped_blast = conch_blast_prepare(blast, blast_width, &blast_lines);
-    blast_lines = conch_blast_render(window, wrapped_blast, blast_y, blast_x);
+    dl = conch_blast_prepare(blast, blast_width, &blast_lines);
+    blast_lines = conch_blast_render(window, dl, blast_y, blast_x);
 
     // Draw highlight
     if (blast == lv->blasts->current) {
       mvwvline(window, blast_y, rect->left, ' ' | COLOR_PAIR(SELECTED_COLOR),
                blast_lines);
     }
-    wrap_lines_free(wrapped_blast);
+    conch_drawlist_free(dl);
 
     blast_y += BLAST_PADDING_BOTTOM + blast_lines;
     available_y -= BLAST_PADDING_BOTTOM + blast_lines;

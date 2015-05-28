@@ -7,7 +7,14 @@
 
 #define BLAST_EXTENDED_MARKER " [...]"
 
-int conch_blast_render(WINDOW *window, char **blast_lines, int y, int x);
-char **conch_blast_prepare(blast *blast, int width, int *nlines);
+typedef struct {
+  char **content;
+  unsigned int marker_rel_y;
+  unsigned int marker_rel_x;
+} drawlist;
+
+int conch_blast_render(WINDOW *window, drawlist *l, int y, int x);
+drawlist *conch_blast_prepare(blast *blast, int width, int *nlines);
+void conch_drawlist_free(drawlist *l);
 
 #endif /* _BLAST_RENDER_H */
