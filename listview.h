@@ -11,6 +11,7 @@ typedef struct listview {
   blast *latest_read;
   blast *top;
   blast *bottom;
+  bool render_from_bottom;
   bool stick_to_top;
   bool at_top;
   char *search_term;

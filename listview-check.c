@@ -183,19 +183,27 @@ START_TEST(test_listview_cursor_movement_scroll_down) {
 
   ck_assert_ptr_eq(lv->top, lv->blasts->head);
   ck_assert_ptr_eq(lv->top, lv->blasts->current);
+  ck_assert_int_eq(lv->render_from_bottom, false);
 
   // We can move forward
   conch_listview_select_next_blast(lv);
 
   ck_assert_ptr_eq(lv->top, lv->blasts->current->prev);
   ck_assert_ptr_eq(lv->blasts->current, lv->blasts->head->next);
+  ck_assert_ptr_eq(lv->blasts->current, lv->bottom);
+  ck_assert_int_eq(lv->render_from_bottom, true);
 
-  // Moving past bottom should move the whole window down
+  // Moving past bottom should push the whole window down, meaning that
+  // both bottom and current should be adjusted.
+  //
+  // We don't adjust top when moving down because only the render loop can
+  // compute which blast is actually at the top.
   conch_listview_select_next_blast(lv);
 
-  ck_assert_ptr_eq(lv->top, lv->blasts->current->prev);
   ck_assert_ptr_eq(lv->blasts->current, lv->blasts->head->next->next);
   ck_assert_ptr_eq(lv->bottom, lv->blasts->tail);
+  ck_assert_ptr_eq(lv->blasts->current, lv->bottom);
+  ck_assert_int_eq(lv->render_from_bottom, true);
 
   conch_listview_free(lv);
   conch_blastlist_free(bl);
@@ -211,19 +219,25 @@ START_TEST(test_listview_cursor_movement_scroll_up) {
   lv->top = lv->blasts->head->next;
   lv->bottom = lv->blasts->tail;
   lv->blasts->current = lv->blasts->tail;
+  lv->render_from_bottom = true;
 
   // We can move up
   conch_listview_select_prev_blast(lv);
 
   ck_assert_ptr_eq(lv->top, lv->blasts->head->next);
   ck_assert_ptr_eq(lv->blasts->current, lv->blasts->head->next);
+  ck_assert_int_eq(lv->render_from_bottom, false);
 
-  // Moving past top should push the whole window up
+  // Moving past top should push the whole window up, meaning that both top and
+  // current should be adjusted.
+  //
+  // We don't adjust bottom when moving up because only the render loop can
+  // compute which blast is actually at the bottom.
   conch_listview_select_prev_blast(lv);
 
   ck_assert_ptr_eq(lv->top, lv->blasts->head);
   ck_assert_ptr_eq(lv->top, lv->blasts->current);
-  ck_assert_ptr_eq(lv->bottom, lv->blasts->head->next);
+  ck_assert_int_eq(lv->render_from_bottom, false);
 
   conch_listview_free(lv);
   conch_blastlist_free(bl);

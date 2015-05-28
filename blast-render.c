@@ -1,4 +1,5 @@
 #include <curses.h>
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -7,12 +8,31 @@
 #include "blast-render.h"
 #include "strutils.h"
 
-int conch_blast_render(WINDOW *window, drawlist *l, int y, int x) {
-  int i;
-  for (i = 0; l->content[i] != NULL; i++) {
-    mvwaddnstr(window, y + i, x, l->content[i], strlen(l->content[i]));
+/*
+ * Draw as many lines from blast_lines as possible on window, starting at
+ * coordinates (y, x) and continuing for at most maxlines.
+ *
+ * If invert is true, conch_blast_render will render from the bottom of the
+ * blast up.
+ *
+ * Returns the number of lines drawn.
+ */
+unsigned int conch_blast_render(WINDOW *window, drawlist *l,
+                                unsigned int nlines, int y, int x,
+                                unsigned int maxlines, bool invert) {
+  unsigned int rendered_lines = 0;
+  if (invert) {
+    for (int i = nlines - 1; i >= 0 && rendered_lines < maxlines; i--) {
+      rendered_lines++;
+      mvwaddnstr(window, y--, x, l->content[i], strlen(l->content[i]));
+    }
+  } else {
+    for (int i = 0; i < nlines && rendered_lines < maxlines; i++) {
+      rendered_lines++;
+      mvwaddnstr(window, y++, x, l->content[i], strlen(l->content[i]));
+    }
   }
-  return i;
+  return rendered_lines;
 }
 
 drawlist *conch_blast_prepare(blast *blast, int width, int *nlines) {

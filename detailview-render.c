@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -89,7 +90,8 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   int blast_height;
   drawlist *dl = conch_blast_prepare(
       v->blastlist->current, rect->width - line_no_width, &blast_height);
-  conch_blast_render(pad, dl, 0, line_no_width);
+  conch_blast_render(pad, dl, blast_height, 0, line_no_width, blast_height,
+                     false);
   conch_drawlist_free(dl);
 
   // Flush renders to ncurses internal state.
