@@ -91,7 +91,8 @@ void mvw_ncurses_display(WINDOW *window, int y, int x, caca_canvas_t *canvas) {
       wmove(window, y + cy, x + dx);
 
       for (cx = dx; cx < dx + dw; cx++) {
-        (void)attrset(caca_attr[caca_attr_to_ansi(*cvattrs++)]);
+        int chat = caca_attr[caca_attr_to_ansi(*cvattrs++)];
+        wattrset(window, chat);
         ncurses_write_utf32(window, *cvchars++);
       }
 
