@@ -39,6 +39,7 @@ void ncurses_init_caca_attrs(int *attr) {
     {.color = &SELECTED_COLOR, .fg = COLOR_RED, .bg = COLOR_RED },
     {.color = &TIMELINE_COLOR, .fg = COLOR_CYAN, .bg = COLOR_BLACK },
     {.color = &STUCK_COLOR, .fg = COLOR_GREEN, .bg = COLOR_GREEN },
+    {.color = &EXTENDED_COLOR, .fg = COLOR_MAGENTA, .bg = COLOR_BLACK },
   };
 
   for (bg = 0; bg < max; bg++) {

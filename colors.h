@@ -8,6 +8,7 @@ extern int NEW_COLOR;
 extern int SELECTED_COLOR;
 extern int TIMELINE_COLOR;
 extern int STUCK_COLOR;
+extern int EXTENDED_COLOR;
 
 void conch_init_colors();
 

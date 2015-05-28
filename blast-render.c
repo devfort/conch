@@ -8,6 +8,16 @@
 #include "blast-render.h"
 #include "strutils.h"
 
+#define BLAST_EXTENDED_MARKER "[...]"
+#define BLAST_EXTENDED_MARKER_WITH_SPACE (" " BLAST_EXTENDED_MARKER)
+
+static void render_extended_marker(WINDOW *window, unsigned int y,
+                                   unsigned int x) {
+  wattron(window, COLOR_PAIR(EXTENDED_COLOR) | A_UNDERLINE);
+  mvwaddstr(window, y, x, BLAST_EXTENDED_MARKER);
+  wattroff(window, COLOR_PAIR(EXTENDED_COLOR) | A_UNDERLINE);
+}
+
 /*
  * Draw as many lines from blast_lines as possible on window, starting at
  * coordinates (y, x) and continuing for at most maxlines.
@@ -24,12 +34,24 @@ unsigned int conch_blast_render(WINDOW *window, drawlist *l,
   if (invert) {
     for (int i = nlines - 1; i >= 0 && rendered_lines < maxlines; i--) {
       rendered_lines++;
-      mvwaddnstr(window, y--, x, l->content[i], strlen(l->content[i]));
+      mvwaddnstr(window, y, x, l->content[i], strlen(l->content[i]));
+
+      if (l->has_marker && l->marker_rel_y == i) {
+        render_extended_marker(window, y + l->marker_rel_y,
+                               x + l->marker_rel_x);
+      }
+      y--;
     }
+
   } else {
     for (int i = 0; i < nlines && rendered_lines < maxlines; i++) {
       rendered_lines++;
-      mvwaddnstr(window, y++, x, l->content[i], strlen(l->content[i]));
+      mvwaddnstr(window, y, x, l->content[i], strlen(l->content[i]));
+      if (l->has_marker && l->marker_rel_y == i) {
+        render_extended_marker(window, y + l->marker_rel_y,
+                               x + l->marker_rel_x);
+      }
+      y++;
     }
   }
   return rendered_lines;
@@ -44,21 +66,39 @@ drawlist *conch_blast_prepare(blast *blast, int width, int *nlines) {
 
   drawlist *instructions = calloc(1, sizeof(drawlist));
   char *message;
+
+  // Even though the "[...]" marker is going to be printed in a different
+  // colour, passing it in to wrap_lines is the easiest way of working out
+  // where it needs to be printed.
   if (blast->extended) {
-    message = strcopycat(blast->content, BLAST_EXTENDED_MARKER);
+    message = strcopycat(blast->content, BLAST_EXTENDED_MARKER_WITH_SPACE);
   } else {
     message = blast->content;
   }
 
   char **wrapped_blast = wrap_lines(message, width);
 
-  if (blast->extended) {
-    free(message);
-  }
-
   // Find NULL at end of lines
   while (wrapped_blast[*nlines]) {
     (*nlines)++;
+  }
+
+  // We've now wrapped the lines, find the marker on the last line.
+  if (blast->extended) {
+    free(message);
+    instructions->has_marker = true;
+
+    int last_line_idx = *nlines - 1;
+
+    char *last_line = wrapped_blast[last_line_idx];
+
+    int len = strlen(last_line);
+
+    instructions->marker_rel_y = last_line_idx;
+    instructions->marker_rel_x = len - strlen(BLAST_EXTENDED_MARKER);
+
+    // And lets be tidy and not draw it in white, then re-draw in color
+    last_line[instructions->marker_rel_x] = 0;
   }
 
   if (blast->attachment != NULL) {

@@ -74,7 +74,7 @@ conch: \
 
 blast: blast.o backend.o strutils.o config.o
 
-blast-render-check: blast-render.o blastlist.o strutils.o
+blast-render-check: blast-render.o blastlist.o strutils.o colors.o
 blastlist-check: blastlist.o backend.o strutils.o
 backend-check: backend.o strutils.o .testdb
 wordwrap-check: wordwrap.o

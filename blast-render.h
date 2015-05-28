@@ -6,10 +6,9 @@
 
 #include "blastlist.h"
 
-#define BLAST_EXTENDED_MARKER " [...]"
-
 typedef struct {
   char **content;
+  bool has_marker;
   unsigned int marker_rel_y;
   unsigned int marker_rel_x;
 } drawlist;

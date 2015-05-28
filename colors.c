@@ -16,6 +16,7 @@ int NEW_COLOR;
 int SELECTED_COLOR;
 int TIMELINE_COLOR;
 int STUCK_COLOR;
+int EXTENDED_COLOR;
 
 void conch_init_colors() {
   start_color();
