@@ -8,7 +8,7 @@ CFLAGS+=$(CDEBUG) --std=c99 -Wall -Wformat -Werror --pedantic -D_GNU_SOURCE
 BINS=conch blast
 BINS_TEST=$(patsubst %.c,%,$(wildcard *-check.c))
 
-LIBS=libpq caca imlib2
+LIBS=libpq caca MagickWand
 LIBS_TEST=check
 
 ifndef verbose
@@ -55,7 +55,6 @@ conch: \
   blast-render.o \
   caca-driver.o \
   colors.o \
-  common-image.o \
   conchview.o \
   conchview-render.o \
   listview.o \

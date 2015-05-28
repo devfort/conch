@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <wand/MagickWand.h>
+
 #include "caca-driver.h"
 #include "conchview-render.h"
 #include "conchview.h"
@@ -19,11 +21,7 @@ static char const *startup_msgs[] = {
 
 void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
   struct timeval now;
-  struct image *i = v->imdata;
 
-  if (i == NULL) {
-    return;
-  }
   gettimeofday(&now, NULL);
 
   if (!v->started) {
@@ -43,10 +41,13 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
     free(msg);
   }
 
+  size_t im_cols = MagickGetImageWidth(v->wand);
+  size_t im_rows = MagickGetImageHeight(v->wand);
+
   int lines = rect->height;
   int cols = rect->width;
 
-  float im_aspect = (float)i->h / (float)(i->w * CHARACTER_ASPECT_RATIO);
+  float im_aspect = (float)im_cols / (float)(im_rows * CHARACTER_ASPECT_RATIO);
 
   int chk_lines = cols * im_aspect;
   if (chk_lines > lines) {
@@ -55,17 +56,31 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
     lines = chk_lines;
   }
 
+  int rmask = 0x00ff0000;
+  int gmask = 0x0000ff00;
+  int bmask = 0x000000ff;
+  int amask = 0xff000000;
+  int bpp = 32;
+  int depth = 4;
+
+  struct caca_dither *dither = caca_create_dither(
+      bpp, im_cols, im_rows, depth * im_cols, rmask, gmask, bmask, amask);
+
+  char *pixels = calloc(im_cols * im_rows, 4);
+  MagickExportImagePixels(v->wand, 0, 0, im_cols, im_rows, "ARGB", CharPixel,
+                          pixels);
+
   caca_canvas_t *cv = caca_create_canvas(rect->top, rect->left);
   caca_set_canvas_size(cv, cols, lines);
   caca_clear_canvas(cv);
-  caca_set_dither_algorithm(i->dither, "none");
-  caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
-  caca_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
+  caca_set_dither_algorithm(dither, "none");
+  caca_dither_bitmap(cv, 0, 0, cols, lines, dither, pixels);
 
   int start_x = (rect->width / 2) - (cols / 2);
   int start_y = (rect->height / 2) - (lines / 2);
 
   mvw_ncurses_display(w, rect->top + start_y, rect->left + start_x, cv);
 
+  free(pixels);
   caca_free_canvas(cv);
 }

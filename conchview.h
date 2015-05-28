@@ -1,10 +1,13 @@
 #ifndef _CONCHVIEW_H
 #define _CONCHVIEW_H
 
+#include <wand/MagickWand.h>
+
 #include "cli.h"
 
 typedef struct {
-  struct image *imdata;
+  MagickWand *wand;
+  struct image *i;
   bool started;
 } conchview;
 
