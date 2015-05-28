@@ -1,6 +1,7 @@
 #ifndef _BACKEND_H
 #define _BACKEND_H
 
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -37,6 +38,7 @@ typedef struct {
   uint16_t page_size;
   char *host;
   char *database;
+  char *username;
 } settings;
 
 typedef struct mouthpiece mouthpiece;

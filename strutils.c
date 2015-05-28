@@ -6,7 +6,7 @@
 
 #include "strutils.h"
 
-char *strclone(char *c) {
+char *strclone(const char *c) {
   if (c == NULL) {
     return NULL;
   }
@@ -22,7 +22,7 @@ char *strclone(char *c) {
   return target;
 }
 
-char *strcopycat(char *c, char *d) {
+char *strcopycat(const char *c, const char *d) {
   assert(c != NULL);
   assert(d != NULL);
 
@@ -37,6 +37,45 @@ char *strcopycat(char *c, char *d) {
   strcpy(target, c);
   strcpy(target + n, d);
   return target;
+}
+
+char* stralleycat(int count, char **strs) {
+  int i = 0, size = 0;
+  int idx = 0;
+  for(i=0; i < count; i++) {
+    size += strlen(strs[i]) + 1;
+  }
+
+  char *result = malloc(size*sizeof(char));
+  if (result == NULL) {
+    fprintf(stderr, "stralleycat: could not alloc\n");
+    abort();
+  }
+
+  for(i=0; i < count; i++) {
+    strcpy(result + idx, strs[i]);
+    idx += strlen(strs[i]);
+    result[idx] = ' ';
+    idx += 1;
+  }
+  result[idx-1] = 0;
+  return result;
+}
+
+char *expand_home(const char *path) {
+  char *tilde = strchr(path, '~');
+  if (tilde != NULL) {
+    int index = tilde - path;
+    char *home = getenv("HOME");
+    char *result = calloc(sizeof(char), strlen(path) + strlen(home));
+    strncat(result, path, index);
+    strcat(result, home);
+    strcat(result, tilde + 1);
+    return result;
+  } else {
+    return strclone(path);
+  }
+  return tilde;
 }
 
 int count_lines_and_find_length_of_longest(const char *string,

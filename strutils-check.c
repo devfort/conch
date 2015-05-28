@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <unistd.h>
 
 #include "checkrunner.h"
@@ -263,9 +264,36 @@ START_TEST(test_lines_wrap_negative_length_passed) {
 }
 END_TEST
 
+START_TEST(test_stralleycat) {
+  char *strs[] = {
+    "one",
+    "two",
+    "three",
+    "four five"
+  };
+
+  char *result = stralleycat(4, strs);
+
+  ck_assert_str_eq(result, "one two three four five");
+  free(result);
+}
+END_TEST
+
+START_TEST(test_expand_home) {
+  char *path = "~/.i_am_a_file";
+  setenv("HOME", "/home/bugle", 1);
+
+  char *result = expand_home(path);
+  ck_assert_str_eq(result, "/home/bugle/.i_am_a_file");
+  free(result);
+}
+END_TEST
+
 Suite *strutils_suite(void) {
   Suite *s = suite_create("strutils");
 
+  ADD_TEST_CASE(s, test_stralleycat);
+  ADD_TEST_CASE(s, test_expand_home);
   ADD_TEST_CASE(s, test_count_lines_and_find_length_of_longest);
   ADD_TEST_CASE(s, test_count_lines_and_find_length_of_longest_with_one_line);
   ADD_TEST_CASE(

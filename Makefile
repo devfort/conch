@@ -26,6 +26,11 @@ endif
 # imglib2 requires this define when compiled without X11 support
 CFLAGS+=-DX_DISPLAY_MISSING=1
 
+# lua
+CFLAGS+=-I/usr/include/lua5.2
+# I'm so sorry, apt puts the library in a strange place and pkg-config doesn't find it
+LDFLAGS+=$(shell [ -f "/usr/lib/x86_64-linux-gnu/liblua5.2.a" ] && echo "-llua5.2" || echo "-llua")
+
 CFLAGS+=$(shell pkg-config --cflags $(LIBS))
 LDFLAGS+=$(shell pkg-config --libs $(LIBS))
 
@@ -60,13 +65,14 @@ conch: \
   detailview-render.o \
   detailview-keys.o \
   render.o \
+	config.o \
   cli.o \
   backend.o \
   keys.o \
   strutils.o \
   wordwrap.o
 
-blast: blast.o backend.o strutils.o
+blast: blast.o backend.o strutils.o config.o
 
 blast-render-check: blast-render.o blastlist.o strutils.o
 blastlist-check: blastlist.o backend.o strutils.o
@@ -74,6 +80,7 @@ backend-check: backend.o strutils.o .testdb
 wordwrap-check: wordwrap.o
 listview-check: listview.o blastlist.o strutils.o keys.o listview-keys.o detailview-keys.o detailview.o
 strutils-check: strutils.o
+config-check: config.o backend.o strutils.o
 
 logs:
 	mkdir -p logs
