@@ -85,7 +85,7 @@ config-check: config.o backend.o strutils.o
 logs:
 	mkdir -p logs
 
-conch-check: conch psycopg2 pexpect .expectdb logs conch_check.py
+conch-check: conch psycopg2 .expectdb logs conch_check.py
 	LD_LIBRARY_PATH=$(shell pg_config --libdir) venv/bin/python conch_check.py
 
 check: $(BINS_TEST)
@@ -131,16 +131,11 @@ $(BINS): %: %.o
 venv:
 	virtualenv venv --python=python2.7
 
-venv/lib/python2.7/site-packages/pexpect: venv
-	venv/bin/pip install -i http://pypi.fort/web/simple pexpect
-
 venv/lib/python2.7/site-packages/psycopg2: venv
 	venv/bin/pip install -i http://pypi.fort/web/simple psycopg2
 
 psycopg2: venv/lib/python2.7/site-packages/psycopg2
 
-pexpect: venv/lib/python2.7/site-packages/pexpect
-
 -include .deps/*.d
 
-.PHONY: all clean reformat check $(CHECKTASKS) pexpect
+.PHONY: all clean reformat check $(CHECKTASKS)
