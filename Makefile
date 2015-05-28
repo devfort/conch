@@ -124,10 +124,10 @@ venv:
 	virtualenv venv --python=python2.7
 
 venv/lib/python2.7/site-packages/pexpect: venv
-	venv/bin/pip install -i http://pypi.fort/web/simple pexpect --trusted-host=pypi.fort
+	venv/bin/pip install -i http://pypi.fort/web/simple pexpect
 
 venv/lib/python2.7/site-packages/psycopg2: venv
-	venv/bin/pip install -i http://pypi.fort/web/simple psycopg2 --trusted-host=pypi.fort
+	venv/bin/pip install -i http://pypi.fort/web/simple psycopg2
 
 psycopg2: venv/lib/python2.7/site-packages/psycopg2
 
