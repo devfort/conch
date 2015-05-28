@@ -55,17 +55,25 @@ mouthpiece *conch_test_connect(settings settings) {
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
     fprintf(stderr, "Could not start test transaction: %s",
             PQerrorMessage(mp->connection));
+    PQclear(res);
     conch_disconnect(mp);
     return NULL;
   }
+
+  PQclear(res);
+
   res = PQexec(mp->connection,
                "set transaction isolation level read uncommitted");
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
     fprintf(stderr, "Could not set isolation of test transaction: %s",
             PQerrorMessage(mp->connection));
+    PQclear(res);
     conch_disconnect(mp);
     return NULL;
   }
+
+  PQclear(res);
+
   return mp;
 }
 
@@ -76,6 +84,7 @@ void conch_disconnect(mouthpiece *mp) {
       fprintf(stderr, "Error when rolling back test transaction: %s",
               PQerrorMessage(mp->connection));
     }
+    PQclear(res);
   }
   PQfinish(mp->connection);
   free(mp);
@@ -95,6 +104,7 @@ void conch_let_silence_fall(mouthpiece *mp) {
             PQerrorMessage(mp->connection));
     abort();
   }
+  PQclear(res);
   PQsetNoticeProcessor(mp->connection, defaultNoticeProcessor, NULL);
 }
 
@@ -134,6 +144,7 @@ static resultset *pg_result_to_resultset(mouthpiece *mp,
     int n = PQntuples(query_result);
 
     if (n == 0) {
+      PQclear(query_result);
       conch_resultset_free(result);
       return NULL;
     }
@@ -158,13 +169,12 @@ static resultset *pg_result_to_resultset(mouthpiece *mp,
       } else {
         blast->attachment = strcopycat(
             "http://bugle.fort/uploads/",
-            strclone(PQgetvalue(query_result, i, attachment_column)));
+            PQgetvalue(query_result, i, attachment_column));
       }
       if (!PQgetlength(query_result, i, extended_column)) {
         blast->extended = NULL;
       } else {
-        blast->extended =
-            strclone(PQgetvalue(query_result, i, extended_column));
+        blast->extended = strclone(PQgetvalue(query_result, i, extended_column));
       }
     }
   }
@@ -323,6 +333,7 @@ void conch_resultset_free(resultset *result) {
     free(result->blasts[i].user);
     free(result->blasts[i].attachment);
     free(result->blasts[i].posted_at);
+    free(result->blasts[i].extended);
   }
   free(result->blasts);
   free(result);

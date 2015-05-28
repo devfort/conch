@@ -73,6 +73,9 @@ START_TEST(test_has_at_least_one_attachment) {
     }
   }
   ck_assert(found);
+
+  conch_resultset_free(recent);
+  conch_disconnect(mp);
 }
 END_TEST
 
@@ -89,6 +92,9 @@ START_TEST(test_has_at_least_one_extended) {
     }
   }
   ck_assert(found);
+
+  conch_resultset_free(recent);
+  conch_disconnect(mp);
 }
 END_TEST
 
@@ -119,6 +125,7 @@ START_TEST(test_can_page_forward_one_page) {
   resultset *back_to_the_future = conch_blasts_after(mp, paster->after_token);
   assert_valid_resultset(mp, back_to_the_future);
 
+  conch_resultset_free(paster);
   conch_resultset_free(recent);
   conch_resultset_free(past);
   conch_resultset_free(back_to_the_future);
@@ -129,11 +136,17 @@ END_TEST
 START_TEST(test_can_silence_everything) {
   settings settings = {.page_size = 10 };
   mouthpiece *mp = conch_test_connect(settings);
+
   ck_assert_ptr_ne(mp, NULL);
+
   conch_let_silence_fall(mp);
+
   resultset *results = conch_recent_blasts(mp);
+
   ck_assert_ptr_eq(results, NULL);
+
   conch_disconnect(mp);
+  conch_resultset_free(results);
 }
 END_TEST
 
@@ -194,6 +207,7 @@ START_TEST(test_is_notified_on_new_blasts) {
   post_or_fail(real_mp, "DRMacIver", "A test message");
   ck_assert_int_eq(1, conch_notifications_poll(&notify));
 
+  conch_disconnect(real_mp);
   conch_disconnect(mp);
 }
 END_TEST
@@ -211,6 +225,7 @@ START_TEST(test_clears_notification_on_read) {
   ck_assert_int_eq(1, conch_notifications_await(&notify, 200));
   ck_assert_int_eq(0, conch_notifications_await(&notify, 200));
 
+  conch_disconnect(real_mp);
   conch_disconnect(mp);
 }
 END_TEST
