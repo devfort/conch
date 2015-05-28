@@ -67,7 +67,7 @@ char *expand_home(const char *path) {
   if (tilde != NULL) {
     int index = tilde - path;
     char *home = getenv("HOME");
-    char *result = malloc(strlen(path) + strlen(home) - 1);
+    char *result = calloc(sizeof(char), strlen(path) + strlen(home));
     strncat(result, path, index);
     strcat(result, home);
     strcat(result, tilde + 1);
