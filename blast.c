@@ -127,9 +127,7 @@ blast_options blast_parse_command_line_args(int argc, char **argv) {
   while ((opt = getopt_long(argc, argv, "c:u:a:ev", longopts, NULL)) != -1) {
     switch (opt) {
     case 'c':
-      if (optarg) {
-        parsed_options.config_filename = optarg;
-      }
+      parsed_options.config_filename = optarg;
       break;
     case 'u':
       parsed_options.username = optarg;
