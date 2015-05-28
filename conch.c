@@ -193,4 +193,5 @@ terminate:
   conch_conchview_free(cv);
   conch_detailview_free(dv);
   conch_listview_free(lv);
+  conch_disconnect(conn);
 }

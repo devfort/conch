@@ -5,7 +5,7 @@
 #include "common-image.h"
 
 conchview *conch_conchview_new(conch_cli_options const *opts) {
-  conchview *v = malloc(sizeof(conchview));
+  conchview *v = calloc(1, sizeof(conchview));
   v->imdata = load_image("rsrc/conch.png");
   return v;
 }
