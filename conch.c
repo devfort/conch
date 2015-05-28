@@ -196,6 +196,8 @@ int main(int argc, char **argv) {
 
 terminate:
   endwin();
+  conch_blastlist_free(bl);
   conch_conchview_free(cv);
+  conch_detailview_free(dv);
   conch_listview_free(lv);
 }
