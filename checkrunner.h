@@ -7,6 +7,10 @@
 #include <check.h>
 #pragma clang diagnostic pop
 
+#define ASSERT_PTR_NULL(ptr) ck_assert_ptr_eq(ptr, NULL)
+#define ASSERT_PTR_NOT_NULL(ptr) ck_assert_ptr_ne(ptr, NULL)
+#define ASSERT_STRNCMP_EQUAL(a, b, n) ck_assert(strncmp(a, b, n) == 0)
+
 /*
  * Run a check suite. Example:
  *

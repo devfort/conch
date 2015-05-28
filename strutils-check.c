@@ -4,9 +4,6 @@
 
 #include "strutils.h"
 
-#define ASSERT_PTR_NULL(ptr) ck_assert_ptr_eq(ptr, NULL)
-#define ASSERT_PTR_NOT_NULL(ptr) ck_assert_ptr_ne(ptr, NULL)
-
 START_TEST(test_count_lines_and_find_length_of_longest) {
   const char *const input = "line 1\n"
                             "much longer line 2\n"

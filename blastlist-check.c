@@ -3,9 +3,6 @@
 #include "backend.h"
 #include "blastlist.h"
 
-#define ASSERT_PTR_NULL(ptr) ck_assert_ptr_eq(ptr, NULL)
-#define ASSERT_PTR_NOT_NULL(ptr) ck_assert_ptr_ne(ptr, NULL)
-
 START_TEST(test_blastlist_new) {
   blastlist *bl = conch_blastlist_new();
 
