@@ -35,8 +35,9 @@ char **conch_generate_wrapped_blast(blast *blast, int max_line_length) {
     line++;
   }
 
-  char *attribution_string = malloc(1024);
-  sprintf(attribution_string, "—%s at %s", blast->user, blast->posted_at);
+  char *attribution_string = malloc(1024 * sizeof(char));
+  snprintf(attribution_string, 1024, "—%s at %s", blast->user,
+           blast->posted_at);
   wrapped_blast[line] = attribution_string;
 
   if (blast->extended) {
