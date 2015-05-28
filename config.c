@@ -27,7 +27,9 @@ bool use_config(const char *filename) {
   if(stat(filename, &buf) == 0) {
     return true;
   } else {
-    fprintf(stderr, "Couldn't read config file %s: %s\n", filename, strerror(errno));
+    if (!strcmp(filename, DEFAULT_CONFIG_LOCATION)) {
+      fprintf(stderr, "Couldn't read config file %s: %s\n", filename, strerror(errno));
+    }
     return false;
   }
 }
