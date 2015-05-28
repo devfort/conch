@@ -9,6 +9,7 @@
 #include "conchview.h"
 #include "common-image.h"
 
+#define CHARACTER_ASPECT_RATIO 2
 #define STATUS_MAXLEN 64
 
 static char const *startup_msgs[] = {
@@ -42,17 +43,17 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
     free(msg);
   }
 
-  int max_x = rect->width;
-
   int lines = rect->height;
   int cols = rect->width;
 
-  float im_aspect = (float)i->h / (float)(i->w * 2);
-  float wi_aspect = (float)lines / (float)cols;
+  float im_aspect = (float)i->h / (float)(i->w * CHARACTER_ASPECT_RATIO);
 
-  float conv_aspect = im_aspect / wi_aspect;
-
-  cols /= conv_aspect;
+  int chk_lines = cols * im_aspect;
+  if (chk_lines > lines) {
+    cols = lines / im_aspect;
+  } else {
+    lines = chk_lines;
+  }
 
   caca_canvas_t *cv = caca_create_canvas(rect->top, rect->left);
   caca_add_dirty_rect(cv, 0, 0, cols, lines);
@@ -62,9 +63,10 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
   caca_set_dither_algorithm(i->dither, "none");
   caca_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
 
-  int start_at = (max_x / 2) - (cols / 2);
+  int start_x = (rect->width / 2) - (cols / 2);
+  int start_y = (rect->height / 2) - (lines / 2);
 
-  mvw_ncurses_display(w, rect->top, rect->left + start_at, cv);
+  mvw_ncurses_display(w, rect->top + start_y, rect->left + start_x, cv);
 
   caca_free_canvas(cv);
 }
