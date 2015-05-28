@@ -14,9 +14,6 @@ typedef struct {
 } winrect;
 
 typedef struct window_chrome_s {
-  int blast_height;
-  int blast_left_margin;
-  int blast_padding;
   int border_width;
   int origin_x;
   int origin_y;

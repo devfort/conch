@@ -10,11 +10,15 @@
 
 #include "render.h"
 
+#define BLAST_MARGIN_LEFT 1
+#define BLAST_PADDING 2
+#define TIMELINE_INDICATOR_HEIGHT 1
+
 void render_blast(WINDOW *window, char **blast_lines, int y, int gutter_x,
                   chtype highlight) {
   // Gutter is 1 character wide because we use mvwvline
   const int gutter_width = 1;
-  const int blast_x = gutter_x + gutter_width + chrome.blast_left_margin;
+  const int blast_x = gutter_x + gutter_width + BLAST_MARGIN_LEFT;
   int i;
   for (i = 0; blast_lines[i]; i++) {
     mvwaddnstr(window, y + i, blast_x, blast_lines[i], strlen(blast_lines[i]));
@@ -62,48 +66,46 @@ static int blast_highlight(blast *blast, listview *lv) {
 }
 
 void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
-
-  const int first_blast_y = rect->top, blast_x = rect->left;
-
-  int max_y = getmaxy(window);
-
-  const int usable_lines = rect->height;
-  const int usable_window_width = rect->width;
-
-  int available_y = usable_lines;
-
   if (conch_listview_has_unread_blasts(lv)) {
     conch_status_set("unread blasts");
   }
 
-  mvwvline(window, first_blast_y, blast_x,
-           ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR), usable_lines);
+  // Draw "thread" at left of available rect. We'll write over parts of this to
+  // indicate new blasts/more blasts/selected blast.
+  mvwvline(window, rect->top, rect->left,
+           ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR), rect->height);
+
+  // If we're stuck to top, show a green box in the upper indicator position.
+  if (lv->stick_to_top) {
+    mvwvline(window, rect->top, rect->left, ACS_VLINE | COLOR_PAIR(STUCK_COLOR),
+             TIMELINE_INDICATOR_HEIGHT);
+  }
 
   // If we don't have any blasts yet, we return early.
   if (lv->blasts == NULL || lv->blasts->current == NULL) {
     return;
   }
 
+  blast *blast = lv->top;
+
   // Keep track that we are scrolling from the bottom
   bool at_bottom = (lv->bottom == lv->blasts->current);
 
-  blast *blast = lv->top;
-
   // Indicate that prior blasts are available
   if (blast->prev) {
-    mvwvline(window, chrome.border_width, blast_x,
-             ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
-  } else if (lv->stick_to_top) {
-    mvwvline(window, chrome.border_width, blast_x,
-             ACS_VLINE | COLOR_PAIR(STUCK_COLOR), 1);
+    mvwvline(window, rect->top, rect->left, ACS_VLINE | COLOR_PAIR(NEW_COLOR),
+             TIMELINE_INDICATOR_HEIGHT);
   }
 
-  // Loop until we run out of available_y or blasts
-  int blast_y = first_blast_y;
-  char **wrapped_blast;
-  while (1) {
-    wrapped_blast = generate_wrapped_blast(blast, usable_window_width);
+  // Loop until we run out of screen space or blasts
+  int blast_x = rect->left;
+  int blast_y = rect->top + TIMELINE_INDICATOR_HEIGHT;
+  int available_y = rect->height - 2 * TIMELINE_INDICATOR_HEIGHT;
 
+  char **wrapped_blast;
+
+  while (1) {
+    wrapped_blast = generate_wrapped_blast(blast, rect->width);
     render_blast(window, wrapped_blast, blast_y, blast_x,
                  blast_highlight(blast, lv));
     int blast_height = 0;
@@ -112,14 +114,14 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
     }
     wrap_lines_free(wrapped_blast);
 
-    blast_y += chrome.blast_padding + blast_height;
-    available_y -= chrome.blast_padding + blast_height;
+    blast_y += BLAST_PADDING + blast_height;
+    available_y -= BLAST_PADDING + blast_height;
 
     // See if we hit the end of the screen and exit if we did
     if (available_y <= 0) {
       // If we did, discount the padding so that you can still select the last
       // element on screen
-      available_y += chrome.blast_padding;
+      available_y += BLAST_PADDING;
       break;
     }
 
@@ -133,8 +135,7 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
 
   // Keep track of the last complete blast on screen so that the next blast key
   // press can increment top correctly. Move bottom back up the last fully
-  // rendered
-  // blast if we overflowed the space.
+  // rendered blast if we overflowed the space.
   lv->bottom = blast;
   if (available_y < 0) {
     lv->bottom = lv->bottom->prev;
@@ -147,7 +148,7 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
 
   // Indicate that more blasts are available
   if (blast->next) {
-    mvwvline(window, max_y - (2 * chrome.border_width), blast_x,
-             ACS_VLINE | COLOR_PAIR(NEW_COLOR), 1);
+    mvwvline(window, rect->bottom, rect->left,
+             ACS_VLINE | COLOR_PAIR(NEW_COLOR), TIMELINE_INDICATOR_HEIGHT);
   }
 }

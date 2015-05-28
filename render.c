@@ -11,9 +11,6 @@
 #include "detailview-render.h"
 
 window_chrome_s chrome = {
-  .blast_height = 2,
-  .blast_left_margin = 1,
-  .blast_padding = 2,
   .border_width = 1,
   .origin_x = 0,
   .origin_y = 0,

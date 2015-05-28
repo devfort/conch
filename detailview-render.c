@@ -8,8 +8,6 @@
 #include "wordwrap.h"
 #include "strutils.h"
 
-extern window_chrome_s chrome;
-
 extern char **generate_wrapped_blast(blast *blast, int max_line_length);
 
 extern void render_blast(WINDOW *window, char **blast_lines, int y,
@@ -50,12 +48,13 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   // Number of chars used to display line numbers
   const int line_no_width = 4;
 
-  // TODO: rename this method call vv
-  int summary_height = calculate_summary_blast_height(v->blastlist->current,
-                                                      rect->right - rect->left);
+  // Offset the blast summary by 2 columns so that it lines up with rendered
+  // code pad
+  const int summary_offset = 2;
 
-  // Right coordinate is inclusive. Thanks ncurses. thurses.
-  int available_width = rect->width, available_height = rect->height;
+  // TODO: rename this method call vv
+  int summary_height = calculate_summary_blast_height(
+      v->blastlist->current, rect->width - summary_offset);
 
   int code_height = 0, code_width = 0;
   if (v->blastlist->current->extended) {
@@ -67,35 +66,33 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
     // Clamp the code_column_offset here. We might have resized since we last
     // pressed a key, so this is the only place we can be sure to clamp
     // correctly
-    if (v->code_column_offset + (available_width - line_no_width) >
-        code_width) {
-      v->code_column_offset = code_width - (available_width - line_no_width);
+    if (v->code_column_offset + (rect->width - line_no_width) > code_width) {
+      v->code_column_offset = code_width - (rect->width - line_no_width);
     }
     if (v->code_column_offset < 0) {
       v->code_column_offset = 0;
     }
   }
 
-  if (v->line_offset + available_height > summary_height + code_height) {
-    v->line_offset = summary_height + code_height - available_height;
+  if (v->line_offset + rect->height > summary_height + code_height) {
+    v->line_offset = summary_height + code_height - rect->height;
   }
   if (v->line_offset < 0) {
     v->line_offset = 0;
   }
 
-  WINDOW *pad = newpad(summary_height + code_height, available_width);
+  WINDOW *pad = newpad(summary_height + code_height, rect->width);
   if (!pad) {
     fatal_error("conch_detailview_render: Could not create vertical pad");
   }
 
   // Render the blast at 0,0 on the pad
   char **blast_lines =
-      generate_wrapped_blast(v->blastlist->current, available_width);
-  render_blast(pad, blast_lines, 0, 0, ' ');
+      generate_wrapped_blast(v->blastlist->current, rect->width - summary_offset);
+  render_blast(pad, blast_lines, 0, summary_offset, ' ');
   wrap_lines_free(blast_lines);
 
-  // Render the chrome to ncurses internal state, but don't render to the
-  // screen.
+  // Flush renders to ncurses internal state.
   wnoutrefresh(window);
 
   if (v->blastlist->current->extended) {
