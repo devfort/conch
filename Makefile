@@ -47,8 +47,8 @@ LDFLAGS_TEST+=$(shell pkg-config --libs $(LIBS_TEST))
 
 all: $(BINS)
 
-release_the_kraken: conch check
-	./conch
+busy_loop:
+	while true; do git pull && (make conch || make clean conch) && ./conch -s; sleep 1; done
 
 conch: \
   blastlist.o \
