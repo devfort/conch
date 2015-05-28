@@ -10,6 +10,9 @@
 #include "listview-render.h"
 #include "detailview-render.h"
 
+#define ORIGIN_Y 0
+#define ORIGIN_X 0
+
 #define CHROME_BORDER_HEIGHT 1
 #define CHROME_PADDING_X 1
 
@@ -25,7 +28,7 @@ static bool show_spinner = false;
 
 static void render_clock(WINDOW *window, char *clock_text) {
   int max_x = getmaxx(window);
-  mvwaddstr(window, 0, max_x - strlen(clock_text) - CHROME_PADDING_X,
+  mvwaddstr(window, ORIGIN_Y, max_x - strlen(clock_text) - CHROME_PADDING_X,
             clock_text);
 }
 
@@ -65,10 +68,10 @@ static void render_chrome(WINDOW *window, char *title_text) {
   int max_x = getmaxx(window);
   int last_line = getmaxy(window) - 1;
 
-  mvwhline(window, 0, 0, ACS_HLINE, max_x);
-  mvwhline(window, last_line, 0, ACS_HLINE, max_x);
+  mvwhline(window, ORIGIN_Y, ORIGIN_X, ACS_HLINE, max_x);
+  mvwhline(window, last_line, ORIGIN_X, ACS_HLINE, max_x);
 
-  mvwaddstr(window, 0, CHROME_PADDING_X, title_text);
+  mvwaddstr(window, ORIGIN_Y, CHROME_PADDING_X, title_text);
 }
 
 void conch_status_clear() { status[0] = '\0'; }
@@ -84,7 +87,7 @@ static void render_status_message(WINDOW *window) {
     return;
   }
   int center_offset = (getmaxx(window) - len + 2 /* whitespace padding */) / 2;
-  mvwprintw(window, 0, center_offset, " %s ", status);
+  mvwprintw(window, ORIGIN_Y, center_offset, " %s ", status);
 }
 
 void render_view(WINDOW *window, view_type current_view, void *view_state) {
@@ -94,7 +97,7 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
   werase(window);
 
   if (max_y < 2 * CHROME_BORDER_HEIGHT) {
-    mvwaddstr(window, 0, 0, "Window too small! Embiggen!");
+    mvwaddstr(window, ORIGIN_Y, ORIGIN_X, "Window too small! Embiggen!");
     wrefresh(window);
     return;
   }
@@ -102,7 +105,7 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
   // The two -1s here are because ncurses co-ordinates are *inclusive*
   winrect rect = {
     .top = CHROME_BORDER_HEIGHT,
-    .left = 0,
+    .left = ORIGIN_X,
     .bottom = max_y - CHROME_BORDER_HEIGHT - 1,
     .right = max_x - 1,
     .width = max_x,
