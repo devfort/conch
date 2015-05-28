@@ -26,15 +26,16 @@ void blast_merge_options(blast_options *main, settings *extra);
 void blast_usage(char *arg0) {
   printf("Usage: %s [options] 'message'\n", arg0);
   printf("  -u username\n"
-    "  --username=username\n"
-    "  -c config\t\t\tconfig filename (defaults to ~/.conchrc)\n"
-    "  --config=config\n"
-    "  -a filename\t\t\tname of file to upload and attach to blast\n"
-    "  --attachment=filename\n"
-    "  -e\t\t\t\textended blast, will wait for input on stdin\n"
-    "  --extended=filename\t\twill read extended blast content from filename\n"
-    "  -v\n"
-    "  --verbose\t\t\tprint out blast details\n");
+         "  --username=username\n"
+         "  -c config\t\t\tconfig filename (defaults to ~/.conchrc)\n"
+         "  --config=config\n"
+         "  -a filename\t\t\tname of file to upload and attach to blast\n"
+         "  --attachment=filename\n"
+         "  -e\t\t\t\textended blast, will wait for input on stdin\n"
+         "  --extended=filename\t\twill read extended blast content from "
+         "filename\n"
+         "  -v\n"
+         "  --verbose\t\t\tprint out blast details\n");
 }
 
 char *get_ext_msg(blast_options options) {
@@ -44,7 +45,8 @@ char *get_ext_msg(blast_options options) {
       if (strcmp(options.extended_filename, "-")) {
         extfile = fopen(options.extended_filename, "r");
         if (extfile == NULL) {
-          fprintf(stderr, "Couldn't open the file: %s", options.extended_filename);
+          fprintf(stderr, "Couldn't open the file: %s",
+                  options.extended_filename);
         }
       } else {
         extfile = stdin;
@@ -59,10 +61,9 @@ char *get_ext_msg(blast_options options) {
     char *buffer = NULL;
     do {
       size += READ_BUFFER_SIZE;
-      buffer = realloc(buffer, size*sizeof(char));
-      read += fread(buffer+read, sizeof(char), READ_BUFFER_SIZE, extfile);
-    }
-    while( !feof(extfile) );
+      buffer = realloc(buffer, size * sizeof(char));
+      read += fread(buffer + read, sizeof(char), READ_BUFFER_SIZE, extfile);
+    } while (!feof(extfile));
     buffer[read] = '\0';
     return buffer;
   } else {
@@ -109,15 +110,13 @@ int main(int argc, char **argv) {
 }
 
 blast_options blast_parse_command_line_args(int argc, char **argv) {
-  blast_options parsed_options = {
-    .config_filename = DEFAULT_CONFIG_LOCATION,
-    .extended = false,
-    .help = false
-  };
+  blast_options parsed_options = {.config_filename = DEFAULT_CONFIG_LOCATION,
+                                  .extended = false,
+                                  .help = false };
 
   int opt;
   static struct option longopts[] = {
-    { "config", required_argument, NULL, 'c'},
+    { "config", required_argument, NULL, 'c' },
     { "user", required_argument, NULL, 'u' },
     { "attachment", required_argument, NULL, 'a' },
     { "extended", optional_argument, NULL, 'e' },

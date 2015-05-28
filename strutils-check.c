@@ -265,12 +265,7 @@ START_TEST(test_lines_wrap_negative_length_passed) {
 END_TEST
 
 START_TEST(test_stralleycat) {
-  char *strs[] = {
-    "one",
-    "two",
-    "three",
-    "four five"
-  };
+  char *strs[] = { "one", "two", "three", "four five" };
 
   char *result = stralleycat(4, strs);
 

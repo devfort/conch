@@ -14,15 +14,18 @@
 static void parse_config(const char *filename, settings *settings) {
   int idx;
   lua_State *L = luaL_newstate();
-  if(luaL_dofile(L, filename)) {
+  if (luaL_dofile(L, filename)) {
     fprintf(stderr, "Couldn't read config file %s\n", filename);
   } else {
-    struct { char* var; char **dest; } vars[] = {
-      {"username", &settings->username},
-      {"host", &settings->host},
-      {"database", &settings->database},
+    struct {
+      char *var;
+      char **dest;
+    } vars[] = {
+      { "username", &settings->username },
+      { "host", &settings->host },
+      { "database", &settings->database },
     };
-    for(int i=0; i<3; i++) {
+    for (int i = 0; i < 3; i++) {
       lua_getglobal(L, vars[i].var);
       idx = lua_gettop(L);
       *vars[i].dest = strclone(lua_tostring(L, idx));
@@ -39,20 +42,19 @@ static void parse_config(const char *filename, settings *settings) {
 
 static bool use_config(const char *filename) {
   struct stat buf;
-  if(stat(filename, &buf) == 0) {
+  if (stat(filename, &buf) == 0) {
     return true;
   } else {
     if (!strcmp(filename, DEFAULT_CONFIG_LOCATION)) {
-      fprintf(stderr, "Couldn't read config file %s: %s\n", filename, strerror(errno));
+      fprintf(stderr, "Couldn't read config file %s: %s\n", filename,
+              strerror(errno));
     }
     return false;
   }
 }
 
 settings conch_load_config(const char *filename) {
-  settings settings = {
-    .page_size = DEFAULT_PAGE_SIZE
-  };
+  settings settings = {.page_size = DEFAULT_PAGE_SIZE };
 
   char *config_path = expand_home(filename);
   if (use_config(config_path)) {
