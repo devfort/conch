@@ -87,7 +87,7 @@ START_TEST(test_conch_blast_prepare_extended) {
 
   ASSERT_PTR_NOT_NULL(lines);
   ck_assert_int_eq(nlines, 2);
-  ASSERT_PTR_NOT_NULL(strstr(lines[1], BLAST_EXTENDED_MARKER));
+  ASSERT_PTR_NOT_NULL(strstr(lines[0], BLAST_EXTENDED_MARKER));
   ASSERT_PTR_NULL(lines[2]);
 }
 END_TEST
