@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 #include <stdlib.h>
 #include <string.h>
 #include <curses.h>
@@ -112,13 +113,14 @@ blast *conch_listview_find_and_select_blast(listview *lv, const char *term) {
   }
 
   while (cur) {
-    char *search = strstr(cur->content, term);
+    char *search_content = strcasestr(cur->content, term);
+    char *search_author = strcasestr(cur->user, term);
 
     if (lv->bottom && cur == lv->bottom->next) {
       past_bottom = true;
     }
 
-    if (search != NULL) {
+    if (search_content || search_author) {
       break;
     }
 
