@@ -22,32 +22,26 @@ void conch_blast_render(WINDOW *window, char **blast_lines, int y, int gutter_x,
 }
 
 char **conch_generate_wrapped_blast(blast *blast, int max_line_length) {
+  int line = 0;
   char **wrapped_blast = wrap_lines(blast->content, max_line_length);
 
-  int line;
-  for (line = 0; wrapped_blast[line]; line++)
-    ;
-
-  if (blast->attachment != NULL) {
-    char *attachment = malloc(strlen(blast->attachment) + 1);
-    strcpy(attachment, blast->attachment);
-    wrapped_blast[line] = attachment;
+  // Find NULL at end of lines
+  while (wrapped_blast[line]) {
     line++;
   }
 
-  char *attribution_string = malloc(1024 * sizeof(char));
-  snprintf(attribution_string, 1024, "—%s at %s", blast->user,
-           blast->posted_at);
-  wrapped_blast[line] = attribution_string;
-
-  if (blast->extended) {
-    // Show a marker to indicate the blast has a code block with it
-    // TODO: Find a better/clearer indicator
-    wrapped_blast[line] = strcat(attribution_string, "…");
+  if (blast->attachment != NULL) {
+    wrapped_blast[line++] = strclone(blast->attachment);
   }
-  line++;
 
-  wrapped_blast[line] = NULL;
+  char const *const attachment_marker = blast->extended ? "[@]" : "   ";
+  char *attribution = malloc(1024 * sizeof(char));
+  snprintf(attribution, 1024, "—%s at %s %s", blast->user, blast->posted_at,
+           attachment_marker);
+  wrapped_blast[line++] = attribution;
+
+  // Terminate the blast lines
+  wrapped_blast[line++] = NULL;
 
   return wrapped_blast;
 }
