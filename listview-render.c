@@ -10,8 +10,8 @@
 
 #include "render.h"
 
-void render_blast(WINDOW *window, char **blast_lines, int y,
-                         int gutter_x, chtype highlight) {
+void render_blast(WINDOW *window, char **blast_lines, int y, int gutter_x,
+                  chtype highlight) {
   // Gutter is 1 character wide because we use mvwvline
   const int gutter_width = 1;
   const int blast_x = gutter_x + gutter_width + chrome.blast_left_margin;
@@ -23,8 +23,7 @@ void render_blast(WINDOW *window, char **blast_lines, int y,
   mvwvline(window, y, gutter_x, highlight, number_of_blast_lines);
 }
 
-char **generate_blast_lines(WINDOW *window, int available_width, int y,
-                            int gutter_x, blast *blast, chtype highlight) {
+char **generate_wrapped_blast(int available_width, blast *blast) {
   int blast_height = 0;
 
   char **wrapped_blast = wrap_lines(blast->content, available_width);
@@ -104,11 +103,10 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
   int blast_y = first_blast_y;
   char **wrapped_blast;
   while (1) {
-    wrapped_blast =
-        generate_blast_lines(window, usable_window_width, blast_y, blast_x,
-                             blast, blast_highlight(blast, lv));
+    wrapped_blast = generate_wrapped_blast(usable_window_width, blast);
 
-    render_blast(window, wrapped_blast, blast_y, blast_x, blast_highlight(blast, lv));
+    render_blast(window, wrapped_blast, blast_y, blast_x,
+                 blast_highlight(blast, lv));
     int blast_height = 0;
     for (int i = 0; wrapped_blast[i]; i++) {
       blast_height++;

@@ -10,11 +10,10 @@
 
 extern window_chrome_s chrome;
 
-extern char **generate_blast_lines(WINDOW *window, int available_width, int y,
-                                   int gutter_x, blast *blast,
-                                   chtype highlight);
+extern char **generate_wrapped_blast(int available_width, blast *blast);
 
-extern void render_blast(WINDOW *window, char **blast_lines, int y, int gutter_x, chtype highlight);
+extern void render_blast(WINDOW *window, char **blast_lines, int y,
+                         int gutter_x, chtype highlight);
 
 int calculate_summary_blast_height(blast *blast, int usable_window_width) {
   wordwrap_s wrap;
@@ -90,8 +89,8 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   }
 
   // Render the blast at 0,0 on the pad
-  char **blast_lines = generate_blast_lines(pad, available_width, 0, 0,
-                                            v->blastlist->current, ' ');
+  char **blast_lines =
+      generate_wrapped_blast(available_width, v->blastlist->current);
   render_blast(pad, blast_lines, 0, 0, ' ');
   wrap_lines_free(blast_lines);
 
