@@ -56,11 +56,10 @@ void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
   }
 
   caca_canvas_t *cv = caca_create_canvas(rect->top, rect->left);
-  caca_add_dirty_rect(cv, 0, 0, cols, lines);
   caca_set_canvas_size(cv, cols, lines);
-  caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
   caca_clear_canvas(cv);
   caca_set_dither_algorithm(i->dither, "none");
+  caca_set_color_ansi(cv, CACA_DEFAULT, CACA_TRANSPARENT);
   caca_dither_bitmap(cv, 0, 0, cols, lines, i->dither, i->pixels);
 
   int start_x = (rect->width / 2) - (cols / 2);
