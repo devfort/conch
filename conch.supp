@@ -117,19 +117,16 @@
 {
    imlib Loaders can never be freed
    Memcheck:Leak
-   match-leak-kinds: indirect
    ...
    fun:__imlib_LoadImage
    ...
 }
 
 {
-   imlib cant free anything
+   imlib initial context can never be freed
    Memcheck:Leak
-   match-leak-kinds: reachable
-   ...
-   fun:__imlib_LoadImage
-   ...
+   fun:malloc
+   fun:imlib_context_push
 }
 
 {

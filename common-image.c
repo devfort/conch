@@ -59,4 +59,5 @@ void unload_image(struct image *im) {
   /* Imlib_Image image = (Imlib_Image)im->priv; */
   imlib_free_image();
   caca_free_dither(im->dither);
+  free(im);
 }
