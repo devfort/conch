@@ -6,7 +6,7 @@
 #include "config.h"
 #include "strutils.h"
 
-void parse_config(char *filename, settings *settings) {
+void parse_config(const char *filename, settings *settings) {
   lua_State *L = luaL_newstate();
   luaL_dofile(L, filename);
 
@@ -15,7 +15,7 @@ void parse_config(char *filename, settings *settings) {
   settings->username = strclone(lua_tostring(L, idx));
 }
 
-settings conch_load_config(char *filename) {
+settings conch_load_config(const char *filename) {
   settings settings = {
     .page_size = DEFAULT_PAGE_SIZE
   };

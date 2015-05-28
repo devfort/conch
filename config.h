@@ -6,6 +6,6 @@
 #define DEFAULT_PAGE_SIZE 42
 #define DEFAULT_CONFIG_LOCATION "~/.conchrc"
 
-settings conch_load_config(char *filename);
+settings conch_load_config(const char *filename);
 
 #endif
