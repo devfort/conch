@@ -55,7 +55,7 @@ static void render_watermark(WINDOW *window, bool spin) {
   int max_y = getmaxy(window) - 1;
   static unsigned int spinner_state;
   static char const *spinner[] = {
-    " /dev/fort 11 ", " -dev-fort 11 ", " \\dev\\fort 11 ", " |dev|fort 11 ",
+    " /dev/fort 11 ", " —dev—fort 11 ", " \\dev\\fort 11 ", " |dev|fort 11 ",
   };
 
   // Spin, either if we've been explicitly instructed to spin, or if we have not
