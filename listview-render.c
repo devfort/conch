@@ -23,33 +23,32 @@ void render_blast(WINDOW *window, char **blast_lines, int y, int gutter_x,
   mvwvline(window, y, gutter_x, highlight, number_of_blast_lines);
 }
 
-char **generate_wrapped_blast(int available_width, blast *blast) {
-  int blast_height = 0;
+char **generate_wrapped_blast(blast *blast, int max_line_length) {
+  char **wrapped_blast = wrap_lines(blast->content, max_line_length);
 
-  char **wrapped_blast = wrap_lines(blast->content, available_width);
-  for (int i = 0; wrapped_blast[i]; i++) {
-    blast_height++;
-  }
+  int line;
+  for (line = 0; wrapped_blast[line]; line++)
+    ;
 
   if (blast->attachment != NULL) {
     char *attachment = malloc(strlen(blast->attachment) + 1);
     strcpy(attachment, blast->attachment);
-    wrapped_blast[blast_height] = attachment;
-    blast_height++;
+    wrapped_blast[line] = attachment;
+    line++;
   }
 
   char *attribution_string = malloc(1024);
   sprintf(attribution_string, "—%s at %s", blast->user, blast->posted_at);
-  wrapped_blast[blast_height] = attribution_string;
+  wrapped_blast[line] = attribution_string;
 
   if (blast->extended) {
     // Show a marker to indicate the blast has a code block with it
     // TODO: Find a better/clearer indicator
-    wrapped_blast[blast_height] = strcat(attribution_string, "…");
+    wrapped_blast[line] = strcat(attribution_string, "…");
   }
-  blast_height++;
+  line++;
 
-  wrapped_blast[blast_height] = NULL;
+  wrapped_blast[line] = NULL;
 
   return wrapped_blast;
 }
@@ -103,7 +102,7 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
   int blast_y = first_blast_y;
   char **wrapped_blast;
   while (1) {
-    wrapped_blast = generate_wrapped_blast(usable_window_width, blast);
+    wrapped_blast = generate_wrapped_blast(blast, usable_window_width);
 
     render_blast(window, wrapped_blast, blast_y, blast_x,
                  blast_highlight(blast, lv));
