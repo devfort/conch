@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <readline/readline.h>
+#include <string.h>
 #include <curses.h>
 
 #include "listview.h"
