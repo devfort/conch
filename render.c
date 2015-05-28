@@ -49,14 +49,18 @@ static void render_watermark(WINDOW *window, bool spin) {
   int max_y = getmaxy(window) - 1;
   static unsigned int spinner_state;
   static char const *spinner[] = {
-    " /dev/fort 11 ", " -dev-fort 11 ", " \\dev\\fort 11 ", " |dev|fort 11 ",
+    "              ",   "              ", "              ", "1             ",
+    "11            ",   " 11           ", "t 11          ", "rt 11         ",
+    "ort 11        ",   "fort 11       ", "/fort 11      ", "v-fort 11     ",
+    "ev\\fort 11    ",  "dev|fort 11   ", "/dev/fort 11  ", " -dev-fort 11 ",
+    " \\dev\\fort 11 ", " |dev|fort 11 ", " /dev/fort 11 ",
   };
 
   // Spin, either if we've been explicitly instructed to spin, or if we have not
   // completed a whole revolution of the spinner.
-  if (spin || spinner_state != 0) {
-    spinner_state =
-        (spinner_state + 1) % (sizeof(spinner) / sizeof(char const *));
+  static int const nstates = sizeof(spinner) / sizeof(char const *);
+  if (spin || spinner_state != (nstates - 1)) {
+    spinner_state = (spinner_state + 1) % nstates;
   }
 
   mvwaddstr(window, max_y,
