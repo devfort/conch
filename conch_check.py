@@ -5,6 +5,8 @@ import pexpect
 from pexpect import ANSI
 import time
 import psycopg2
+import os
+import signal
 
 
 class TestConchCommand(unittest.TestCase):
@@ -108,20 +110,18 @@ class TestConchCommand(unittest.TestCase):
         self.assert_screen_contains("Hello world")
 
     def assert_screen_contains(self, text):
+        self.read_all_available()
         screen = self.screen.dump()
         if text not in screen:
-            print("Expected %r to be on the screen, but the screen is:" % (
-                text,))
             print(self.screen.pretty())
-            self.fail()
+            self.fail("Expected %r to be on the screen" % (text,))
 
     def assert_screen_does_not_contain(self, text):
+        self.read_all_available()
         screen = self.screen.dump()
         if text in screen:
-            print("Expected %r to not be on the screen, but the screen is:" % (
-                text,))
             print(self.screen.pretty())
-            self.fail()
+            self.fail("Expected %r to not be on the screen" % (text,))
 
     def wait_for_loading_screen(self):
         start = time.time()
@@ -146,6 +146,26 @@ class TestConchCommand(unittest.TestCase):
             self.read_all_available()
         self.assert_screen_contains("Message %d for test" % (n,))
         self.assert_screen_does_not_contain("Message 1 for test")
+
+    def test_auto_follow_mode_auto_scrolls_to_top(self):
+        self.wait_for_loading_screen()
+        self.child.send("s")
+        self.read_all_available()
+        self.assert_screen_does_not_contain("pkqk")
+        self.blast("pkqk", "Some test message")
+        time.sleep(1)
+        self.assert_screen_contains("pkqk")
+
+    def test_signal_a_conch(self):
+        self.wait_for_loading_screen()
+        marker = "%%%%"
+        self.assert_screen_does_not_contain(marker)
+        os.kill(self.child.pid, signal.SIGUSR1)
+        time.sleep(0.5)
+        self.assert_screen_contains(marker)
+        self.child.send("@")
+        time.sleep(0.1)
+        self.assert_screen_does_not_contain(marker)
 
 
 if __name__ == '__main__':
