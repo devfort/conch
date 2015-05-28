@@ -110,6 +110,8 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
     for (int i = 0; wrapped_blast[i]; i++) {
       blast_height++;
     }
+    wrap_lines_free(wrapped_blast);
+
     blast_y += chrome.blast_padding + blast_height;
     available_y -= chrome.blast_padding + blast_height;
 
@@ -121,7 +123,6 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
       break;
     }
 
-    wrap_lines_free(wrapped_blast);
     // Exit when we run out of blasts
     if (blast->next) {
       blast = blast->next;
