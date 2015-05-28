@@ -139,7 +139,6 @@ blast *conch_listview_find_and_select_blast(listview *lv, const char *term) {
 }
 
 bool conch_listview_search_forward(listview *lv) {
-  static char *prev_term = NULL;
   char *term = calloc(1024, 1);
   int max_y = getmaxy(curscr);
   int max_x = getmaxx(curscr);
@@ -157,17 +156,17 @@ bool conch_listview_search_forward(listview *lv) {
 
   // if search is empty, use the previous one
   if (strlen(term) == 0) {
-    free(term);
-    term = prev_term;
-  }
-
-  // dont bother searching if the input it still empty
-  if (term) {
+    conch_listview_repeat_search_forward(lv);
+  } else {
     conch_listview_find_and_select_blast(lv, term);
+    lv->search_term = term;
   }
 
-  prev_term = term;
+  return true;
+}
 
+bool conch_listview_repeat_search_forward(listview *lv) {
+  conch_listview_find_and_select_blast(lv, lv->search_term);
   return true;
 }
 

@@ -32,6 +32,10 @@ keypress_result conch_listview_keypress_dispatch(int key, listview *lv) {
     conch_listview_search_forward(lv);
     break;
 
+  case 'n':
+    conch_listview_repeat_search_forward(lv);
+    break;
+
   case '\r':
   case '\n':
     return CONCH_DETAIL;
