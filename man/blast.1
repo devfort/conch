@@ -1,0 +1,54 @@
+.\" We don't entirely understand this
+.TH BLAST "1" "May 2015" "" "BLAST"
+
+.SH NAME
+blast \- a command line client for posting to bugle or conch(1)
+
+.SH SYNOPSIS
+.B blast
+[\fIOPTIONS\fR] message
+
+.SH DESCRIPTION
+\fUBlast\fR is a companion tool for posting to conch(1) or bugle. You can quickly post
+short messages or attach a file for extended contents in blasts.
+.SH OPTIONS
+.TP
+\fB\-c\fR, \fB\-\-config\fR=\fIconfig\fR
+config filename (defaults to ~/.conchrc)
+.TP
+\fB\-u\fR, \fB\-\-username\fR=\fIUSER\fR
+user to post as, overriding the config file setting
+.TP
+\fB\-a\fR, \fB\-\-attachment\fR=\fIFILENAME\fR
+name of file to upload as attachment
+.TP
+\fB\-\-extended\fR=\fIFILENAME\fR
+name of file to use for extended content of a blast. If \fB-\fR is provided it will read from \fIstdin\fR
+.TP
+\fB\-e\fR
+Interacively get content extended for a blast.
+.TP
+\fB\-v\fR, \fB\-\-verbose\fR
+Print out details of blast such as username, host and id of blast
+
+
+.SH BUGS
+
+File attachment does not currently work.
+
+.SH SEE ALSO
+conch(1)
+
+.SH AUTHOR
+.PP
+The /dev/fort 11 team:
+Adam Sven Johnson,
+Alex Stapleton,
+Anna Shipman,
+Ash Berlin,
+David MacIver,
+James Aylett,
+Nick Stenning, and
+Steve Marshall.
+
+For more information, see http://devfort.com/.
