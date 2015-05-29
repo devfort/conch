@@ -137,12 +137,17 @@ int main(int argc, char **argv) {
   current_view = VIEW_CONCH;
   current_view_state = cv;
   render_view(win, current_view, current_view_state);
+  wrefresh(win);
 
   bind_signal_handlers();
+  splash_display_cycles--;
+  wrefresh(win);
 
   // Connect to postgres and fetch initial data
   conn = wait_for_connection(&config);
   conch_notifications_init(&notifications, conn);
+  splash_display_cycles--;
+  wrefresh(win);
   bl = conch_blastlist_new();
   init_blasts(conn, bl);
   conch_listview_update(lv, bl);
