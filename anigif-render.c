@@ -88,9 +88,8 @@ void anigif_render_frame(anigif *gif, WINDOW *window, winrect *rect) {
     if (gif->delay == 0) {
       gif->delay += 10;
     }
+
+    gif->last_switch_time = now;
   }
-
-  gif->last_switch_time = now;
-
   render_wand_to_screen(gif->wand, window, rect);
 }
