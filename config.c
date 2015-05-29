@@ -14,6 +14,7 @@
 #include "strutils.h"
 
 static lua_State *L;
+static bool use_lua = false;
 
 jmp_buf savepoint;
 
@@ -23,18 +24,20 @@ static int everybody_panic(lua_State *L) {
 
 void generate_clock_text(int time_str_limit,
                                 char *time_str) {
-  lua_getglobal(L, "clock_format_func");
-  int idx = lua_gettop(L);
-  if (lua_isfunction(L, idx)) {
-    if (setjmp(savepoint) == 0) {
-      lua_call(L, 0, 1);
-      const char *result = lua_tostring(L, lua_gettop(L));
-      snprintf(time_str, time_str_limit, " %s ", result);
+  if (use_lua) {
+    lua_getglobal(L, "clock_format_func");
+    int idx = lua_gettop(L);
+    if (lua_isfunction(L, idx)) {
+      if (setjmp(savepoint) == 0) {
+        lua_call(L, 0, 1);
+        const char *result = lua_tostring(L, lua_gettop(L));
+        snprintf(time_str, time_str_limit, " %s ", result);
+        lua_pop(L, 1);
+        return;
+      }
+    } else {
       lua_pop(L, 1);
-      return;
     }
-  } else {
-    lua_pop(L, 1);
   }
 
   time_t now = time(NULL);
@@ -44,6 +47,7 @@ void generate_clock_text(int time_str_limit,
 
 static void parse_config(const char *filename, settings *settings) {
   int idx;
+  use_lua = true;
   L = luaL_newstate();
 
   lua_CFunction panic = everybody_panic;
