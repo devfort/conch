@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 typedef struct {
-  bool stick_to_top;
+  bool stick_to_head;
   char *host;
   char *database;
 } conch_cli_options;

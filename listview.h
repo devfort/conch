@@ -13,14 +13,14 @@ typedef struct listview {
   blast *bottom;
   int page_size;
   bool render_from_bottom;
-  bool stick_to_top;
-  bool at_top;
+  bool stick_to_head;
+  bool at_head;
   char *search_term;
 } listview;
 
 listview *conch_listview_new(conch_cli_options const *opts);
 void conch_listview_update(listview *lv, blastlist *bl);
-void conch_listview_toggle_stick_to_top(listview *lv);
+void conch_listview_toggle_stick_to_head(listview *lv);
 void conch_listview_jump_to_bottom(listview *lv);
 void conch_listview_jump_to_top(listview *lv);
 void conch_listview_jump_to_next_unread(listview *lv);

@@ -68,25 +68,25 @@ blastlist *blastlist_fixture_new(int n) {
 }
 
 START_TEST(test_listview_new) {
-  conch_cli_options opts = {.stick_to_top = false };
+  conch_cli_options opts = {.stick_to_head = false };
   listview *lv = conch_listview_new(&opts);
 
   ASSERT_PTR_NOT_NULL(lv);
   ASSERT_PTR_NULL(lv->blasts);
   ASSERT_PTR_NULL(lv->latest_read);
-  ck_assert_int_eq(lv->stick_to_top, false);
+  ck_assert_int_eq(lv->stick_to_head, false);
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
 
   conch_listview_free(lv);
 }
 END_TEST
 
-START_TEST(test_listview_new_with_stick_to_top) {
-  conch_cli_options opts = {.stick_to_top = true };
+START_TEST(test_listview_new_with_stick_to_head) {
+  conch_cli_options opts = {.stick_to_head = true };
   listview *lv = conch_listview_new(&opts);
 
   ASSERT_PTR_NOT_NULL(lv);
-  ck_assert_int_eq(lv->stick_to_top, true);
+  ck_assert_int_eq(lv->stick_to_head, true);
 
   conch_listview_free(lv);
 }
@@ -94,7 +94,7 @@ END_TEST
 
 START_TEST(test_listview_update_null_blastlist) {
   blastlist *bl = NULL;
-  conch_cli_options opts = {.stick_to_top = false };
+  conch_cli_options opts = {.stick_to_head = false };
   listview *lv = conch_listview_new(&opts);
 
   conch_listview_update(lv, bl);
@@ -109,7 +109,7 @@ END_TEST
 
 START_TEST(test_listview_update_jumps_to_top_if_sticky) {
   blastlist *bl = blastlist_fixture_new(1);
-  conch_cli_options opts = {.stick_to_top = true };
+  conch_cli_options opts = {.stick_to_head = true };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
@@ -131,24 +131,24 @@ START_TEST(test_listview_update_jumps_to_top_if_sticky) {
 }
 END_TEST
 
-START_TEST(test_listview_toggle_stick_to_top) {
-  conch_cli_options opts = {.stick_to_top = true };
+START_TEST(test_listview_toggle_stick_to_head) {
+  conch_cli_options opts = {.stick_to_head = true };
   listview *lv = conch_listview_new(&opts);
 
   ASSERT_PTR_NOT_NULL(lv);
-  ck_assert_int_eq(lv->stick_to_top, true);
+  ck_assert_int_eq(lv->stick_to_head, true);
 
-  conch_listview_toggle_stick_to_top(lv);
-  ck_assert_int_eq(lv->stick_to_top, false);
+  conch_listview_toggle_stick_to_head(lv);
+  ck_assert_int_eq(lv->stick_to_head, false);
 
-  conch_listview_toggle_stick_to_top(lv);
-  ck_assert_int_eq(lv->stick_to_top, true);
+  conch_listview_toggle_stick_to_head(lv);
+  ck_assert_int_eq(lv->stick_to_head, true);
 }
 END_TEST
 
 START_TEST(test_listview_cursor_movement) {
   blastlist *bl = blastlist_fixture_new(2);
-  conch_cli_options opts = {.stick_to_top = false };
+  conch_cli_options opts = {.stick_to_head = false };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
@@ -175,7 +175,7 @@ END_TEST
 
 START_TEST(test_listview_cursor_movement_scroll_down) {
   blastlist *bl = blastlist_fixture_new(3);
-  conch_cli_options opts = {.stick_to_top = false };
+  conch_cli_options opts = {.stick_to_head = false };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
@@ -212,7 +212,7 @@ END_TEST
 
 START_TEST(test_listview_cursor_movement_scroll_up) {
   blastlist *bl = blastlist_fixture_new(3);
-  conch_cli_options opts = {.stick_to_top = false };
+  conch_cli_options opts = {.stick_to_head = false };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
@@ -246,7 +246,7 @@ END_TEST
 
 START_TEST(test_listview_cursor_movement_updates_latest_read) {
   blastlist *bl = blastlist_fixture_new(3);
-  conch_cli_options opts = {.stick_to_top = false };
+  conch_cli_options opts = {.stick_to_head = false };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
@@ -303,7 +303,7 @@ END_TEST
 
 START_TEST(test_listview_jump_to_top) {
   blastlist *bl = blastlist_fixture_new(3);
-  conch_cli_options opts = {.stick_to_top = false };
+  conch_cli_options opts = {.stick_to_head = false };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
@@ -321,13 +321,13 @@ END_TEST
 
 START_TEST(test_listview_jump_to_top_updates_latest_read) {
   blastlist *bl = blastlist_fixture_new(1);
-  conch_cli_options opts = {.stick_to_top = false };
+  conch_cli_options opts = {.stick_to_head = false };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
   ck_assert_ptr_eq(lv->latest_read, bl->head);
 
-  // Don't update latest_read on update when stick_to_top disabled
+  // Don't update latest_read on update when stick_to_head disabled
   blastdata b = {
     .id = 1,
   };
@@ -351,7 +351,7 @@ START_TEST(test_listview_jump_to_top_updates_latest_read) {
 END_TEST
 
 START_TEST(test_listview_has_unread_blasts) {
-  conch_cli_options opts = {.stick_to_top = false };
+  conch_cli_options opts = {.stick_to_head = false };
   listview *lv = conch_listview_new(&opts);
 
   ck_assert_int_eq(conch_listview_has_unread_blasts(lv), false);
@@ -378,7 +378,7 @@ END_TEST
 
 START_TEST(test_listview_jump_to_next_unread) {
   blastlist *bl = blastlist_fixture_new(1);
-  conch_cli_options opts = {.stick_to_top = false };
+  conch_cli_options opts = {.stick_to_head = false };
   listview *lv = conch_listview_new(&opts);
 
   conch_listview_jump_to_next_unread(lv);
@@ -412,7 +412,7 @@ END_TEST
 START_TEST(test_listview_search_forward) {
   blastlist *bl = blastlist_fixture_new(3);
 
-  conch_cli_options opts = {.stick_to_top = false };
+  conch_cli_options opts = {.stick_to_head = false };
   listview *lv = conch_listview_new(&opts);
   conch_listview_update(lv, bl);
 
@@ -436,9 +436,9 @@ Suite *listview_suite(void) {
   Suite *s = suite_create("listview");
 
   ADD_TEST_CASE(s, test_listview_new);
-  ADD_TEST_CASE(s, test_listview_new_with_stick_to_top);
+  ADD_TEST_CASE(s, test_listview_new_with_stick_to_head);
   ADD_TEST_CASE(s, test_listview_update_null_blastlist);
-  ADD_TEST_CASE(s, test_listview_toggle_stick_to_top);
+  ADD_TEST_CASE(s, test_listview_toggle_stick_to_head);
   ADD_TEST_CASE(s, test_listview_cursor_movement);
   ADD_TEST_CASE(s, test_listview_cursor_movement_updates_latest_read);
   ADD_TEST_CASE(s, test_listview_jump_to_top);

@@ -39,7 +39,7 @@ keypress_result conch_listview_keypress_dispatch(int key, listview *lv) {
     break;
 
   case 's':
-    conch_listview_toggle_stick_to_top(lv);
+    conch_listview_toggle_stick_to_head(lv);
     break;
 
   case '/':

@@ -8,8 +8,8 @@
 
 listview *conch_listview_new(conch_cli_options const *opts) {
   listview *lv = calloc(1, sizeof(listview));
-  lv->stick_to_top = opts->stick_to_top;
-  lv->at_top = true;
+  lv->stick_to_head = opts->stick_to_head;
+  lv->at_head = true;
   lv->page_size = 0;
   return lv;
 }
@@ -30,13 +30,13 @@ void conch_listview_update(listview *lv, blastlist *bl) {
     lv->top = lv->blasts->current;
   }
 
-  if (lv->at_top && lv->stick_to_top) {
+  if (lv->at_head && lv->stick_to_head) {
     conch_listview_jump_to_top(lv);
   }
 }
 
-void conch_listview_toggle_stick_to_top(listview *lv) {
-  lv->stick_to_top ^= true;
+void conch_listview_toggle_stick_to_head(listview *lv) {
+  lv->stick_to_head ^= true;
 }
 
 void conch_listview_jump_to_top(listview *lv) {
@@ -45,7 +45,7 @@ void conch_listview_jump_to_top(listview *lv) {
   lv->latest_read = lv->blasts->current = lv->blasts->head;
   lv->top = lv->latest_read;
   lv->render_from_bottom = false;
-  lv->at_top = true;
+  lv->at_head = true;
 }
 
 void conch_listview_jump_to_next_unread(listview *lv) {
@@ -59,7 +59,7 @@ void conch_listview_jump_to_next_unread(listview *lv) {
     lv->top = lv->latest_read;
   }
   lv->render_from_bottom = false;
-  lv->at_top = (lv->blasts->current->prev == NULL);
+  lv->at_head = (lv->blasts->current->prev == NULL);
 }
 
 void conch_listview_select_next_blast(listview *lv) {
@@ -75,7 +75,7 @@ void conch_listview_select_next_blast(listview *lv) {
   if (lv->bottom == lv->blasts->current) {
     lv->render_from_bottom = true;
   }
-  lv->at_top = (lv->blasts->current->prev == NULL);
+  lv->at_head = (lv->blasts->current->prev == NULL);
 }
 
 void conch_listview_jump_to_bottom(listview *lv) {
@@ -104,7 +104,7 @@ void conch_listview_select_prev_blast(listview *lv) {
   if (lv->top == lv->blasts->current) {
     lv->render_from_bottom = false;
   }
-  lv->at_top = (lv->blasts->current->prev == NULL);
+  lv->at_head = (lv->blasts->current->prev == NULL);
 }
 
 bool conch_listview_has_unread_blasts(listview *lv) {

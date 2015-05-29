@@ -17,7 +17,7 @@ static void merge_config(conch_cli_options *options, settings *config) {
 
 conch_cli_options conch_parse_command_line_args(int argc, char **argv) {
   conch_cli_options parsed_options = {
-    .stick_to_top = false, .host = "bugle.fort",
+    .stick_to_head = false, .host = "bugle.fort",
   };
   int opt;
   char *config_filename = DEFAULT_CONFIG_LOCATION;
@@ -35,7 +35,7 @@ conch_cli_options conch_parse_command_line_args(int argc, char **argv) {
       config_filename = optarg;
       break;
     case 's':
-      parsed_options.stick_to_top = true;
+      parsed_options.stick_to_head = true;
       break;
     case 'h':
       parsed_options.host = optarg;

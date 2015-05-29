@@ -87,7 +87,7 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
            ACS_VLINE | COLOR_PAIR(TIMELINE_COLOR), rect->height);
 
   // If we're stuck to top, show a green box in the upper indicator position.
-  if (lv->stick_to_top) {
+  if (lv->stick_to_head) {
     mvwvline(window, rect->top, rect->left, ACS_VLINE | COLOR_PAIR(STUCK_COLOR),
              TIMELINE_INDICATOR_HEIGHT);
   }
