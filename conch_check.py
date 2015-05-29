@@ -110,6 +110,7 @@ class TestConchCommand(unittest.TestCase):
             lambda x: loading_text in x, timeout=0.5,
             message="loading to start"
         )
+        self.press("@")
         return self.await(
             lambda x: loading_text not in x, timeout=5,
             message="loading to finish"
