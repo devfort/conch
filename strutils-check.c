@@ -146,16 +146,16 @@ START_TEST(test_wrap_lines_with_multiple_spaces) {
 }
 END_TEST
 
-START_TEST(test_wrap_lines_strips_leading_spaces) {
+START_TEST(test_wrap_lines_does_not_strip_leading_spaces) {
   unsigned int nout;
   char *expected[] = {
-    "We're going to need a bigger boat",
+    "      We're going to need", "      a bigger boat",
   };
 
   char **actual =
-      wrap_lines("       We're going to need a bigger boat", 35, &nout);
+      wrap_lines("      We're going to need\n      a bigger boat", 35, &nout);
 
-  ASSERT_STRARY_EQ(1, nout, expected, actual);
+  ASSERT_STRARY_EQ(2, nout, expected, actual);
 
   wrap_lines_free(actual, nout);
 }
@@ -318,7 +318,7 @@ Suite *strutils_suite(void) {
   ADD_TEST_CASE(s, test_lines_wrap_at_13);
   ADD_TEST_CASE(s, test_lines_wrap_at_30);
   ADD_TEST_CASE(s, test_wrap_lines_with_multiple_spaces);
-  ADD_TEST_CASE(s, test_wrap_lines_strips_leading_spaces);
+  ADD_TEST_CASE(s, test_wrap_lines_does_not_strip_leading_spaces);
   ADD_TEST_CASE(s, test_wrap_lines_lands_on_a_space);
   ADD_TEST_CASE(s, test_wrap_lines_empty_text);
   ADD_TEST_CASE(s, test_wrap_lines_null_text);

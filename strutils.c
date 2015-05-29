@@ -161,6 +161,7 @@ static char **appendline(char **lines, unsigned int *nlines, char *l, char *r) {
 char **wrap_lines(char const *const text, int width, unsigned int *nlines) {
   char *cursl = (char *)text;
   char *cursr = (char *)text;
+  char *linestart = (char *)text;
   char *lastbreak = NULL;
   char **result = NULL;
 
@@ -179,9 +180,19 @@ char **wrap_lines(char const *const text, int width, unsigned int *nlines) {
     if (*cursr == '\n') {
       result = appendline(result, nlines, cursl, cursr);
       cursr++;
-      cursl = cursr;
+      linestart = cursl = cursr;
       lastbreak = NULL;
       continue;
+    }
+
+    // Preserve any whitespace at the start of a line
+    if (linestart) {
+      if (isspace(*cursr)) {
+        cursr++;
+        continue;
+      } else {
+        linestart = NULL;
+      }
     }
 
     // If we just broke the line, skip to a non-space character
