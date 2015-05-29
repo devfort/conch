@@ -18,7 +18,6 @@ keypress_result conch_keypress_dispatch(const int key, view_type current_view,
     } else {
       return CONCH_CONCH;
     }
-
   case -1:
     break;
   default:

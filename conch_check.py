@@ -149,6 +149,16 @@ class TestConchCommand(unittest.TestCase):
         self.wait_for_loading_screen()
         self.press("n")
 
+    def test_shift_g_scrolls_to_bottom(self):
+        n = 200
+        for i in range(n):
+            self.blast("steve", "Message %d for test" % (n - i,))
+        self.wait_for_loading_screen()
+        self.press("G")
+        self.await_text("Message %d for test" % (n,))
+        self.press("g")
+        self.await_text("Message 1 for test")
+
 
 if __name__ == '__main__':
     unittest.main()

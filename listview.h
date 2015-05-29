@@ -20,6 +20,7 @@ typedef struct listview {
 listview *conch_listview_new(conch_cli_options const *opts);
 void conch_listview_update(listview *lv, blastlist *bl);
 void conch_listview_toggle_stick_to_top(listview *lv);
+void conch_listview_jump_to_bottom(listview *lv);
 void conch_listview_jump_to_top(listview *lv);
 void conch_listview_jump_to_next_unread(listview *lv);
 void conch_listview_select_next_blast(listview *lv);

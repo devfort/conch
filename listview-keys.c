@@ -8,9 +8,12 @@ keypress_result conch_listview_keypress_dispatch(int key, listview *lv) {
 
   switch (key) {
   case '0':
+  case 'g':
     conch_listview_jump_to_top(lv);
     break;
-
+  case 'G':
+    conch_listview_jump_to_bottom(lv);
+    break;
   case '.':
   case '\t':
     conch_listview_jump_to_next_unread(lv);

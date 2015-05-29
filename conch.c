@@ -64,6 +64,16 @@ void update_old_blasts(mouthpiece *conn, blastlist *bl) {
   conch_resultset_free(result);
 }
 
+void fetch_full_history(mouthpiece *conn, blastlist *bl) {
+  blast *tail = bl->tail;
+  while (true) {
+    update_old_blasts(conn, bl);
+    if (tail == bl->tail)
+      break;
+    tail = bl->tail;
+  }
+}
+
 static void handle_magic_message_from_the_operator(int signal) {
   toggle_conchview = true;
 }
@@ -160,12 +170,21 @@ int main(int argc, char **argv) {
 
     render_view(win, current_view, current_view_state);
 
+    int key = wgetch(win);
+
     if (lv->bottom != NULL && lv->bottom->next == NULL) {
       update_old_blasts(conn, bl);
     }
 
-    res =
-        conch_keypress_dispatch(wgetch(win), current_view, current_view_state);
+    // Annoying special case.
+    // If we're going to be scrolling to the bottom we need to ensure we've
+    // fetched the whole history before we enter the list view as otherwise
+    // we'll scroll only to the bottom of what's currently been fetched.
+    if (key == 'G') {
+      fetch_full_history(conn, bl);
+    }
+
+    res = conch_keypress_dispatch(key, current_view, current_view_state);
     switch (res) {
     case CONCH_NOP:
       break;

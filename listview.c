@@ -76,6 +76,15 @@ void conch_listview_select_next_blast(listview *lv) {
   lv->at_top = (lv->blasts->current->prev == NULL);
 }
 
+void conch_listview_jump_to_bottom(listview *lv) {
+  if (lv->blasts->current == NULL) {
+    return;
+  }
+  while (lv->bottom->next != NULL) {
+    conch_listview_select_next_blast(lv);
+  };
+}
+
 void conch_listview_select_prev_blast(listview *lv) {
   if (lv->blasts->current == NULL) {
     return;
