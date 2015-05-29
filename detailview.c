@@ -82,25 +82,26 @@ static char *tmp_blast_file_create(blast *b) {
 
   char *tmpdir = getenv("TMPDIR");
 #ifdef P_tmpdir
-  if (!tmpdir) {
+  if (!tmpdir || strlen(tmpdir) == 0) {
     tmpdir = P_tmpdir;
-  }
+  } else if (!tmpdir) {
 #else
-  if (!tmpdir) {
-    tmpdir = "/tmp/";
+  if (!tmpdir || strlen(tempdir) == 0) {
 #endif
+    tmpdir = "/tmp";
+  }
 
   // Try 10 times to find a non-conflicting filename.
   for (int i = 0; file == NULL && i < 10; i++) {
     // Free from last time around the loop if we had one.
     free(template);
-    template = strcopycat(tmpdir, "conch-blast.XXXXX");
+    template = strcopycat(tmpdir, "/conch-blast.XXXXXX");
 
     // This modifies template in place, and returns it (or on error returns
     // null)
     filename = mktemp(template);
 
-    if (!filename) {
+    if (!filename || filename[0] == '\0') {
       continue;
     }
 
