@@ -20,7 +20,8 @@ static void config_defaults(conch_cli_options *options) {
   options->database = DEFAULT_DATABASE_NAME;
 }
 
-static void merge_config(conch_cli_options *options, settings config, conch_cli_options defaults) {
+static void merge_config(conch_cli_options *options, settings config,
+                         conch_cli_options defaults) {
   if (!options->username) {
     options->username = config.username ? config.username : defaults.username;
   }

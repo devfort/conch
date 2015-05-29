@@ -354,8 +354,7 @@ void conch_notifications_init(notifications *notifications, mouthpiece *mp) {
 bool conch_notifications_poll(notifications *notifications) {
   PGconn *conn = notifications->mouthpiece->connection;
   if (!PQconsumeInput(conn)) {
-    fatal_error("Error listening for notifications: %s",
-                PQerrorMessage(conn));
+    fatal_error("Error listening for notifications: %s", PQerrorMessage(conn));
   }
   while (true) {
     PGnotify *notification = PQnotifies(conn);

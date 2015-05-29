@@ -41,7 +41,8 @@ static void options_defaults(blast_options *options) {
   options->database = DEFAULT_DATABASE_NAME;
 }
 
-void blast_merge_options(blast_options *options, settings config, blast_options defaults) {
+void blast_merge_options(blast_options *options, settings config,
+                         blast_options defaults) {
   if (!options->username) {
     options->username = config.username ? config.username : defaults.username;
   }
