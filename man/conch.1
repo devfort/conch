@@ -9,8 +9,8 @@ conch \- ncurses client for bugle.
 [\fIOPTIONS\fR]
 
 .SH DESCRIPTION
-\fUConch\fR is for people who don't think \fUbugle\fR, running on an
-outdated and unsupported version of \fUDjango\fR, is nearly insecure
+\fIConch\fR is for people who don't think \fIbugle\fR, running on an
+outdated and unsupported version of \fIDjango\fR, is nearly insecure
 enough. It supports reading the blast timeline, posting new blasts,
 displaying (gist-like) extended blasts, and animated GIFs.
 
@@ -36,7 +36,7 @@ database name, overriding the config file setting (default: bugle)
 
 .SH CONFIGURATION FILE
 
-\fUConch\fR's configuration file is written in \fULua\fR, an
+\fIConch\fR's configuration file is written in \fILua\fR, an
 "extension programming language designed to support general procedural
 programming with data description facilities". The following variables
 are supported, and are expressed in the file in the following format:
@@ -48,7 +48,7 @@ variable = 'string value'
 variable = 42 -- int value
 .fi
 
-Since configuration files are interpreted as \fULua\fR on startup, any
+Since configuration files are interpreted as \fILua\fR on startup, any
 variables may be computed as runtime.
 
 .TP
@@ -64,18 +64,18 @@ from the database. Defaults to \fB42\fR.
 
 .TP
 \fBclock_format_func\fR
-Replace the default clock; this should be a \fULua\fR function which
+Replace the default clock; this should be a \fILua\fR function which
 returns the value to be printed.
 
 .SH BUGS
-Because \fUconch\fR (and \fUbugle\fR) are designed for use in a fort,
+Because \fIconch\fR (and \fIbugle\fR) are designed for use in a fort,
 there is no security whatsoever.
 
 When loading attachments for the detail view, we block rather than
 loading in a second thread and showing the spinner.
 
 Non-fatal errors in the backend are reported by writing to
-\fUstderr\fR, which once we're running ncurses is unpleasant. We
+\fIstderr\fR, which once we're running ncurses is unpleasant. We
 should instead create a modal dialogue in ncurses for displaying
 dismissable alerts.
 
@@ -107,7 +107,7 @@ WebM support is broken.
 Audio is not supported for video formats (or audio formats).
 
 .SH SEE ALSO
-blast(1)
+\fIblast\fR(1)
 
 .SH AUTHORS
 .PP
