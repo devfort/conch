@@ -1,11 +1,14 @@
 CDEBUG?=-g
 CFLAGS?=
 LDFLAGS?=
+PREFIX?=/usr/local
+DESTDIR?=
 DEPS=.deps
 
 CFLAGS+=$(CDEBUG) --std=c99 -Wall -Wformat -Werror --pedantic -D_GNU_SOURCE
 
 BINS=conch blast
+MANPAGES=$(wildcard man/*)
 BINS_TEST=$(patsubst %.c,%,$(wildcard *-check.c))
 
 LIBS=libpq caca MagickWand
@@ -50,6 +53,15 @@ LDFLAGS_TEST=$(LDFLAGS)
 LDFLAGS_TEST+=$(shell pkg-config --libs $(LIBS_TEST))
 
 all: $(BINS)
+
+bindir = $(PREFIX)/bin
+man1dir = $(PREFIX)/man/man1
+INSTALLDIRS = $(DESTDIR)$(man1dir) $(DESTDIR)$(bindir)
+
+install: $(BINS) $(MANPAGES)
+	install -d $(INSTALLDIRS)
+	install -t $(DESTDIR)$(bindir) $(BINS)
+	install -t $(DESTDIR)$(man1dir) $(MANPAGES)
 
 busy_loop:
 	while true; do git pull && (make conch || make clean conch) && ./conch -c conchrc.example -s; sleep 1; done
@@ -143,4 +155,4 @@ psycopg2: venv/lib/python2.7/site-packages/psycopg2
 
 -include .deps/*.d
 
-.PHONY: all clean reformat check $(CHECKTASKS)
+.PHONY: all install clean reformat check $(CHECKTASKS)
