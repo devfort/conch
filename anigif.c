@@ -100,6 +100,9 @@ void anigif_render_frame(anigif *gif, WINDOW *window, winrect *rect) {
 
     time_since_switch -= gif->delay;
     gif->delay = MagickGetImageDelay(gif->wand) * 10;
+    if (gif->delay == 0) {
+      gif->delay += 10;
+    }
   }
 
   gif->last_switch_time = now;
