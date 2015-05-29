@@ -26,18 +26,14 @@ blast_options blast_parse_command_line_args(int argc, char **argv);
 void blast_merge_options(blast_options *main, settings *extra);
 
 void blast_usage(char *arg0) {
-  printf("Usage: %s [options] 'message'\n", arg0);
-  printf("  -u username\n"
-         "  --username=username\n"
-         "  -c config\t\t\tconfig filename (defaults to ~/.conchrc)\n"
-         "  --config=config\n"
-         "  -a filename\t\t\tname of file to upload and attach to blast\n"
-         "  --attachment=filename\n"
+  printf("Usage: %s [options] 'message'\n\n", arg0);
+  printf("  -u, --username=username\tuser to post as\n"
+         "  -c, --config=config\t\tconfig filename (defaults to ~/.conchrc)\n"
+         "  -a, --attachment=filename\tname of file to upload and attach to "
+         "blast\n"
+         "  --extended=filename\t\textended blast from file\n"
          "  -e\t\t\t\textended blast, will wait for input on stdin\n"
-         "  --extended=filename\t\twill read extended blast content from "
-         "filename\n"
-         "  -v\n"
-         "  --verbose\t\t\tprint out blast details\n");
+         "  -v, --verbose\t\t\tprint out blast details\n");
 }
 
 char *get_ext_msg(blast_options options) {
@@ -128,7 +124,7 @@ blast_options blast_parse_command_line_args(int argc, char **argv) {
     { NULL, 0, NULL, 0 },
   };
 
-  while ((opt = getopt_long(argc, argv, "c:u:a:ev", longopts, NULL)) != -1) {
+  while ((opt = getopt_long(argc, argv, "h?c:u:a:ev", longopts, NULL)) != -1) {
     switch (opt) {
     case 'c':
       parsed_options.config_filename = optarg;
