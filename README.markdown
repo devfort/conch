@@ -84,9 +84,14 @@ For example:
 
 ## Vagrant
 
-There is also a rudimentary Vagrantfile. This brings up a machine with all the
-required packages installed. There are some manual steps to be taken at the end
-which I've not yet automated.
+There is also a Vagrantfile. This brings up a machine with all the required
+packages installed, for both running conch and for the tests.
 
-`make`, and `./conch`, will work straightaway; `make check` requires the extra
-manual setup.
+If you find your VM clock keeps losing time, you can set
+`VBoxManage modifyvm [vm_name] --biossystemtimeoffset 10000` on your host
+machine. Virtualbox guest additions, which is installed as part of this,
+runs every 10 mins to correct the clock, but only if it is 20mins out of date.
+This command sets it to correct if it's 10s out.
+
+You may find your network is slow and some tests timeout. If so, add
+`CK_DEFAULT_TIMEOUT=6` (or higher) when running them.
