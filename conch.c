@@ -14,6 +14,7 @@
 #include "listview.h"
 #include "detailview.h"
 #include "render.h"
+#include "webfetcher.h"
 
 // Approximate time to wait between requests to the database (seconds)
 #define DB_POLL_INTERVAL 10
@@ -122,6 +123,9 @@ int main(int argc, char **argv) {
   config.host = opts.host;
   config.database = opts.database;
 
+  // global init
+  conch_webfetcher_init();
+
   // Create views
   cv = conch_conchview_new(&opts);
   lv = conch_listview_new(&opts);
@@ -214,4 +218,5 @@ terminate:
   conch_detailview_free(dv);
   conch_listview_free(lv);
   conch_disconnect(conn);
+  conch_webfetcher_cleanup();
 }

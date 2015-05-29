@@ -40,6 +40,10 @@ LDFLAGS+=$(shell pkg-config --silence-errors --libs ncursesw || \
                  pkg-config --silence-errors --libs ncurses || \
                  echo -lncurses)
 
+# curl doesn't have a package config file, just `curl-config` :(
+CFLAGS+=$(shell curl-config --cflags)
+LDFLAGS+=$(shell curl-config --libs)
+
 CFLAGS_TEST=$(CFLAGS)
 CFLAGS_TEST+=$(shell pkg-config --cflags $(LIBS_TEST))
 LDFLAGS_TEST=$(LDFLAGS)
@@ -72,7 +76,8 @@ conch: \
   anigif.o \
   anigif-render.o \
   wordwrap.o \
-  explode.o
+  explode.o \
+  webfetcher.o
 
 blast: blast.o backend.o strutils.o config.o explode.o
 
