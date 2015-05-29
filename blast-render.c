@@ -93,9 +93,6 @@ drawlist *conch_blast_prepare(blast *blast, int width, int *nlines,
 
     instructions->content_last_line = last_line_idx;
     instructions->marker_rel_x = len - strlen(BLAST_EXTENDED_MARKER);
-
-    // And lets be tidy and not draw it in white, then re-draw in color
-    last_line[instructions->marker_rel_x] = 0;
   }
 
   if (blast->attachment != NULL) {

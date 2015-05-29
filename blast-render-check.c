@@ -106,7 +106,7 @@ START_TEST(test_conch_blast_prepare_extended_with_display_markers) {
   ASSERT_PTR_NOT_NULL(instructions);
   ck_assert(instructions->has_marker);
   ck_assert_int_eq(nlines, 2);
-  ASSERT_PTR_NULL(strstr(instructions->content[0], BLAST_EXTENDED_MARKER));
+  ASSERT_PTR_NOT_NULL(strstr(instructions->content[0], BLAST_EXTENDED_MARKER));
   ck_assert_int_eq(instructions->content_last_line, 0);
   ck_assert_int_eq(instructions->marker_rel_x, 28);
   ASSERT_PTR_NULL(instructions->content[2]);
@@ -156,10 +156,7 @@ START_TEST(test_conch_blast_prepare_extended_marker_at_start_of_line) {
   ASSERT_PTR_NOT_NULL(instructions);
   ck_assert(instructions->has_marker);
   ck_assert_int_eq(nlines, 3);
-  ASSERT_PTR_NULL(strstr(instructions->content[0], BLAST_EXTENDED_MARKER));
-  // Becuase "[...]" should have wrapped to a new line, and it shouldn't appear
-  // in the content to print the second line should be empty
-  ck_assert_str_eq(instructions->content[1], "");
+  ck_assert_str_eq(instructions->content[1], BLAST_EXTENDED_MARKER);
   ck_assert_int_eq(instructions->content_last_line, 1);
   ck_assert_int_eq(instructions->marker_rel_x, 0);
   ASSERT_PTR_NULL(instructions->content[3]);
