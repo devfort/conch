@@ -92,6 +92,3 @@ If you find your VM clock keeps losing time, you can set
 machine. Virtualbox guest additions, which is installed as part of this,
 runs every 10 mins to correct the clock, but only if it is 20mins out of date.
 This command sets it to correct if it's 10s out.
-
-You may find your network is slow and some tests timeout. If so, add
-`CK_DEFAULT_TIMEOUT=6` (or higher) when running them.

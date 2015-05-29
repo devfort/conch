@@ -254,8 +254,12 @@ END_TEST
 Suite *backend_suite(void) {
   Suite *s = suite_create("backend");
 
+  TCase *tc = tcase_create("test_can_connect_and_disconnect_production");
+  tcase_set_timeout(tc, 6);
+  tcase_add_test(tc, test_can_connect_and_disconnect_production);
+  suite_add_tcase(s, tc);
+
   ADD_TEST_CASE(s, test_can_connect_and_disconnect);
-  ADD_TEST_CASE(s, test_can_connect_and_disconnect_production);
   ADD_TEST_CASE(s, test_can_retrieve_most_recent);
   ADD_TEST_CASE(s, test_can_page_backwards);
   ADD_TEST_CASE(s, test_can_page_forwards);
