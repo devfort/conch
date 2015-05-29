@@ -93,10 +93,11 @@ void anigif_render_frame(anigif *gif, WINDOW *window, winrect *rect) {
       MagickNextImage(gif->wand);
     } else {
       MagickResetIterator(gif->wand);
+      MagickNextImage(gif->wand);
     }
 
-    gif->last_switch_time = now;
     gif->delay = MagickGetImageDelay(gif->wand) || 1.0;
+    gif->last_switch_time = now;
   }
 
   render_wand_to_screen(gif->wand, window, rect);
