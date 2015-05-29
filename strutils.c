@@ -64,6 +64,11 @@ char *stralleycat(int count, char **strs) {
 
 char *strcopytrunc(char const *const src, unsigned int width) {
   char *result = malloc((width + 1) * sizeof(char));
+  if (result == NULL) {
+    fprintf(stderr, "strcopytrunc: could not alloc\n");
+    abort();
+  }
+
   strncpy(result, src, width);
   result[width] = '\0';
   return result;
