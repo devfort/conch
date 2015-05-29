@@ -55,6 +55,16 @@ START_TEST(test_unreadable_config) {
 }
 END_TEST
 
+START_TEST(test_clock_function_error) {
+  char *explode = "rsrc/config/explode.lua";
+  char clock_buffer[100];
+  settings config = conch_load_config(explode);
+  config.username = "using the username";
+  generate_clock_text(100, clock_buffer);
+  ck_assert_msg(true, "generate_clock_text should not crash");
+}
+END_TEST
+
 Suite *config_suite(void) {
   Suite *s = suite_create("config");
 
@@ -62,6 +72,7 @@ Suite *config_suite(void) {
   ADD_TEST_CASE(s, test_load_empty_config);
   ADD_TEST_CASE(s, test_load_missing_config);
   ADD_TEST_CASE(s, test_unreadable_config);
+  ADD_TEST_CASE(s, test_clock_function_error);
 
   return s;
 }
