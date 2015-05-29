@@ -12,6 +12,10 @@ typedef struct listview {
   blast *top;
   blast *bottom;
   int page_size;
+  bool render_overflow; /* If the last blast to render is only partially drawn
+                           (i.e. it overflows the blast render area) the render
+                           loop will set this flag. It is used to determine when
+                           we should switch render direction. */
   bool render_from_bottom;
   bool stick_to_head;
   bool at_head;

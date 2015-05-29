@@ -69,10 +69,11 @@ void conch_listview_select_next_blast(listview *lv) {
   if (lv->blasts->current->next) {
     if (lv->blasts->current == lv->bottom) {
       lv->bottom = lv->bottom->next;
+      lv->render_from_bottom = true;
     }
     lv->blasts->current = lv->blasts->current->next;
   }
-  if (lv->bottom == lv->blasts->current) {
+  if (lv->render_overflow && lv->bottom == lv->blasts->current) {
     lv->render_from_bottom = true;
   }
   lv->at_head = (lv->blasts->current->prev == NULL);
@@ -95,13 +96,14 @@ void conch_listview_select_prev_blast(listview *lv) {
     bool current_is_latest_read = (lv->latest_read == lv->blasts->current);
     if (lv->blasts->current == lv->top) {
       lv->top = lv->top->prev;
+      lv->render_from_bottom = false;
     }
     lv->blasts->current = lv->blasts->current->prev;
     if (current_is_latest_read) {
       lv->latest_read = lv->blasts->current;
     }
   }
-  if (lv->top == lv->blasts->current) {
+  if (lv->render_overflow && lv->top == lv->blasts->current) {
     lv->render_from_bottom = false;
   }
   lv->at_head = (lv->blasts->current->prev == NULL);

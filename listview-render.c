@@ -162,6 +162,11 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
     }
   }
 
+  // Allow the view key handlers to find out whether or not the last blast
+  // rendered (at either the top or bottom of the screen, depending on render
+  // direction) overflowed the available blast render area.
+  lv->render_overflow = (blast_lines != rendered_blast_lines);
+
   // Set lv->top/lv->bottom to the first/last blast on screen, even if only
   // partially rendered.
   if (lv->render_from_bottom) {

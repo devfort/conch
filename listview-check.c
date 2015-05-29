@@ -181,17 +181,24 @@ START_TEST(test_listview_cursor_movement_scroll_down) {
 
   lv->bottom = lv->blasts->head->next;
 
+  /*
+   * head  0  top    current
+   *       1  bottom
+   * tail  2
+   */
   ck_assert_ptr_eq(lv->top, lv->blasts->head);
   ck_assert_ptr_eq(lv->top, lv->blasts->current);
-  ck_assert_int_eq(lv->render_from_bottom, false);
 
-  // We can move forward
   conch_listview_select_next_blast(lv);
 
-  ck_assert_ptr_eq(lv->top, lv->blasts->current->prev);
+  /*
+   * head  0  top
+   *       1  bottom current
+   * tail  2
+   */
+  ck_assert_ptr_eq(lv->top, lv->blasts->head);
   ck_assert_ptr_eq(lv->blasts->current, lv->blasts->head->next);
   ck_assert_ptr_eq(lv->blasts->current, lv->bottom);
-  ck_assert_int_eq(lv->render_from_bottom, true);
 
   // Moving past bottom should push the whole window down, meaning that
   // both bottom and current should be adjusted.
@@ -200,10 +207,13 @@ START_TEST(test_listview_cursor_movement_scroll_down) {
   // compute which blast is actually at the top.
   conch_listview_select_next_blast(lv);
 
-  ck_assert_ptr_eq(lv->blasts->current, lv->blasts->head->next->next);
+  /*
+   * head  0  top
+   *       1
+   * tail  2  bottom current
+   */
+  ck_assert_ptr_eq(lv->blasts->current, lv->blasts->tail);
   ck_assert_ptr_eq(lv->bottom, lv->blasts->tail);
-  ck_assert_ptr_eq(lv->blasts->current, lv->bottom);
-  ck_assert_int_eq(lv->render_from_bottom, true);
 
   conch_listview_free(lv);
   conch_blastlist_free(bl);
@@ -219,14 +229,22 @@ START_TEST(test_listview_cursor_movement_scroll_up) {
   lv->top = lv->blasts->head->next;
   lv->bottom = lv->blasts->tail;
   lv->blasts->current = lv->blasts->tail;
-  lv->render_from_bottom = true;
 
-  // We can move up
+  /*
+   * head  0
+   *       1  top
+   * tail  2  bottom current
+   */
+
   conch_listview_select_prev_blast(lv);
 
+  /*
+   * head  0
+   *       1  top current
+   * tail  2  bottom
+   */
   ck_assert_ptr_eq(lv->top, lv->blasts->head->next);
   ck_assert_ptr_eq(lv->blasts->current, lv->blasts->head->next);
-  ck_assert_int_eq(lv->render_from_bottom, false);
 
   // Moving past top should push the whole window up, meaning that both top and
   // current should be adjusted.
@@ -235,8 +253,135 @@ START_TEST(test_listview_cursor_movement_scroll_up) {
   // compute which blast is actually at the bottom.
   conch_listview_select_prev_blast(lv);
 
+  /*
+   * head  0  top current
+   *       1
+   * tail  2  bottom current
+   */
   ck_assert_ptr_eq(lv->top, lv->blasts->head);
-  ck_assert_ptr_eq(lv->top, lv->blasts->current);
+  ck_assert_ptr_eq(lv->blasts->current, lv->blasts->head);
+
+  conch_listview_free(lv);
+  conch_blastlist_free(bl);
+}
+END_TEST
+
+START_TEST(test_listview_render_direction_scroll_down) {
+  blastlist *bl = blastlist_fixture_new(4);
+  conch_cli_options opts = {.stick_to_head = false };
+  listview *lv = conch_listview_new(&opts);
+  conch_listview_update(lv, bl);
+
+  lv->bottom = lv->blasts->head->next;
+
+  /*
+   * head  0  top    current
+   *       1  bottom
+   *       2
+   * tail  3
+   */
+  ck_assert_int_eq(lv->render_from_bottom, false);
+
+  conch_listview_select_next_blast(lv);
+
+  /*
+   * head  0  top
+   *       1  bottom current
+   *       2
+   * tail  3
+   */
+  ck_assert_int_eq(lv->render_from_bottom, false);
+
+  // Now move bottom down one, but also tell the listview that it was partially
+  // rendered. Unlike the last case, this should trigger a change of render
+  // direction.
+  lv->bottom = lv->bottom->next;
+  lv->render_overflow = true;
+  conch_listview_select_next_blast(lv);
+
+  /*
+   * head  0  top
+   *       1
+   *       2  bottom current
+   * tail  3
+   */
+  ck_assert_int_eq(lv->render_from_bottom, true);
+
+  // Now, with render_overflow false, we should trigger a render direction
+  // change because we actually try to move current *past* bottom.
+  lv->render_from_bottom = false;
+  lv->render_overflow = false;
+  conch_listview_select_next_blast(lv);
+
+  /*
+   * head  0  top
+   *       1
+   *       2
+   * tail  3  bottom current
+   */
+  ck_assert_int_eq(lv->render_from_bottom, true);
+
+  conch_listview_free(lv);
+  conch_blastlist_free(bl);
+}
+END_TEST
+
+START_TEST(test_listview_render_direction_scroll_up) {
+  blastlist *bl = blastlist_fixture_new(4);
+  conch_cli_options opts = {.stick_to_head = false };
+  listview *lv = conch_listview_new(&opts);
+  conch_listview_update(lv, bl);
+
+  lv->blasts->current = lv->blasts->tail;
+  lv->bottom = lv->blasts->tail;
+  lv->top = lv->blasts->tail->prev;
+  lv->render_from_bottom = true;
+
+  /*
+   * head  0
+   *       1
+   *       2  top
+   * tail  3  bottom current
+   */
+  ck_assert_int_eq(lv->render_from_bottom, true);
+
+  conch_listview_select_prev_blast(lv);
+
+  /*
+   * head  0
+   *       1
+   *       2 top current
+   * tail  3 bottom
+   */
+  ck_assert_int_eq(lv->render_from_bottom, true);
+
+  // Now move top up one, but also tell the listview that it was partially
+  // rendered. Unlike the last case, this should trigger a change of render
+  // direction.
+  lv->top = lv->top->prev;
+  lv->render_overflow = true;
+  conch_listview_select_prev_blast(lv);
+
+  /*
+   * head  0
+   *       1  top current
+   *       2
+   * tail  3  bottom
+   */
+  ck_assert_int_eq(lv->render_from_bottom, false);
+
+  // Now, with render_overflow false, we should trigger a render direction
+  // change because we actually try to move current *past* bottom.
+  lv->render_from_bottom = true;
+  lv->render_overflow = false;
+  conch_listview_select_prev_blast(lv);
+
+  /*
+   * head  0  top current
+   *       1
+   *       2
+   * tail  3  bottom
+   */
   ck_assert_int_eq(lv->render_from_bottom, false);
 
   conch_listview_free(lv);
@@ -448,6 +593,8 @@ Suite *listview_suite(void) {
   ADD_TEST_CASE(s, test_listview_jump_to_next_unread);
   ADD_TEST_CASE(s, test_listview_cursor_movement_scroll_down);
   ADD_TEST_CASE(s, test_listview_cursor_movement_scroll_up);
+  ADD_TEST_CASE(s, test_listview_render_direction_scroll_down);
+  ADD_TEST_CASE(s, test_listview_render_direction_scroll_up);
   ADD_TEST_CASE(s, test_listview_search_forward);
   return s;
 }
