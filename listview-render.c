@@ -127,11 +127,12 @@ void conch_listview_render(listview *lv, WINDOW *window, winrect *rect) {
       maxlines = cursor_y - blast_area_top + 1;
     }
 
-    drawlist *dl = conch_blast_prepare(blast, blast_width, &blast_lines,
-                                       display_extended_markers);
+    drawlist *dl =
+        conch_blast_prepare(blast, blast_width, display_extended_markers);
+    blast_lines = dl->nlines;
     rendered_blast_lines =
-        conch_blast_render(window, dl, blast_lines, cursor_y, cursor_x,
-                           maxlines, lv->render_from_bottom);
+        conch_blast_render(window, dl, dl->nlines, cursor_y, cursor_x, maxlines,
+                           lv->render_from_bottom);
     conch_drawlist_free(dl);
 
     // Draw highlight

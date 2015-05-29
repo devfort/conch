@@ -10,20 +10,17 @@
 #define BLAST_EXTENDED_MARKER "[...]"
 
 START_TEST(test_conch_blast_prepare_null) {
-  int nlines;
   drawlist *instructions;
 
-  instructions = conch_blast_prepare(NULL, 10, &nlines, true);
+  instructions = conch_blast_prepare(NULL, 10, true);
 
   ASSERT_PTR_NULL(instructions);
-  ck_assert_int_eq(nlines, 0);
 
   conch_drawlist_free(instructions);
 }
 END_TEST
 
 START_TEST(test_conch_blast_prepare_oneline) {
-  int nlines;
   drawlist *instructions;
   blast b = {
     .user = "joebloggs",
@@ -31,22 +28,20 @@ START_TEST(test_conch_blast_prepare_oneline) {
     .posted_at = "two blue moons ago",
   };
 
-  instructions = conch_blast_prepare(&b, 40, &nlines, true);
+  instructions = conch_blast_prepare(&b, 40, true);
 
   ASSERT_PTR_NOT_NULL(instructions);
   ck_assert(!instructions->has_marker);
-  ck_assert_int_eq(nlines, 2);
+  ck_assert_int_eq(instructions->nlines, 2);
   ck_assert_str_eq(instructions->content[0], b.content);
   ASSERT_PTR_NOT_NULL(strstr(instructions->content[1], b.user));
   ASSERT_PTR_NOT_NULL(strstr(instructions->content[1], b.posted_at));
-  ASSERT_PTR_NULL(instructions->content[2]);
 
   conch_drawlist_free(instructions);
 }
 END_TEST
 
 START_TEST(test_conch_blast_prepare_multiline) {
-  int nlines;
   drawlist *instructions;
   blast b = {
     .user = "joebloggs",
@@ -54,21 +49,19 @@ START_TEST(test_conch_blast_prepare_multiline) {
     .posted_at = "two blue moons ago",
   };
 
-  instructions = conch_blast_prepare(&b, 15, &nlines, true);
+  instructions = conch_blast_prepare(&b, 15, true);
 
   ASSERT_PTR_NOT_NULL(instructions);
   ck_assert(!instructions->has_marker);
-  ck_assert_int_eq(nlines, 3);
+  ck_assert_int_eq(instructions->nlines, 3);
   ASSERT_PTR_NOT_NULL(strstr(instructions->content[2], b.user));
   ASSERT_PTR_NOT_NULL(strstr(instructions->content[2], b.posted_at));
-  ASSERT_PTR_NULL(instructions->content[3]);
 
   conch_drawlist_free(instructions);
 }
 END_TEST
 
 START_TEST(test_conch_blast_prepare_attachment) {
-  int nlines;
   drawlist *instructions;
   blast b = {
     .user = "joebloggs",
@@ -77,20 +70,18 @@ START_TEST(test_conch_blast_prepare_attachment) {
     .attachment = "http://example.com/foo.zip",
   };
 
-  instructions = conch_blast_prepare(&b, 40, &nlines, true);
+  instructions = conch_blast_prepare(&b, 40, true);
 
   ASSERT_PTR_NOT_NULL(instructions);
   ck_assert(!instructions->has_marker);
-  ck_assert_int_eq(nlines, 3);
+  ck_assert_int_eq(instructions->nlines, 3);
   ck_assert_str_eq(instructions->content[1], b.attachment);
-  ASSERT_PTR_NULL(instructions->content[3]);
 
   conch_drawlist_free(instructions);
 }
 END_TEST
 
 START_TEST(test_conch_blast_prepare_extended_with_display_markers) {
-  int nlines;
   drawlist *instructions;
   blast b = {
     .user = "joebloggs",
@@ -101,22 +92,20 @@ START_TEST(test_conch_blast_prepare_extended_with_display_markers) {
 
   bool display_markers = true;
 
-  instructions = conch_blast_prepare(&b, 40, &nlines, display_markers);
+  instructions = conch_blast_prepare(&b, 40, display_markers);
 
   ASSERT_PTR_NOT_NULL(instructions);
   ck_assert(instructions->has_marker);
-  ck_assert_int_eq(nlines, 2);
+  ck_assert_int_eq(instructions->nlines, 2);
   ASSERT_PTR_NOT_NULL(strstr(instructions->content[0], BLAST_EXTENDED_MARKER));
   ck_assert_int_eq(instructions->content_last_line, 0);
   ck_assert_int_eq(instructions->last_line_length, 28);
-  ASSERT_PTR_NULL(instructions->content[2]);
 
   conch_drawlist_free(instructions);
 }
 END_TEST
 
 START_TEST(test_conch_blast_prepare_extended_without_display_markers) {
-  int nlines;
   drawlist *instructions;
   blast b = {
     .user = "joebloggs",
@@ -127,22 +116,20 @@ START_TEST(test_conch_blast_prepare_extended_without_display_markers) {
 
   bool display_markers = false;
 
-  instructions = conch_blast_prepare(&b, 40, &nlines, display_markers);
+  instructions = conch_blast_prepare(&b, 40, display_markers);
 
   ASSERT_PTR_NOT_NULL(instructions);
   ck_assert(!instructions->has_marker);
-  ck_assert_int_eq(nlines, 2);
+  ck_assert_int_eq(instructions->nlines, 2);
   ASSERT_PTR_NULL(strstr(instructions->content[0], BLAST_EXTENDED_MARKER));
   ck_assert_int_eq(instructions->content_last_line, 0);
   ck_assert_int_eq(instructions->last_line_length, 0);
-  ASSERT_PTR_NULL(instructions->content[2]);
 
   conch_drawlist_free(instructions);
 }
 END_TEST
 
 START_TEST(test_conch_blast_prepare_extended_marker_at_start_of_line) {
-  int nlines;
   drawlist *instructions;
   blast b = {
     .user = "joebloggs",
@@ -151,15 +138,14 @@ START_TEST(test_conch_blast_prepare_extended_marker_at_start_of_line) {
     .extended = "LOOK AT MY EXTENSION!",
   };
 
-  instructions = conch_blast_prepare(&b, 29, &nlines, true);
+  instructions = conch_blast_prepare(&b, 29, true);
 
   ASSERT_PTR_NOT_NULL(instructions);
   ck_assert(instructions->has_marker);
-  ck_assert_int_eq(nlines, 3);
+  ck_assert_int_eq(instructions->nlines, 3);
   ck_assert_str_eq(instructions->content[1], BLAST_EXTENDED_MARKER);
   ck_assert_int_eq(instructions->content_last_line, 1);
   ck_assert_int_eq(instructions->last_line_length, 0);
-  ASSERT_PTR_NULL(instructions->content[3]);
 
   conch_drawlist_free(instructions);
 }

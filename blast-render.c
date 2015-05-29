@@ -55,10 +55,7 @@ unsigned int conch_blast_render(WINDOW *window, drawlist *l,
   return rendered_lines;
 }
 
-drawlist *conch_blast_prepare(blast *blast, int width, int *nlines,
-                              bool display_marker) {
-  *nlines = 0;
-
+drawlist *conch_blast_prepare(blast *blast, int width, bool display_marker) {
   if (blast == NULL) {
     return NULL;
   }
@@ -75,19 +72,24 @@ drawlist *conch_blast_prepare(blast *blast, int width, int *nlines,
     message = blast->content;
   }
 
+  int nlines = 0;
   char **wrapped_blast = wrap_lines(message, width);
 
   // Find NULL at end of lines
-  while (wrapped_blast[*nlines]) {
-    (*nlines)++;
+  while (wrapped_blast[nlines]) {
+    nlines++;
   }
+
+  // Ensure we have space for another pointer at the end of the list of lines to
+  // account for the attribution.
+  wrapped_blast = realloc(wrapped_blast, (nlines + 1) * sizeof(char *));
 
   // We've now wrapped the lines, find the marker on the last line.
   if (display_marker && blast->extended) {
     free(message);
     instructions->has_marker = true;
 
-    int last_line_idx = *nlines - 1;
+    int last_line_idx = nlines - 1;
     char *last_line = wrapped_blast[last_line_idx];
 
     instructions->content_last_line = last_line_idx;
@@ -95,25 +97,28 @@ drawlist *conch_blast_prepare(blast *blast, int width, int *nlines,
   }
 
   if (blast->attachment != NULL) {
-    wrapped_blast[(*nlines)++] = strcopytrunc(blast->attachment, width);
+    wrapped_blast[nlines++] = strcopytrunc(blast->attachment, width);
+    // We just stole the attribution's slot, so add another line.
+    wrapped_blast = realloc(wrapped_blast, (nlines + 1) * sizeof(char *));
   }
 
   char *attribution = malloc(1024 * sizeof(char));
   // TODO: wrap/truncate this
   snprintf(attribution, 1024, "—%s at %s", blast->user, blast->posted_at);
-  wrapped_blast[(*nlines)++] = attribution;
+  wrapped_blast[nlines++] = attribution;
 
-  // Terminate the blast lines
-  wrapped_blast[*nlines] = NULL;
-
+  instructions->nlines = nlines;
   instructions->content = wrapped_blast;
 
   return instructions;
 }
 
 void conch_drawlist_free(drawlist *l) {
-  if (l != NULL) {
-    wrap_lines_free(l->content);
+  if (l == NULL) {
+    return;
+  }
+  for (int i = 0; i < l->nlines; i++) {
+    free(l->content[i]);
   }
   free(l);
 }

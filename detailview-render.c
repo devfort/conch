@@ -28,9 +28,9 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
 
   drawlist *dl =
       conch_blast_prepare(v->blastlist->current, rect->width - line_no_width,
-                          &summary_lines, dont_show_extended_markers);
+                          dont_show_extended_markers);
 
-  summary_height = summary_lines;
+  summary_height = dl->nlines;
 
   int code_height = 0, code_width = 0;
   if (v->blastlist->current->extended) {
