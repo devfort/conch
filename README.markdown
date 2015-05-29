@@ -38,9 +38,7 @@ Be very afraid.
 
 ## Installing
 
-On Linux you'll need to install
-
-  sudo apt-get install libmagickwand-dev libcaca-dev libncurses5 liblua5.2-dev
+On Linux you'll need to install the packages that are listed in the [Vagrantfile](/Vagrantfile).
 
 On OS X you'll need to install
 

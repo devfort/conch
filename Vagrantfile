@@ -27,16 +27,19 @@ Vagrant.configure(2) do |config|
 
     sudo apt-get update
 
+    # required for development on the VM
     sudo apt-get install -y git
     sudo apt-get install -y vim
-    sudo apt-get install -y libimlib2-dev libcaca-dev
+    sudo apt-get install -y virtualbox-guest-additions-iso
+
+    # packages required for the application
+    sudo apt-get install -y libmagickwand-dev libcaca-dev
     sudo apt-get install -y libncurses5-dev libncursesw5-dev
     sudo apt-get install -y postgresql libpq-dev
     sudo apt-get install -y check
     sudo apt-get install -y clang-format-3.6
     sudo apt-get install -y python-virtualenv
     sudo apt-get install -y liblua5.2-dev
-    sudo apt-get install -y virtualbox-guest-additions-iso
 
     # To rename clang-format to what the Makefile expects
     sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-3.6 10
