@@ -1,19 +1,20 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+def on_a_fort
+  fort_response = Net::HTTP.get_response(URI('http://files.fort/'))
+  fort_response.is_a?(Net::HTTPSuccess)
+rescue
+  false
+end
+
 Vagrant.configure(2) do |config|
 
-  ## Comment out vagrant box & URL as appropriate ######################
-
-  ## Vagrant box outside a fort
-  ## or if you already have this box locally
-  config.vm.box = "ubuntu/trusty64"
-  config.vm.box_url = "https://atlas.hashicorp.com/ubuntu/boxes/trust64"
-
-  ## Vagrant box inside a fort
-  ## Assumes this box exists at http://files.fort/boxes
-  # config.vm.box = "chef-ubuntu-14.04.box"
-  # config.vm.box_url = "http://files.fort/boxes/chef-ubuntu-14.04.box"
+  config.vm.box = "chef/ubuntu-14.04"
+  if on_a_fort
+    config.vm.box_url = "http://files.fort/boxes/chef-ubuntu-14.04.box"
+    config.vm.box_check_update = false
+  end
 
   config.ssh.forward_agent = true
 
@@ -49,7 +50,7 @@ Vagrant.configure(2) do |config|
     ##                                                                  #
     ## 1. To run the tests you will have to make two changes:           #
     ##    Edit `/etc/postgresql/9.3/main/pg_hba.conf`                   #
-    ##    Under #DBA bu Unix domain socket                              #
+    ##    Under # Database administrative login by Unix domain socket   #
     ##    Change the final column for postgres from                     #
     ##   `peer` to `trust`                                              #
     ##    Add two lines under #IPv4 local connections ABOVE what's      #
