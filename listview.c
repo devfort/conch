@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <curses.h>
+#include <assert.h>
 
 #include "listview.h"
 #include "keys.h"
@@ -9,6 +10,7 @@ listview *conch_listview_new(conch_cli_options const *opts) {
   listview *lv = calloc(1, sizeof(listview));
   lv->stick_to_top = opts->stick_to_top;
   lv->at_top = true;
+  lv->page_size = 0;
   return lv;
 }
 
@@ -176,6 +178,39 @@ bool conch_listview_repeat_search_forward(listview *lv) {
     conch_listview_find_and_select_blast(lv, lv->search_term);
   }
   return true;
+}
+
+static void compute_page_size(listview *lv) {
+  if (lv->blasts->current == NULL) {
+    return;
+  }
+  blast *top = lv->top;
+  blast *bottom = lv->bottom;
+  int n = 1;
+  while (top != bottom) {
+    top = top->next;
+    n++;
+  }
+  if (lv->page_size > n) {
+    lv->page_size = n;
+  }
+  if (3 * lv->page_size < 2 * n) {
+    lv->page_size = n;
+  }
+}
+
+void conch_listview_page_down(listview *lv) {
+  compute_page_size(lv);
+  for (int i = 0; i < lv->page_size; i++) {
+    conch_listview_select_next_blast(lv);
+  }
+}
+
+void conch_listview_page_up(listview *lv) {
+  compute_page_size(lv);
+  for (int i = 0; i < lv->page_size; i++) {
+    conch_listview_select_prev_blast(lv);
+  }
 }
 
 void conch_listview_free(listview *lv) { free(lv); }

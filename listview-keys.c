@@ -19,12 +19,23 @@ keypress_result conch_listview_keypress_dispatch(int key, listview *lv) {
     conch_listview_jump_to_next_unread(lv);
     break;
 
+  case KEY_DOWN:
   case 'j':
     conch_listview_select_next_blast(lv);
     break;
 
+  case KEY_UP:
   case 'k':
     conch_listview_select_prev_blast(lv);
+    break;
+
+  case KEY_NPAGE:
+  case ' ':
+    conch_listview_page_down(lv);
+    break;
+
+  case KEY_PPAGE:
+    conch_listview_page_up(lv);
     break;
 
   case 's':
