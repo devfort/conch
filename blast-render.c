@@ -99,9 +99,9 @@ drawlist *conch_blast_prepare(blast *blast, int width, bool display_marker) {
   }
 
   char *attribution = malloc(1024 * sizeof(char));
-  // TODO: wrap/truncate this
   snprintf(attribution, 1024, "—%s at %s", blast->user, blast->posted_at);
-  wrapped_blast[nlines++] = attribution;
+  wrapped_blast[nlines++] = strcopytrunc(attribution, width);
+  free(attribution);
 
   instructions->nlines = nlines;
   instructions->content = wrapped_blast;

@@ -44,7 +44,27 @@ END_TEST
 START_TEST(test_conch_blast_prepare_multiline) {
   drawlist *instructions;
   blast b = {
-    .user = "joebloggs",
+    .user = "joe",
+    .content = "This line is 27 chars long.",
+    .posted_at = "2:22",
+  };
+
+  instructions = conch_blast_prepare(&b, 15, true);
+
+  ASSERT_PTR_NOT_NULL(instructions);
+  ck_assert(!instructions->has_marker);
+  ck_assert_int_eq(instructions->nlines, 3);
+  ASSERT_PTR_NOT_NULL(strstr(instructions->content[2], b.user));
+  ASSERT_PTR_NOT_NULL(strstr(instructions->content[2], b.posted_at));
+
+  conch_drawlist_free(instructions);
+}
+END_TEST
+
+START_TEST(test_conch_blast_prepare_attribution_line_truncated) {
+  drawlist *instructions;
+  blast b = {
+    .user = "joanna",
     .content = "This line is 27 chars long.",
     .posted_at = "two blue moons ago",
   };
@@ -55,7 +75,8 @@ START_TEST(test_conch_blast_prepare_multiline) {
   ck_assert(!instructions->has_marker);
   ck_assert_int_eq(instructions->nlines, 3);
   ASSERT_PTR_NOT_NULL(strstr(instructions->content[2], b.user));
-  ASSERT_PTR_NOT_NULL(strstr(instructions->content[2], b.posted_at));
+  ASSERT_PTR_NULL(strstr(instructions->content[2], b.posted_at));
+  ASSERT_PTR_NOT_NULL(strstr(instructions->content[2], "tw"));
 
   conch_drawlist_free(instructions);
 }
@@ -161,6 +182,7 @@ Suite *blast_render_suite(void) {
   ADD_TEST_CASE(s, test_conch_blast_prepare_extended_with_display_markers);
   ADD_TEST_CASE(s, test_conch_blast_prepare_extended_without_display_markers);
   ADD_TEST_CASE(s, test_conch_blast_prepare_extended_marker_at_start_of_line);
+  ADD_TEST_CASE(s, test_conch_blast_prepare_attribution_line_truncated);
 
   return s;
 }
