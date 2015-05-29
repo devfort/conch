@@ -72,8 +72,11 @@ Because \fIconch\fR (and \fIbugle\fR) are designed for use in a fort,
 any security is presumed to be provided by 5ft thick stone walls. No
 security can be assumed to be provided by the software itself.
 
-When loading attachments for the detail view, we block rather than
-loading in a second thread and showing the spinner.
+When loading attachments for the detail view, we don't show any progress
+indicator. (We do animate the spinner however).
+
+You can't cancel loading an attachment by hitting enter (it blocks as soon as
+you hit enter)
 
 Non-fatal errors in the backend are reported by writing to
 \fIstderr\fR, which once we're running ncurses is unpleasant. We

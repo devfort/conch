@@ -5,11 +5,15 @@
 #include "webfetcher.h"
 #include "anigif.h"
 
+#include <pthread.h>
+
 typedef struct {
   blastlist *blastlist;
   int line_offset;
   int code_column_offset;
 
+  bool tried_fetching_attachment;
+  pthread_t fetch_thread;
   webfetch_result *attachment;
   anigif *anigif;
 } detailview;

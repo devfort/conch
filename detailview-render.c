@@ -6,6 +6,7 @@
 #include "anigif-render.h"
 #include "blast-render.h"
 #include "detailview-render.h"
+#include "detailview-thread.h"
 #include "listview.h"
 #include "listview-render.h"
 #include "strutils.h"
@@ -144,6 +145,15 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
     }
     delwin(code_pad);
   }
+
+#ifndef NO_FETCH_THREAD
+  if (v->blastlist->current->attachment) {
+    if (v->fetch_thread != 0) {
+      conch_spinner_show();
+      conch_detailview_pollfetchthread(v);
+    }
+  }
+#endif
 
   delwin(pad);
 

@@ -9,6 +9,7 @@
 
 #include "anigif.h"
 #include "detailview.h"
+#include "detailview-thread.h"
 #include "strutils.h"
 
 #define FALLBACK_EDITOR "vi"
@@ -18,15 +19,12 @@ detailview *conch_detailview_new(blastlist *blastlist) {
   v->blastlist = blastlist;
 
   if (blastlist->current->attachment) {
-    v->attachment = conch_webfetcher_get(blastlist->current->attachment);
-
-    // If we have an attachment and it's Content-Type from the server is
-    // image/* then try to display it
-    if (v->attachment &&
-        strncmp(v->attachment->content_type, "image/", strlen("image/")) == 0) {
-      v->anigif = anigif_new_from_blob(v->attachment->content,
-                                       v->attachment->content_length);
-    }
+    v->tried_fetching_attachment = true;
+#ifdef NO_FETCH_THREAD
+    conch_detailview_fetchattachment(v);
+#else
+    conch_detailview_spawnfetchthread(v);
+#endif
   }
   return v;
 }
@@ -35,6 +33,9 @@ void conch_detailview_free(detailview *v) {
   if (v) {
     conch_webfetch_result_free(v->attachment);
     anigif_free(v->anigif);
+#ifndef NO_FETCH_THREAD
+    conch_detailview_killfetchthread(v);
+#endif
   }
   free(v);
 }

@@ -38,71 +38,74 @@ static void render_help(WINDOW *window, char *help_text) {
   mvwaddstr(window, last_line, CHROME_PADDING_X, help_text);
 }
 
+static unsigned int spinner_state = 0;
+
+// Forgive me father, for I have sinned.
+//
+// - NS 2015-0528
+//
+// clang-format off
+static char const *spinner[] = {
+  "              ",
+  "              ",
+  "              ",
+  "             \\",
+  "             -",
+  "             /",
+  "            |d",
+  "            \\d",
+  "            -d",
+  "           /de",
+  "           |de",
+  "           \\de",
+  "          -dev",
+  "          /dev",
+  "          |dev",
+  "         \\dev\\",
+  "         -dev-",
+  "         /dev/",
+  "        |dev|f",
+  "        \\dev\\f",
+  "        -dev-f",
+  "       /dev/fo",
+  "       |dev|fo",
+  "       \\dev\\fo",
+  "      -dev-for",
+  "      /dev/for",
+  "      |dev|for",
+  "     \\dev\\fort",
+  "     -dev-fort",
+  "     /dev/fort",
+  "    |dev|fort ",
+  "    \\dev\\fort ",
+  "    -dev-fort ",
+  "   /dev/fort 1",
+  "   |dev|fort 1",
+  "   \\dev\\fort 1",
+  "  -dev-fort 11",
+  "  /dev/fort 11",
+  "  |dev|fort 11",
+  " \\dev\\fort 11 ",
+  " -dev-fort 11 ",
+  " /dev/fort 11 ",
+  " /dev/fort 11 ",
+  " |dev|fort 11 ",
+  " \\dev\\fort 11 ",
+  " -dev-fort 11 ",
+  " /dev/fort 11 ",
+};
+// clang-format on
+
+static const int number_spinner_states = sizeof(spinner) / sizeof(char const *);
+#define PROGRESS_SPINNER_START_STATE (number_spinner_states - 5)
 static void render_watermark(WINDOW *window, bool spin) {
   int max_x = getmaxx(window);
   int max_y = getmaxy(window) - 1;
-  static unsigned int spinner_state;
-
-  // Forgive me father, for I have sinned.
-  //
-  // - NS 2015-0528
-  //
-  // clang-format off
-  static char const *spinner[] = {
-    "              ",
-    "              ",
-    "              ",
-    "             \\",
-    "             -",
-    "             /",
-    "            |d",
-    "            \\d",
-    "            -d",
-    "           /de",
-    "           |de",
-    "           \\de",
-    "          -dev",
-    "          /dev",
-    "          |dev",
-    "         \\dev\\",
-    "         -dev-",
-    "         /dev/",
-    "        |dev|f",
-    "        \\dev\\f",
-    "        -dev-f",
-    "       /dev/fo",
-    "       |dev|fo",
-    "       \\dev\\fo",
-    "      -dev-for",
-    "      /dev/for",
-    "      |dev|for",
-    "     \\dev\\fort",
-    "     -dev-fort",
-    "     /dev/fort",
-    "    |dev|fort ",
-    "    \\dev\\fort ",
-    "    -dev-fort ",
-    "   /dev/fort 1",
-    "   |dev|fort 1",
-    "   \\dev\\fort 1",
-    "  -dev-fort 11",
-    "  /dev/fort 11",
-    "  |dev|fort 11",
-    " \\dev\\fort 11 ",
-    " -dev-fort 11 ",
-    " /dev/fort 11 ",
-    " |dev|fort 11 ",
-    " \\dev\\fort 11 ",
-    " -dev-fort 11 ",
-    " /dev/fort 11 ",
-  };
-  // clang-format on
 
   // Spin, either if we've been explicitly instructed to spin, or if we have not
   // completed a whole revolution of the spinner.
-  static int const nstates = sizeof(spinner) / sizeof(char const *);
-  if (spin || spinner_state != (nstates - 1)) {
-    spinner_state = (spinner_state + 1) % nstates;
+  if (spin || spinner_state != (number_spinner_states - 1)) {
+    spinner_state = (spinner_state + 1) % number_spinner_states;
   }
 
   mvwaddstr(window, max_y,
@@ -131,7 +134,11 @@ void conch_status_set(const char *msg) {
 void conch_spinner_hide() {
   show_spinner = false;
 }
+
 void conch_spinner_show() {
+  if (show_spinner == false && spinner_state == number_spinner_states - 1) {
+    spinner_state = PROGRESS_SPINNER_START_STATE;
+  }
   show_spinner = true;
 }
 

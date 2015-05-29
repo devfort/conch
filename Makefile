@@ -7,6 +7,7 @@ DESTDIR?=
 
 DEPS=.deps
 CFLAGS+=$(CDEBUG) --std=c99 -Wall -Wformat -Werror --pedantic -D_GNU_SOURCE
+LDFLAGS+=-lpthread
 
 BINS=conch blast
 # List of test binaries (i.e. foo-check, bar-check, ...)
@@ -83,6 +84,7 @@ busy_loop:
 conch: \
 	anigif-render.o \
 	anigif.o \
+	anigif.o \
 	backend.o \
 	blast-render.o \
 	blastlist.o \
@@ -95,6 +97,7 @@ conch: \
 	config.o \
 	detailview-keys.o \
 	detailview-render.o \
+	detailview-thread.o \
 	detailview.o \
 	explode.o \
 	help.o \
