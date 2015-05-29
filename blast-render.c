@@ -103,8 +103,7 @@ drawlist *conch_blast_prepare(blast *blast, int width, int *nlines,
   }
 
   if (blast->attachment != NULL) {
-    // TODO: wrap this
-    wrapped_blast[(*nlines)++] = strclone(blast->attachment);
+    wrapped_blast[(*nlines)++] = strcopytrunc(blast->attachment, width);
   }
 
   char *attribution = malloc(1024 * sizeof(char));
