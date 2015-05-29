@@ -11,28 +11,37 @@
 #define HELP_DIALOG_VBORDER 1
 #define HELP_DIALOG_HBORDER 1
 #define HELP_DIALOG_VPADDING 1
-#define HELP_DIALOG_HPADDING 1
-#define NBSP "\xa0"
+#define HELP_DIALOG_HPADDING 2
 
+// clang-format off
 static char const *help_text = {
   "Global keyboard shortcuts:\n"
-  "\n" NBSP NBSP "q         quit\n" NBSP NBSP "@         toggle screensaver\n"
+  "\n"
+  "q         quit\n"
+  "@         toggle screensaver\n"
   "\n\n"
   "Timeline shortcuts:\n"
-  "\n" NBSP NBSP "j         select next blast\n" NBSP NBSP
-  "k         select previous blast\n" NBSP NBSP
-  "ENTER     view blast detail\n" NBSP NBSP
-  "i         enter insert mode\n" NBSP NBSP "0 g       jump to top\n" NBSP NBSP
-  "G         jump to bottom\n" NBSP NBSP
-  ". TAB     jump to next unread\n" NBSP NBSP "SPC PGDN  next page\n" NBSP NBSP
-  "PGUP      prev page\n" NBSP NBSP "s         follow latest blasts\n" NBSP NBSP
-  "/         search forward\n" NBSP NBSP "n         repeat last search\n"
+  "\n"
+  "j         select next blast\n"
+  "k         select previous blast\n"
+  "ENTER     view blast detail\n"
+  "i         enter insert mode\n"
+  "0 g       jump to top\n"
+  "G         jump to bottom\n"
+  ". TAB     jump to next unread\n"
+  "SPC PGDN  next page\n"
+  "PGUP      prev page\n"
+  "s         follow latest blasts\n"
+  "/         search forward\n"
+  "n         repeat last search\n"
   "\n\n"
   "Detail view shortcuts:\n"
-  "\n" NBSP NBSP "h j k l   scroll text\n" NBSP NBSP
-  "e v       open text in $EDITOR\n" NBSP NBSP
+  "\n"
+  "h j k l   scroll text\n"
+  "e v       open text in $EDITOR\n"
   "ENTER     return to timeline\n"
 };
+// clang-format on
 
 void conch_help_render(WINDOW *w) {
   WINDOW *dia, *pad;
