@@ -30,12 +30,8 @@ static mouthpiece *conch_connect_internal(settings settings) {
 }
 
 mouthpiece *conch_connect(settings settings) {
-  if (settings.host == NULL) {
-    settings.host = "core.fort";
-  }
-  if (settings.database == NULL) {
-    settings.database = "bugle";
-  }
+  assert(settings.host);
+  assert(settings.database);
   return conch_connect_internal(settings);
 }
 

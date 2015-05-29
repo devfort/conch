@@ -15,6 +15,8 @@ typedef struct {
   char *username;
   char *attachment_filename;
   char *extended_filename;
+  char *host;
+  char *database;
   bool verbose;
   bool extended;
   bool help;
@@ -111,6 +113,8 @@ int main(int argc, char **argv) {
 
 blast_options blast_parse_command_line_args(int argc, char **argv) {
   blast_options parsed_options = {.config_filename = DEFAULT_CONFIG_LOCATION,
+                                  .host = DEFAULT_DATABASE_HOST,
+                                  .database = DEFAULT_DATABASE_NAME,
                                   .extended = false,
                                   .help = false };
 
@@ -156,5 +160,11 @@ blast_options blast_parse_command_line_args(int argc, char **argv) {
 void blast_merge_options(blast_options *main, settings *extra) {
   if (!main->username) {
     main->username = extra->username;
+  }
+  if (main->database) {
+    extra->database = main->database;
+  }
+  if (main->host) {
+    extra->host = main->host;
   }
 }

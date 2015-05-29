@@ -20,7 +20,9 @@ static void merge_config(conch_cli_options *options, settings *config) {
 
 conch_cli_options conch_parse_command_line_args(int argc, char **argv) {
   conch_cli_options parsed_options = {
-    .stick_to_head = false, .host = "bugle.fort",
+    .stick_to_head = false,
+    .host = DEFAULT_DATABASE_HOST,
+    .database = DEFAULT_DATABASE_NAME,
   };
   int opt;
   char *config_filename = DEFAULT_CONFIG_LOCATION;

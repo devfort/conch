@@ -28,7 +28,9 @@ START_TEST(test_can_connect_and_disconnect) {
 END_TEST
 
 START_TEST(test_can_connect_and_disconnect_production) {
-  settings settings = {.page_size = 10 };
+  settings settings = {.page_size = 10,
+                       .database = "bugle",
+                       .host = "bugle.fort" };
   mouthpiece *mp = conch_connect(settings);
   ck_assert_ptr_ne(mp, NULL);
   conch_disconnect(mp);
