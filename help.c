@@ -1,5 +1,6 @@
 #include <curses.h>
 #include <errno.h>
+#include <math.h>
 #include <string.h>
 
 #include "explode.h"
@@ -93,8 +94,8 @@ void conch_help_render(WINDOW *w) {
   }
 
   int overflow = padnl - padh;
-  overflow = overflow <= 0 ? 1 : overflow;
-  int scroll_offset = ((int)scroll_amount) % overflow;
+  overflow = overflow <= 0 ? 0 : overflow;
+  int scroll_offset = ((1 + sinf(scroll_amount)) / 2.0) * overflow;
 
   pnoutrefresh(pad, scroll_offset, 0, pady, padx, pady + padh, padx + padw);
 

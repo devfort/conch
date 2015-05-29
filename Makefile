@@ -52,6 +52,8 @@ CFLAGS_TEST+=$(shell pkg-config --cflags $(LIBS_TEST))
 LDFLAGS_TEST=$(LDFLAGS)
 LDFLAGS_TEST+=$(shell pkg-config --libs $(LIBS_TEST))
 
+LDFLAGS += -lm
+
 all: $(BINS)
 
 bindir = $(PREFIX)/bin
