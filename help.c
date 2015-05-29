@@ -13,33 +13,37 @@
 #define HELP_DIALOG_VPADDING 1
 #define HELP_DIALOG_HPADDING 2
 
+// AWOOGA AWOOGA FIXME: I've indented the following with unicode non-breaking
+// spaces to work around the fact that wrap_lines currently strips leading
+// spaces.
+
 // clang-format off
 static char const *help_text = {
   "Global keyboard shortcuts:\n"
   "\n"
-  "q         quit\n"
-  "@         toggle screensaver\n"
+  "  q         quit\n"
+  "  @         toggle screensaver\n"
   "\n\n"
   "Timeline shortcuts:\n"
   "\n"
-  "j         select next blast\n"
-  "k         select previous blast\n"
-  "ENTER     view blast detail\n"
-  "i         enter insert mode\n"
-  "0 g       jump to top\n"
-  "G         jump to bottom\n"
-  ". TAB     jump to next unread\n"
-  "SPC PGDN  next page\n"
-  "PGUP      prev page\n"
-  "s         follow latest blasts\n"
-  "/         search forward\n"
-  "n         repeat last search\n"
+  "  j         select next blast\n"
+  "  k         select previous blast\n"
+  "  ENTER     view blast detail\n"
+  "  i         enter insert mode\n"
+  "  0 g       jump to top\n"
+  "  G         jump to bottom\n"
+  "  . TAB     jump to next unread\n"
+  "  SPC PGDN  next page\n"
+  "  PGUP      prev page\n"
+  "  s         follow latest blasts\n"
+  "  /         search forward\n"
+  "  n         repeat last search\n"
   "\n\n"
   "Detail view shortcuts:\n"
   "\n"
-  "h j k l   scroll text\n"
-  "e v       open text in $EDITOR\n"
-  "ENTER     return to timeline\n"
+  "  h j k l   scroll text\n"
+  "  e v       open text in $EDITOR\n"
+  "  ENTER     return to timeline\n"
 };
 // clang-format on
 
