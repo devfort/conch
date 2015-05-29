@@ -5,6 +5,10 @@
 
 # `blast` will need to be built from conch and installed on the $PATH
 
+# In order for the git commiter to conch username mapping to work you will
+# need to have a .mailmap file with contents of the format
+#   conch-name <git-commiter-email-address>
+
 while read old_ref new_ref ref_name
 do
   if [ "refs/heads/master" = "${ref_name}" ]
