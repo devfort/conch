@@ -24,13 +24,11 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   const int line_no_width = 4;
   const bool dont_show_extended_markers = false;
 
-  int summary_lines, summary_height;
-
   drawlist *dl =
       conch_blast_prepare(v->blastlist->current, rect->width - line_no_width,
                           dont_show_extended_markers);
 
-  summary_height = dl->nlines;
+  int summary_height = dl->nlines;
 
   int code_height = 0, code_width = 0;
   if (v->blastlist->current->extended) {
@@ -63,7 +61,7 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   }
 
   // Render the blast at 0,0 on the pad
-  conch_blast_render(pad, dl, summary_lines, 0, line_no_width, summary_lines,
+  conch_blast_render(pad, dl, dl->nlines, 0, line_no_width, dl->nlines,
                      false);
   conch_drawlist_free(dl);
 
