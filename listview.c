@@ -3,6 +3,7 @@
 #include <curses.h>
 #include <assert.h>
 
+#include "explode.h"
 #include "listview.h"
 #include "backend.h"
 #include "keys.h"
@@ -158,6 +159,10 @@ blast *conch_listview_find_and_select_blast(listview *lv, const char *term) {
 }
 
 void conch_listview_create_blast(listview *lv) {
+  if (NULL == lv->username) {
+    fatal_error("No username set! Restart with --username [you] to post");
+  }
+
   char *content = calloc(1024, sizeof(char));
   int max_y = getmaxy(curscr);
   int max_x = getmaxx(curscr);
