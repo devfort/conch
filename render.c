@@ -1,11 +1,11 @@
 #include <curses.h>
 #include <stdbool.h>
 #include <string.h>
-#include <time.h>
 
 #include "colors.h"
 
 #include "render.h"
+#include "config.h"
 #include "conchview-render.h"
 #include "listview-render.h"
 #include "detailview-render.h"
@@ -22,6 +22,7 @@ static char status[STATUS_MAXLEN];
 
 // 64 characters provides space for a 14-character status with the clock
 #define MIN_WIDTH_FOR_CLOCK 64
+#define MAX_LENGTH_FOR_CLOCK 1024
 
 // Should we display the spinner?
 static bool show_spinner = false;
@@ -30,13 +31,6 @@ static void render_clock(WINDOW *window, char *clock_text) {
   int max_x = getmaxx(window);
   mvwaddstr(window, ORIGIN_Y, max_x - strlen(clock_text) - CHROME_PADDING_X,
             clock_text);
-}
-
-static void generate_clock_text(WINDOW *window, int time_str_limit,
-                                char *time_str) {
-  time_t now = time(NULL);
-  struct tm *now_tm = localtime(&now);
-  strftime(time_str, time_str_limit, " %Y-%m-%d %H:%M:%S ", now_tm);
 }
 
 static void render_help(WINDOW *window, char *help_text) {
@@ -182,8 +176,8 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
   render_chrome(window, " conch 螺 ");
 
   if (MIN_WIDTH_FOR_CLOCK <= max_x) {
-    char clock_text[1024];
-    generate_clock_text(window, sizeof(clock_text), clock_text);
+    char clock_text[MAX_LENGTH_FOR_CLOCK];
+    generate_clock_text(MAX_LENGTH_FOR_CLOCK, clock_text);
     render_clock(window, clock_text);
   }
 

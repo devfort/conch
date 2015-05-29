@@ -3,6 +3,8 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <time.h>
+#include <setjmp.h>
 
 #include <lua.h>
 #include <lualib.h>
@@ -11,10 +13,42 @@
 #include "config.h"
 #include "strutils.h"
 
+static lua_State *L;
+
+jmp_buf savepoint;
+
+static int everybody_panic(lua_State *L) {
+  longjmp(savepoint, 1);
+}
+
+void generate_clock_text(int time_str_limit,
+                                char *time_str) {
+  lua_getglobal(L, "clock_format_func");
+  int idx = lua_gettop(L);
+  if (lua_isfunction(L, idx)) {
+    if (setjmp(savepoint) == 0) {
+      lua_call(L, 0, 1);
+      const char *result = lua_tostring(L, lua_gettop(L));
+      snprintf(time_str, time_str_limit, " %s ", result);
+      return;
+    }
+  }
+
+  time_t now = time(NULL);
+  struct tm *now_tm = localtime(&now);
+  strftime(time_str, time_str_limit, " %Y-%m-%d %H:%M:%S ", now_tm);
+}
+
 static void parse_config(const char *filename, settings *settings) {
   int idx;
-  lua_State *L = luaL_newstate();
+  L = luaL_newstate();
+
+  lua_CFunction panic = everybody_panic;
+  lua_atpanic(L, panic);
+  
+  luaL_openlibs(L);
   if (luaL_dofile(L, filename)) {
+    //TODO: change to fatal_error
     fprintf(stderr, "Couldn't read config file %s\n", filename);
   } else {
     struct {
@@ -63,4 +97,10 @@ settings conch_load_config(const char *filename) {
   free(config_path);
 
   return settings;
+}
+
+void conch_free_config_state() {
+  if (L != NULL) {
+    lua_close(L);
+  }
 }
