@@ -18,6 +18,9 @@ anigif *anigif_new(const char *filename) {
   MagickBooleanType ret = MagickReadImage(gif->wand, filename);
   assert(ret == MagickTrue);
 
+  gif->delay = MagickGetImageDelay(gif->wand) * 10;
+
+  gettimeofday(&gif->last_switch_time, NULL);
   return gif;
 }
 
@@ -87,8 +90,7 @@ void anigif_render_frame(anigif *gif, WINDOW *window, winrect *rect) {
   gettimeofday(&now, NULL);
 
   double time_since_switch = difftimems(&now, &gif->last_switch_time);
-
-  if (time_since_switch >= gif->delay) {
+  while(time_since_switch >= gif->delay) {
     if (MagickHasNextImage(gif->wand)) {
       MagickNextImage(gif->wand);
     } else {
@@ -96,9 +98,11 @@ void anigif_render_frame(anigif *gif, WINDOW *window, winrect *rect) {
       MagickNextImage(gif->wand);
     }
 
-    gif->delay = MagickGetImageDelay(gif->wand) || 1.0;
-    gif->last_switch_time = now;
+    time_since_switch -= gif->delay;
+    gif->delay = MagickGetImageDelay(gif->wand) * 10;
   }
+
+  gif->last_switch_time = now;
 
   render_wand_to_screen(gif->wand, window, rect);
 }
