@@ -51,6 +51,11 @@ On OS X you'll need to install
   make
   make install
 
+## git integration
+
+We provide a sample post-receive hook as `tools/post-receive` which
+will blast what changed.
+
 ## Testing
 
 To run the tests: `make check`. If they are timing out, you can use the
