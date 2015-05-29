@@ -4,13 +4,11 @@
 #include <sys/time.h>
 #include <wand/MagickWand.h>
 
+#include "anigif.h"
 #include "cli.h"
 
 typedef struct {
-  MagickWand *wand;
-  struct timeval last_render;
-
-  struct image *i;
+  anigif *gif;
   bool started;
 } conchview;
 

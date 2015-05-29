@@ -1,19 +1,14 @@
 #include <assert.h>
 #include <stdlib.h>
-#include <wand/MagickWand.h>
 
+#include "anigif.h"
 #include "cli.h"
 #include "conchview.h"
 
 conchview *conch_conchview_new(conch_cli_options const *opts) {
   conchview *v = calloc(1, sizeof(conchview));
 
-  MagickWandGenesis();
-  v->wand = NewMagickWand();
-  assert(v->wand);
-
-  MagickBooleanType ret = MagickReadImage(v->wand, "rsrc/piano.gif");
-  assert(ret == MagickTrue);
+  v->gif = anigif_new("rsrc/piano.gif");
 
   return v;
 }
@@ -23,8 +18,7 @@ void conch_conchview_free(conchview *v) {
     return;
   }
 
-  v->wand = DestroyMagickWand(v->wand);
-  MagickWandTerminus();
+  anigif_free(v->gif);
 
   free(v);
 }

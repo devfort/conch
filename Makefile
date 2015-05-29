@@ -69,6 +69,7 @@ conch: \
   backend.o \
   keys.o \
   strutils.o \
+	anigif.o \
   wordwrap.o
 
 blast: blast.o backend.o strutils.o config.o

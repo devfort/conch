@@ -28,6 +28,8 @@ WINDOW *init_screen() {
   initscr();
   refresh();
 
+  MagickWandGenesis();
+
   conch_init_colors();
   ncurses_init_caca_attrs(&caca_attr[0]);
 
