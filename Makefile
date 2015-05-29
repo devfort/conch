@@ -124,7 +124,7 @@ PG_BIN_DIR=$(shell pg_config --bindir)
 	touch .expectdb
 
 clean:
-	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST) conch-logo.c .testdb .expectdb venv logs
+	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST) conch-logo.c .testdb .expectdb logs
 
 reformat: *.c *.h
 	@rm -f conch-logo.c
@@ -158,13 +158,16 @@ conch-logo.c: rsrc/conch-emoji.png
 		xxd -p $< | sed -e 's/\(..\)/0x\1, /g' && echo "};" && \
 		echo "const size_t logo_length = sizeof(logo_data);") > $@
 
-venv:
-	virtualenv venv --python=python2.7
+venv/lib/python3.4:
+	rm -rf venv
+	virtualenv venv --python=python3.4
 
-venv/lib/python2.7/site-packages/psycopg2: venv
+venv: venv/lib/python3.4
+
+venv/lib/python3.4/site-packages/psycopg2: venv
 	venv/bin/pip install -i http://pypi.fort/web/simple psycopg2
 
-psycopg2: venv/lib/python2.7/site-packages/psycopg2
+psycopg2: venv/lib/python3.4/site-packages/psycopg2
 
 -include .deps/*.d
 
