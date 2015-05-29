@@ -38,7 +38,8 @@ Be very afraid.
 
 ## Installing
 
-On Linux you'll need to install the packages that are listed in the [Vagrantfile](/Vagrantfile).
+On Linux you'll need to install the packages that are listed in the [Vagrantfile](/Vagrantfile)
+(or just use the vagrant VM).
 
 On OS X you'll need to install
 
@@ -84,8 +85,9 @@ For example:
 
 ## Vagrant
 
-There is also a rudimentary Vagrantfile. This brings up a machine will all the required packages installed. There are some manual steps to be taken at the end which I've not yet automated.
+There is also a rudimentary Vagrantfile. This brings up a machine with all the
+required packages installed. There are some manual steps to be taken at the end
+which I've not yet automated.
 
-Make sure you look at the Vagrantfile before using, as a few lines need commenting in or out depending on whether you are on a fort and what vagrant boxes you have locally.
-
-`make`, and `./conch`, will work straightaway; `make check` requires the extra manual setup.
+`make`, and `./conch`, will work straightaway; `make check` requires the extra
+manual setup.
