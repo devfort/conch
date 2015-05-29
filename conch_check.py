@@ -163,6 +163,13 @@ class TestConchCommand(unittest.TestCase):
         self.wait_for_loading_screen()
         self.press("Enter")
 
+    def test_search_should_not_segfault_when_database_is_empty(self):
+        self.wait_for_loading_screen()
+        self.press("/")
+        self.press(" ")
+        self.press("Enter")
+
+
 
 if __name__ == '__main__':
     unittest.main()

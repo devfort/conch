@@ -180,6 +180,9 @@ void conch_listview_create_blast(listview *lv) {
 }
 
 bool conch_listview_search_forward(listview *lv) {
+  if (lv->blasts->current == NULL) {
+    return false;
+  }
   char *term = calloc(1024, 1);
   int max_y = getmaxy(curscr);
   int max_x = getmaxx(curscr);
