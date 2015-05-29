@@ -116,124 +116,63 @@ int count_lines_and_find_length_of_longest(const char *string,
   return lines + 1;
 }
 
-/*
- * Copy the string represented by the pointer range [`l`, `r`).
- *
- * That is, if `l` and `r` are pointers into a longer string thus:
- *
- *     l    r
- *     |    |
- *    "Hello, world."
- *
- * the returned string will be (NUL-terminated) "Hello".
- */
-static char *strcpyrange(char *l, char *r) {
-  char *dst = malloc((r - l + 1) * sizeof(char));
-  if (dst == NULL) {
-    fatal_error("strcpyrange: could not allocate");
-  }
-  strncpy(dst, l, r - l);
-  dst[r - l] = '\0';
-  return dst;
-}
+char **wrap_lines(char *text, int max_line_length, unsigned int *nout) {
+  char **lines = malloc(1024 * sizeof(char *));
+  int lines_required = 0;
+  char *start_of_line, *remaining_content;
+  start_of_line = remaining_content = text;
 
-/*
- * Append a line (a copy of the string between `l` and `r`) to the array
- * `lines`, reallocating if necessary. `nlines` is the current size of the
- * `lines` array, and will be incremented.
- */
-static char **appendline(char **lines, unsigned int *nlines, char *l, char *r) {
-  lines = realloc(lines, ((*nlines) + 1) * sizeof(char *));
-  if (lines == NULL) {
-    fatal_error("appendline: could not allocate %u lines", (*nlines) + 1);
+  if (NULL == text || 0 == strlen(text) || max_line_length <= 0) {
+    char *empty_string = calloc(1, sizeof(char));
+    lines[lines_required] = empty_string;
+    lines_required++;
   }
-  lines[(*nlines)++] = strcpyrange(l, r);
+
+  while ((0 < max_line_length) && remaining_content &&
+         strlen(remaining_content)) {
+    char *line = calloc(1, max_line_length + 1);
+
+    if (strlen(remaining_content) < max_line_length) {
+      remaining_content += strlen(remaining_content);
+    } else {
+      remaining_content += max_line_length;
+
+      while ((start_of_line < remaining_content) &&
+             !isspace(*remaining_content)) {
+        --remaining_content;
+      }
+
+      if (remaining_content == start_of_line) {
+        remaining_content += max_line_length;
+      }
+    }
+
+    strncat(line, start_of_line, remaining_content - start_of_line);
+
+    lines[lines_required] = line;
+    lines_required++;
+
+    while ((0 < strlen(remaining_content)) && isspace(*remaining_content)) {
+      remaining_content++;
+    }
+    start_of_line = remaining_content;
+  }
+
+  if (nout != NULL) {
+    *nout = lines_required;
+  }
 
   return lines;
 }
 
-/*
- * Given a NUL-terminated string `text`, and a wrap width `width`, return an
- * array of lines representing the wrapped string.
- *
- * Writes the number of wrapped lines to the pointer `nlines`.
- */
-char **wrap_lines(char const *const text, int width, unsigned int *nlines) {
-  char *cursl = (char *)text;
-  char *cursr = (char *)text;
-  char *linestart = (char *)text;
-  char *lastbreak = NULL;
-  char **result = NULL;
-
-  *nlines = 0;
-
-  // NULL text, empty text, or zero/negative width: we return one empty line.
-  if (text == NULL || strlen(text) == 0 || width <= 0) {
-    result = malloc(sizeof(char *));
-    char *s = calloc(1, sizeof(char));
-    result[(*nlines)++] = s;
-    return result;
-  }
-
-  while (*cursr != '\0') {
-    // When we encounter a newline, we break the current line.
-    if (*cursr == '\n') {
-      result = appendline(result, nlines, cursl, cursr);
-      cursr++;
-      linestart = cursl = cursr;
-      lastbreak = NULL;
-      continue;
-    }
-
-    // Preserve any whitespace at the start of a line
-    if (linestart) {
-      if (isspace(*cursr)) {
-        cursr++;
-        continue;
-      } else {
-        linestart = NULL;
-      }
-    }
-
-    // If we just broke the line, skip to a non-space character
-    if (cursl == cursr && isspace(*cursr)) {
-      cursl++;
-      cursr++;
-      continue;
-    }
-
-    // Otherwise, when we encounter whitespace, keep a reference to it
-    if (isspace(*cursr)) {
-      lastbreak = cursr;
-    }
-
-    if (cursr - cursl == width) {
-      if (lastbreak == NULL) {
-        result = appendline(result, nlines, cursl, cursr);
-        cursl = cursr;
-        continue;
-      }
-      result = appendline(result, nlines, cursl, lastbreak);
-      cursl = cursr = lastbreak + 1;
-      lastbreak = NULL;
-      continue;
-    }
-
-    cursr++;
-  }
-
-  result = appendline(result, nlines, cursl, cursr);
-  return result;
-}
-
-void wrap_lines_free(char **lines, unsigned int nlines) {
-  if (lines == NULL) {
+void wrap_lines_free(char **wrapped_lines, unsigned int nlines) {
+  if (wrapped_lines == NULL) {
     return;
   }
 
-  for (unsigned int i = 0; i < nlines; i++) {
-    free(lines[i]);
+  for (int i = 0; i < nlines; i++) {
+    free(wrapped_lines[i]);
   }
 
-  free(lines);
+  free(wrapped_lines);
 }

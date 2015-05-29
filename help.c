@@ -15,7 +15,7 @@
 #define HELP_DIALOG_HPADDING 2
 
 // clang-format off
-static char const *help_text = {
+static char *help_text = {
   "Global keyboard shortcuts:\n"
   "\n"
   "    q         quit\n"
