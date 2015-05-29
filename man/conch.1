@@ -1,0 +1,56 @@
+.\" We don't entirely understand this
+.TH CONCH "1" "May 2015" "" "CONCH"
+
+.SH NAME
+conch \- ncurses client for bugle.
+
+.SH SYNOPSIS
+.B conch
+[\fIOPTIONS\fR]
+
+.SH DESCRIPTION
+\fUConch\fR is for people who don't think \fUbugle\fR, running on an
+outdated and unsupported version of \fUDjango\fR, is nearly insecure
+enough. It supports reading the blast timeline, posting new blasts,
+displaying (gist-like) extended blasts, and animated GIFs.
+
+.SH OPTIONS
+.TP
+\fB\-c\fR, \fB\-\-config\fR=\fIconfig\fR
+config filename (defaults to ~/.conchrc)
+.TP
+\fB\-s\fR, \fB\-\-stick-to-top\fR
+auto-display new blasts as they come in (providing you haven't moved
+the current cursor, in which case you'll just get a notification at
+the top of the screen)
+.TP
+\fB\-u\fR, \fB\-\-username\fR=\fIUSER\fR
+user to post as, overriding the config file setting
+.TP
+\fB\-H\fR, \fB\-\-host\fR=\fIHOSTNAME\fR
+database server host, overriding the config file setting (default:
+bugle.fort)
+.TP
+\fB\-d\fR, \fB\-\-database\fR=\fIDBNAME\fR
+database name, overriding the config file setting (default: bugle)
+
+.SH BUGS
+Because \fUconch\fR (and \fUbugle\fR) are designed for use in a fort,
+there is no security whatsoever.
+
+.SH SEE ALSO
+blast(1)
+
+.SH AUTHOR
+.PP
+The /dev/fort 11 team:
+Adam Sven Johnson,
+Alex Stapleton,
+Anna Shipman,
+Ash Berlin,
+David MacIver,
+James Aylett,
+Nick Stenning, and
+Steve Marshall.
+
+For more information, see http://devfort.com/.
