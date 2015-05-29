@@ -161,8 +161,10 @@ int main(int argc, char **argv) {
       } else {
         cv->started = true;
         started = true;
-        current_view = VIEW_LIST;
-        current_view_state = lv;
+        if (current_view == VIEW_CONCH) {
+          current_view = VIEW_LIST;
+          current_view_state = lv;
+        }
       }
     }
 
