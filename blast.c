@@ -22,8 +22,38 @@ typedef struct {
   bool help;
 } blast_options;
 
+static void options_empty(blast_options *options) {
+  options->config_filename = NULL;
+  options->username = NULL;
+  options->host = NULL;
+  options->database = NULL;
+  options->attachment_filename = NULL;
+  options->extended_filename = NULL;
+  options->verbose = false;
+  options->extended = false;
+  options->help = false;
+}
+
+static void options_defaults(blast_options *options) {
+  options_empty(options);
+  options->config_filename = DEFAULT_CONFIG_LOCATION;
+  options->host = DEFAULT_DATABASE_HOST;
+  options->database = DEFAULT_DATABASE_NAME;
+}
+
+void blast_merge_options(blast_options *options, settings config, blast_options defaults) {
+  if (!options->username) {
+    options->username = config.username ? config.username : defaults.username;
+  }
+  if (!options->host) {
+    options->host = config.host ? config.host : defaults.host;
+  }
+  if (!options->database) {
+    options->database = config.database ? config.database : defaults.database;
+  }
+}
+
 blast_options blast_parse_command_line_args(int argc, char **argv);
-void blast_merge_options(blast_options *main, settings *extra);
 
 void blast_usage(char *arg0) {
   printf("Usage: %s [options] 'message'\n\n", arg0);
@@ -71,9 +101,11 @@ char *get_ext_msg(blast_options options) {
 
 int main(int argc, char **argv) {
   int exit_code = 0;
+  blast_options default_options;
+  options_defaults(&default_options);
   blast_options options = blast_parse_command_line_args(argc, argv);
   settings config = conch_load_config(options.config_filename);
-  blast_merge_options(&options, &config);
+  blast_merge_options(&options, config, default_options);
 
   if (options.username == NULL) {
     options.help = true;
@@ -151,16 +183,4 @@ blast_options blast_parse_command_line_args(int argc, char **argv) {
     }
   }
   return parsed_options;
-}
-
-void blast_merge_options(blast_options *main, settings *extra) {
-  if (!main->username) {
-    main->username = extra->username;
-  }
-  if (main->database) {
-    extra->database = main->database;
-  }
-  if (main->host) {
-    extra->host = main->host;
-  }
 }

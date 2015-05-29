@@ -7,15 +7,28 @@
 #include "cli.h"
 #include "backend.h"
 
-static void merge_config(conch_cli_options *options, settings *config) {
+static void config_empty(conch_cli_options *options) {
+  options->stick_to_head = false;
+  options->host = NULL;
+  options->database = NULL;
+  options->username = NULL;
+}
+
+static void config_defaults(conch_cli_options *options) {
+  config_empty(options);
+  options->host = DEFAULT_DATABASE_HOST;
+  options->database = DEFAULT_DATABASE_NAME;
+}
+
+static void merge_config(conch_cli_options *options, settings config, conch_cli_options defaults) {
   if (!options->username) {
-    options->username = config->username;
+    options->username = config.username ? config.username : defaults.username;
   }
   if (!options->host) {
-    options->host = config->host;
+    options->host = config.host ? config.host : defaults.host;
   }
   if (!options->database) {
-    options->database = config->database;
+    options->database = config.database ? config.database : defaults.database;
   }
 }
 
@@ -37,11 +50,11 @@ void usage(char const *const progname) {
 }
 
 conch_cli_options conch_parse_command_line_args(int argc, char **argv) {
-  conch_cli_options parsed_options = {
-    .stick_to_head = false,
-    .host = DEFAULT_DATABASE_HOST,
-    .database = DEFAULT_DATABASE_NAME,
-  };
+  conch_cli_options default_options;
+  conch_cli_options parsed_options;
+  config_defaults(&default_options);
+  config_empty(&parsed_options);
+
   int opt;
   char *config_filename = DEFAULT_CONFIG_LOCATION;
   static struct option longopts[] = {
@@ -82,7 +95,7 @@ conch_cli_options conch_parse_command_line_args(int argc, char **argv) {
   }
 
   settings config = conch_load_config(config_filename);
-  merge_config(&parsed_options, &config);
+  merge_config(&parsed_options, config, default_options);
 
   return parsed_options;
 }
