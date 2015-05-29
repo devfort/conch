@@ -34,6 +34,39 @@ bugle.fort)
 \fB\-d\fR, \fB\-\-database\fR=\fIDBNAME\fR
 database name, overriding the config file setting (default: bugle)
 
+.SH CONFIGURATION FILE
+
+\fUConch\fR's configuration file is written in \fULua\fR, an
+"extension programming language designed to support general procedural
+programming with data description facilities". The following variables
+are supported, and are expressed in the file in the following format:
+
+.nf
+-- This is a comment
+variable = "string value"
+variable = 'string value'
+variable = 42 -- int value
+.fi
+
+Since configuration files are interpreted as \fULua\fR on startup, any
+variables may be computed as runtime.
+
+.TP
+\fBusername\fR, \fBhost\fR, \fBdatabase\fR
+Respectively the user to post as, database server host and database
+name. These may be overridden using command line options, and have
+sensible defaults (for a fort).
+
+.TP
+\fBpage_size\fR
+Page size of the backend, ie the number of blasts fetched at a time
+from the database. Defaults to \fB42\fR.
+
+.TP
+\fBclock_format_func\fR
+Replace the default clock; this should be a \fULua\fR function which
+returns the value to be printed.
+
 .SH BUGS
 Because \fUconch\fR (and \fUbugle\fR) are designed for use in a fort,
 there is no security whatsoever.
