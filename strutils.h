@@ -4,6 +4,7 @@
 char *strclone(const char *c);
 char *strcopycat(const char *c, const char *d);
 char *stralleycat(int count, char **strs);
+char *strcopytrunc(char const *const src, unsigned int width);
 
 char *expand_home(const char *path);
 

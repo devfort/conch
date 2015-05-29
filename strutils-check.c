@@ -5,6 +5,48 @@
 
 #include "strutils.h"
 
+START_TEST(test_strcopytrunc) {
+  char const *const input = "Hello, world, I am far too long for the screen.";
+  char *result;
+
+  result = strcopytrunc(input, 12);
+
+  ASSERT_PTR_NOT_NULL(result);
+  ck_assert_int_eq(12, strlen(result));
+  ck_assert_str_eq("Hello, world", result);
+
+  free(result);
+}
+END_TEST
+
+START_TEST(test_strcopytrunc_width_exceeds_strlen) {
+  char const *const input = "Hello, world";
+  char *result;
+
+  result = strcopytrunc(input, 50);
+
+  ASSERT_PTR_NOT_NULL(result);
+  ck_assert_int_eq(12, strlen(result));
+  ck_assert_str_eq("Hello, world", result);
+
+  free(result);
+}
+END_TEST
+
+START_TEST(test_strcopytrunc_zero) {
+  char const *const input = "Hello, world, I am far too long for the screen.";
+  char *result;
+
+  result = strcopytrunc(input, 0);
+
+  ASSERT_PTR_NOT_NULL(result);
+  ck_assert_int_eq(0, strlen(result));
+  ck_assert_str_eq("", result);
+
+  free(result);
+}
+END_TEST
+
 START_TEST(test_count_lines_and_find_length_of_longest) {
   const char *const input = "line 1\n"
                             "much longer line 2\n"
@@ -288,6 +330,9 @@ Suite *strutils_suite(void) {
   Suite *s = suite_create("strutils");
 
   ADD_TEST_CASE(s, test_stralleycat);
+  ADD_TEST_CASE(s, test_strcopytrunc);
+  ADD_TEST_CASE(s, test_strcopytrunc_width_exceeds_strlen);
+  ADD_TEST_CASE(s, test_strcopytrunc_zero);
   ADD_TEST_CASE(s, test_expand_home);
   ADD_TEST_CASE(s, test_count_lines_and_find_length_of_longest);
   ADD_TEST_CASE(s, test_count_lines_and_find_length_of_longest_with_one_line);

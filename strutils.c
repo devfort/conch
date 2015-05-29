@@ -62,6 +62,13 @@ char *stralleycat(int count, char **strs) {
   return result;
 }
 
+char *strcopytrunc(char const *const src, unsigned int width) {
+  char *result = malloc((width + 1) * sizeof(char));
+  strncpy(result, src, width);
+  result[width] = '\0';
+  return result;
+}
+
 char *expand_home(const char *path) {
   char *tilde = strchr(path, '~');
   if (tilde != NULL) {
