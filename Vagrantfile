@@ -15,8 +15,8 @@ Vagrant.configure(2) do |config|
     config.vm.box_url = "http://files.fort/boxes/chef-ubuntu-14.04.box"
     config.vm.box_check_update = false
     config.vm.provision "shell", inline: <<-SHELL
-      sudo sed -ibackup s,archive.ubuntu.com/ubuntu,apt.fort,g /etc/apt/sources.list
-      sudo sed -ibackup s,us.apt,apt,g /etc/apt/sources.list
+      sudo sed -ibackup s,us.archive.ubuntu.com/ubuntu,apt.fort,g  \
+        /etc/apt/sources.list
     SHELL
   end
 
