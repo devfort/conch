@@ -123,7 +123,7 @@ char **wrap_lines(char *text, int max_line_length, unsigned int *nout) {
   start_of_line = remaining_content = text;
 
   if (NULL == text || 0 == strlen(text) || max_line_length <= 0) {
-    char *empty_string = calloc(1, 1);
+    char *empty_string = calloc(1, sizeof(char));
     lines[lines_required] = empty_string;
     lines_required++;
   }
