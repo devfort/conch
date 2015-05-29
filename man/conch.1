@@ -79,7 +79,30 @@ Non-fatal errors in the backend are reported by writing to
 should instead create a modal dialogue in ncurses for displaying
 dismissable alerts.
 
+Frame-drop in rendering animated GIFs is too aggressive.
+
+The aspect ratio of console characters is taken into account when
+rendering images, however this ratio is assumed to be fixed but should
+respond to the console font in use. An acceptable middle ground might
+be to make this fixed assumption into a configuration variable,
+although this is a contentious issue among the developers.
+
+Limited information is made available to the configuration file before
+evaluating it.
+
+Unicode behaviour is undocumented.
+
+Overly-long attribution lines (such as caused by narrow terminals or
+long usernames) are displayed unpleasantly.
+
 Syntax highlighting code blocks does not work.
+
+Once you have looked at the detail of a blast that contains an
+extended segment (or code block), the marker in the list view does not
+change colour to indicate this. Also, the initial colour is magenta
+when it should be blue as per web defaults.
+
+WebM support is broken.
 
 Audio is not supported for video formats (or audio formats).
 
