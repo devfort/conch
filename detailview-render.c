@@ -104,10 +104,23 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
       *token = ' ';
     }
 
-    if (waddstr(code_pad, string) == ERR) {
-      fatal_error("conch_detailview_render: waddstr to code_pad failed! Pad "
-                  "size %d,%d",
-                  code_height + 1, code_width);
+    int i = 0;
+    int err;
+    char const *cursl = string;
+    char const *cursr = string;
+
+    while (*cursr != '\0') {
+      if (*cursr == '\n') {
+        err = mvwaddnstr(code_pad, i++, 0, cursl, cursr - cursl + 1);
+        if (err == ERR) {
+          fatal_error("conch_detailview_render: mvwaddnstr of size %ld to "
+                      "code_pad (width = %u) failed!",
+                      cursr - cursl + 1, code_width + 1);
+        }
+        cursl = ++cursr;
+        continue;
+      }
+      cursr++;
     }
     free(string);
 
