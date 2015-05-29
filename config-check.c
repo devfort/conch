@@ -4,6 +4,8 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <unistd.h>
+#include <setjmp.h>
+
 #include "config.h"
 #include "backend.h"
 
@@ -37,12 +39,19 @@ START_TEST(test_load_missing_config) {
 END_TEST
 
 START_TEST(test_unreadable_config) {
+  bool caught = false;
   char *unreadable = "rsrc/config/no-read.lua";
   // this file should not have read permission
   creat(unreadable, O_CREAT | O_TRUNC | S_IWUSR);
 
-  settings config = conch_load_config(unreadable);
-  ck_assert_ptr_eq(config.username, NULL);
+  if (setjmp(check_jump) == 0) {
+    settings config = conch_load_config(unreadable);
+    config.username = "using the username";
+  } else {
+    caught = true;
+  }
+  
+  ck_assert_msg(caught, "fatal error was not called");
 }
 END_TEST
 

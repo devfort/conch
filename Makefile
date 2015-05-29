@@ -82,7 +82,7 @@ backend-check: backend.o strutils.o .testdb
 wordwrap-check: wordwrap.o
 listview-check: listview.o blastlist.o strutils.o keys.o listview-keys.o detailview-keys.o detailview.o backend.o config.o explode.o
 strutils-check: strutils.o
-config-check: config.o backend.o strutils.o explode.o
+config-check: config.o backend.o strutils.o check-explode.o
 
 logs:
 	mkdir -p logs
