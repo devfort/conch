@@ -48,6 +48,7 @@ static char const *help_text = {
 // clang-format on
 
 void conch_help_render(WINDOW *w) {
+  static float scroll_amount = 0;
   WINDOW *dia, *pad;
   unsigned int winh, winw; /* global window height, width */
   unsigned int diah, diaw; /* dialog on-screen height, width */
@@ -90,7 +91,14 @@ void conch_help_render(WINDOW *w) {
   for (unsigned int i = 0; i < padnl; i++) {
     mvwaddstr(pad, i, 0, text[i]);
   }
-  pnoutrefresh(pad, 0, 0, pady, padx, pady + padh, padx + padw);
+
+  int overflow = padnl - padh;
+  overflow = overflow <= 0 ? 1 : overflow;
+  int scroll_offset = ((int)scroll_amount) % overflow;
+
+  pnoutrefresh(pad, scroll_offset, 0, pady, padx, pady + padh, padx + padw);
+
+  scroll_amount += 0.1;
 
   delwin(pad);
   delwin(dia);
