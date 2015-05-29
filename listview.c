@@ -7,6 +7,7 @@
 #include "listview.h"
 #include "backend.h"
 #include "keys.h"
+#include "strutils.h"
 
 extern mouthpiece *conn;
 
@@ -179,8 +180,12 @@ void conch_listview_create_blast(listview *lv) {
   conch_default_input_config();
 
   if (strlen(content) != 0) {
-    blastresult *post = conch_blast_post(conn, lv->username, content, NULL);
-    free(post);
+    blastresult *posted = conch_blast_post(conn, lv->username, content, NULL);
+    if (0 == posted->post) {
+      char *error = strclone(posted->error_message);
+      conch_blastresult_free(posted);
+      fatal_error("Couldn't post blast: %s", error);
+    }
   }
 }
 
