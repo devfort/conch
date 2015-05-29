@@ -11,6 +11,7 @@
 
 #include "backend-internal.h"
 #include "strutils.h"
+#include "explode.h"
 
 #define POSTED_DATEFORMAT "'YYYY-MM-DD HH24:MI:SS TZ'"
 
@@ -95,9 +96,8 @@ void conch_let_silence_fall(mouthpiece *mp) {
   PQsetNoticeProcessor(mp->connection, silentNoticeProcessor, NULL);
   PGresult *res = PQexec(mp->connection, "truncate table bugle_blast cascade");
   if (PQresultStatus(res) != PGRES_COMMAND_OK) {
-    fprintf(stderr, "Error when truncating test blasts: %s",
-            PQerrorMessage(mp->connection));
-    abort();
+    fatal_error("Error when truncating test blasts: %s",
+                PQerrorMessage(mp->connection));
   }
   PQclear(res);
   PQsetNoticeProcessor(mp->connection, defaultNoticeProcessor, NULL);
@@ -342,9 +342,8 @@ void conch_notifications_init(notifications *notifications, mouthpiece *mp) {
   if (!mp->notification_counter) {
     PGresult *listen = PQexec(mp->connection, "listen newblast");
     if (PQresultStatus(listen) != PGRES_COMMAND_OK) {
-      fprintf(stderr, "Error listening for notifications: %s\n",
-              PQerrorMessage(mp->connection));
-      abort();
+      fatal_error("Error listening for notifications: %s",
+                  PQerrorMessage(mp->connection));
     }
     PQclear(listen);
     mp->notification_counter++;
@@ -355,9 +354,8 @@ void conch_notifications_init(notifications *notifications, mouthpiece *mp) {
 bool conch_notifications_poll(notifications *notifications) {
   PGconn *conn = notifications->mouthpiece->connection;
   if (!PQconsumeInput(conn)) {
-    fprintf(stderr, "Error listening for notifications: %s\n",
-            PQerrorMessage(conn));
-    abort();
+    fatal_error("Error listening for notifications: %s",
+                PQerrorMessage(conn));
   }
   while (true) {
     PGnotify *notification = PQnotifies(conn);
