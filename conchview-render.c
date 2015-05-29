@@ -6,7 +6,7 @@
 
 #include <wand/MagickWand.h>
 
-#include "caca-driver.h"
+#include "anigif-render.h"
 #include "conchview-render.h"
 #include "conchview.h"
 

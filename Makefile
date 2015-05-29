@@ -64,14 +64,15 @@ conch: \
   detailview-render.o \
   detailview-keys.o \
   render.o \
-	config.o \
+  config.o \
   cli.o \
   backend.o \
   keys.o \
   strutils.o \
-	anigif.o \
+  anigif.o \
+  anigif-render.o \
   wordwrap.o \
-	explode.o
+  explode.o
 
 blast: blast.o backend.o strutils.o config.o explode.o
 
