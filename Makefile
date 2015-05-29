@@ -152,7 +152,7 @@ $(BINS): %: %.o
 	$(SILENT)$(CC) -o $@ $^ $(LDFLAGS)
 
 conch-logo.c: rsrc/conch-emoji.png
-	(echo "#include <stdint.h>" && \
+	@(echo "#include <stdint.h>" && \
 		echo "#include <stdlib.h>" && \
 		echo "const uint8_t logo_data[] = {" && \
 		xxd -p $< | sed -e 's/\(..\)/0x\1, /g' && echo "};" && \
