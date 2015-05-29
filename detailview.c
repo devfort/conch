@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <string.h>
-#include <stdio.h>
 
 #include "detailview.h"
 #include "anigif.h"
@@ -16,10 +15,8 @@ detailview *conch_detailview_new(blastlist *blastlist) {
     // image/* then try to display it
     if (v->attachment &&
         strncmp(v->attachment->content_type, "image/", strlen("image/")) == 0) {
-      fprintf(stderr, "detailview: anigif_new_from_blob\n");
       v->anigif = anigif_new_from_blob(v->attachment->content,
                                        v->attachment->content_length);
-      fprintf(stderr, "detailview: anigif_new_from_blob returned\n");
     }
   }
   return v;
