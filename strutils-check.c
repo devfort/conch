@@ -146,6 +146,21 @@ START_TEST(test_wrap_lines_with_multiple_spaces) {
 }
 END_TEST
 
+START_TEST(test_wrap_lines_strips_leading_spaces) {
+  unsigned int nout;
+  char *expected[] = {
+    "We're going to need a bigger boat",
+  };
+
+  char **actual =
+      wrap_lines("       We're going to need a bigger boat", 35, &nout);
+
+  ASSERT_STRARY_EQ(1, nout, expected, actual);
+
+  wrap_lines_free(actual, nout);
+}
+END_TEST
+
 // probably ideally it would trim a trailing space
 // but for the purposes of this, it doesn't really matter
 START_TEST(test_wrap_lines_lands_on_a_space) {
@@ -171,6 +186,21 @@ START_TEST(test_wrap_lines_with_no_spaces) {
   char **actual = wrap_lines("You'regoingtoneedabiggerboat", 8, &nout);
 
   ASSERT_STRARY_EQ(4, nout, expected, actual);
+
+  wrap_lines_free(actual, nout);
+}
+END_TEST
+
+START_TEST(test_wrap_lines_preserves_newlines) {
+  unsigned int nout;
+  char *expected[] = {
+    "You're", "going", "to need", "a bigger", "boat",
+  };
+
+  char **actual =
+      wrap_lines("You're\ngoing\nto need\na bigger\nboat", 50, &nout);
+
+  ASSERT_STRARY_EQ(5, nout, expected, actual);
 
   wrap_lines_free(actual, nout);
 }
@@ -288,11 +318,13 @@ Suite *strutils_suite(void) {
   ADD_TEST_CASE(s, test_lines_wrap_at_13);
   ADD_TEST_CASE(s, test_lines_wrap_at_30);
   ADD_TEST_CASE(s, test_wrap_lines_with_multiple_spaces);
+  ADD_TEST_CASE(s, test_wrap_lines_strips_leading_spaces);
   ADD_TEST_CASE(s, test_wrap_lines_lands_on_a_space);
   ADD_TEST_CASE(s, test_wrap_lines_empty_text);
   ADD_TEST_CASE(s, test_wrap_lines_null_text);
   ADD_TEST_CASE(s, test_wrap_lines_free);
   ADD_TEST_CASE(s, test_wrap_lines_with_no_spaces);
+  ADD_TEST_CASE(s, test_wrap_lines_preserves_newlines);
   ADD_TEST_CASE(s, test_wrap_lines_with_odd_unicode_doesnt_explode);
   ADD_TEST_CASE(s, test_wrap_lines_zero_width);
   ADD_TEST_CASE(s, test_wrap_lines_negative_width);
