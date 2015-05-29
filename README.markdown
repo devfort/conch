@@ -50,44 +50,16 @@ installing as root):
 
 To run the tests: `make check`.
 
-On Linux you'll need to install the packages that are listed in the [Vagrantfile](/Vagrantfile)
-(or just use the vagrant VM).
+### Mac OS X
 
-If you don't use the vagrant machine, note that you'll have to rename `clang-format`:
-
-    sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-3.6 10
-
-(The last argument is a priority number; arbitrary but necessary.)
-
-On OS X you'll need to install
+You'll need to install various packages. We suggest using homebrew:
 
   echo Ask Ash what the Homebrew packages are.
-  curl -O http://apt.fort/pool/main/i/imagemagick/imagemagick_6.7.7.10.orig.tar.bz2
-  tar -jxvf imagemagick_6.7.7.10.orig.tar.bz2
-  cd ImageMagick-6.7.7-10/
-  ./configure
-  make
-  make install
+  brew install ImageMagick libcaca ncurses libpq lua52 libcurl4 check
 
-## git integration
+### Linux (using vagrant)
 
-We provide a sample post-receive hook as `tools/post-receive` which
-will blast what changed.
-
-## Testing
-
-To run the tests: `make check`. If they are timing out, you can use the
-environment variable CK_DEFAULT_TIMEOUT with the make target. The default is 4
-seconds, I've found that my Vagrant VM requires 6 seconds, i.e. `make check
-CK_DEFAULT_TIMEOUT=6`.
-
-You will need postgres installed and running and your current user will need to be a
-postgres superuser. Your pg\_hba.conf should be set up to allow passwordless local
-connections to the bugle\_test database as the bugle user.
-
-## Vagrant
-
-There is also a Vagrantfile. This brings up a machine with all the required
+We have a Vagrantfile which brings up a machine with all the required
 packages installed, for both running conch and for the tests.
 
 If you find your VM clock keeps losing time, you can set
@@ -95,3 +67,128 @@ If you find your VM clock keeps losing time, you can set
 machine. Virtualbox guest additions, which is installed as part of this,
 runs every 10 mins to correct the clock, but only if it is 20mins out of date.
 This command sets it to correct if it's 10s out.
+
+### Linux (without vagrant)
+
+You'll need to install the packages that are listed in the
+[Vagrantfile](Vagrantfile). Note that you'll have to rename
+`clang-format`:
+
+    sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-3.6 10
+
+(The last argument is a priority number; arbitrary but necessary.)
+
+## Testing
+
+To run the tests: `make check`.
+
+You will need postgres installed and running and your current user
+will need to be a postgres superuser. Your pg\_hba.conf should be set
+up to allow passwordless local connections to the bugle\_test database
+as the bugle user; there is a suitable file in
+[`vagrant_files/pg_hba.conf`](vagrant_files/pg_hba.conf), although you
+should note that it also allows any user on the same machine as the
+database to connect as a superuser, which is considered unwise.
+
+## Running conch
+
+Conch connects to a postgres database. Once everything is set up,
+you just do:
+
+  conch
+
+This should work out of the box at a fort, but in other places you'll
+need to at least override the hostname of the database:
+
+  conch -H your.database.server
+
+You may also need to change the database name from the default ("bugle"):
+
+  conch -d your-dbname
+
+### Setting up your postgres database for development
+
+With postgres on your local machine set up for testing (for which, see
+above), you want a database called "bugle" with the correct database
+schema:
+
+  createdb -O bugle bugle
+  psql -h localhost -U bugle bugle < rsrc/schema.sql
+  psql -h localhost -U bugle bugle < rsrc/add-trigger.sql
+
+The first `psql` command is the schema, the second is a custom SQL
+trigger which we use to detect when there are new blasts available.
+
+(If the `createdb` command does not work, you need to give it a
+postgres user to connect as. One way of doing this is to follow the
+commands in the Vagrantfile, which set up a "vagrant" user; if you use
+your own Unix/OS X username here then you'll subsequently be able to
+run the command above.)
+
+You then want to create a bugle user in that database:
+
+  psql -h localhost -U bugle bugle -c \
+  "INSERT INTO auth_user (id, username, first_name, last_name, email, password, is_staff, is_superuser, is_active, last_login, date_joined) VALUES (1, 'myusername', '', '', '', '', false, false, true, NOW(), NOW())"
+
+(The database schema is compatible with the bugle web app, which means
+there are lots of fields not used by conch. Sorry about that.)
+
+You can then run conch connecting to this database using this username:
+
+  conch -u myusername -H localhost
+
+### Setting up a postgres database for production
+
+We'd like to take this opportunity to remind you that conch is not
+intended to be secure; the word "production" here should be considered
+with extreme reservations. In particular, conch does not support
+authenticated access to its database; you must allow passwordless
+connections as the bugle user.
+
+The best way of having a production database is to be at a fort;
+conch's configurations defaults will find the bugle database running
+on bugle.fort quite happily. (If you're setting up a fort's bugle
+database, start by getting bugle running -- which will set up the
+database schema from Django -- and then run in the
+`rsrc/add-trigger.sql` file mentioned previously.)
+
+If you really want to set up your own, you broadly want to go through
+the same steps as for setting up a development database above. The
+main difference is that you don't want to follow the Vagrantfile
+commands for preparing the database, because that lowers your security
+further than you actually need. Assuming you can run the `psql`
+command as a superuser (possibly using the command line option `-U` to
+specify the username), you want to create a "bugle" user and a "bugle"
+database.
+
+Before you do that, however, you need to make the bugle user (once it
+exists) able to connect from anywhere in the world. Don't worry(*), as
+it will only be able to modify the bugle database itself(+).
+
+To do that you want the following in your `pg_hba.conf`:
+
+  host all bugle 0.0.0.0/0 trust
+
+Then restart your postgres server.
+
+Then create the user and database, and set up the database schema:
+
+  createuser bugle
+  createdb -O bugle bugle
+  psql -U bugle bugle < rsrc/schema.sql
+  psql -U bugle bugle < rsrc/add-trigger.sql
+
+Finally you need to create users as required using the `INSERT INTO`
+SQL command given earlier. Conch doesn't support per-user
+authentication to its database; anyone can post as any registered
+user. This is considered a feature.
+
+(*) Do worry. This is a terrible idea from a security point of view.
+
+(+) This isn't really true. Again, you probably shouldn't run this in
+    production.
+
+## git integration
+
+We provide a sample post-receive hook as `tools/post-receive` which
+will blast what changed.
