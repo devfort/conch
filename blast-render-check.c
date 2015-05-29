@@ -118,7 +118,7 @@ START_TEST(test_conch_blast_prepare_extended_with_display_markers) {
   ASSERT_PTR_NOT_NULL(instructions);
   ck_assert(instructions->has_marker);
   ck_assert_int_eq(instructions->nlines, 2);
-  ASSERT_PTR_NOT_NULL(strstr(instructions->content[0], BLAST_EXTENDED_MARKER));
+  ASSERT_PTR_NULL(strstr(instructions->content[0], BLAST_EXTENDED_MARKER));
   ck_assert_int_eq(instructions->content_last_line, 0);
   ck_assert_int_eq(instructions->last_line_length, 28);
 
@@ -164,9 +164,34 @@ START_TEST(test_conch_blast_prepare_extended_marker_at_start_of_line) {
   ASSERT_PTR_NOT_NULL(instructions);
   ck_assert(instructions->has_marker);
   ck_assert_int_eq(instructions->nlines, 3);
-  ck_assert_str_eq(instructions->content[1], BLAST_EXTENDED_MARKER);
+  ASSERT_PTR_NULL(strstr(instructions->content[0], BLAST_EXTENDED_MARKER));
+  // This line is empty because the marker has wrapped to a new line
+  // but does not display.
+  ck_assert_str_eq(instructions->content[1], "");
   ck_assert_int_eq(instructions->content_last_line, 1);
   ck_assert_int_eq(instructions->last_line_length, 0);
+
+  conch_drawlist_free(instructions);
+}
+END_TEST
+
+START_TEST(test_conch_blast_extended_in_wrong_place_with_unicode) {
+  drawlist *instructions;
+  blast b = {
+    .user = "Unicode user",
+    .content = "123…",
+    .posted_at = "two blue moons ago",
+    .extended = "LOOK AT MY EXTENSION!",
+  };
+
+  instructions = conch_blast_prepare(&b, 20, true);
+
+  ASSERT_PTR_NOT_NULL(instructions);
+  ASSERT_PTR_NULL(strstr(instructions->content[0], BLAST_EXTENDED_MARKER));
+  ck_assert_int_eq(instructions->content_last_line, 0);
+  // our strlen counts the ellipsis as 3 characters (+ terminating char = 7)
+  // but it displays as one.
+  ck_assert_int_eq(instructions->last_line_length, 7);
 
   conch_drawlist_free(instructions);
 }
@@ -183,6 +208,7 @@ Suite *blast_render_suite(void) {
   ADD_TEST_CASE(s, test_conch_blast_prepare_extended_without_display_markers);
   ADD_TEST_CASE(s, test_conch_blast_prepare_extended_marker_at_start_of_line);
   ADD_TEST_CASE(s, test_conch_blast_prepare_attribution_line_truncated);
+  ADD_TEST_CASE(s, test_conch_blast_extended_in_wrong_place_with_unicode);
 
   return s;
 }

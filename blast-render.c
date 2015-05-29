@@ -90,6 +90,14 @@ drawlist *conch_blast_prepare(blast *blast, int width, bool display_marker) {
     instructions->content_last_line = last_line_idx;
     instructions->last_line_length =
         strlen(last_line) - strlen(BLAST_EXTENDED_MARKER);
+
+    // We do not have a unicode safe strlen function,
+    // so if there is unicode in the last line of our string
+    // the render function will draw it in the wrong place.
+    // Until we have unicode support, therefore, we need to
+    // remove the marker at this point otherwise they may get
+    // drawn in different places.
+    last_line[instructions->last_line_length] = 0;
   }
 
   if (blast->attachment != NULL) {
