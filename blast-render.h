@@ -10,7 +10,7 @@ typedef struct {
   char **content;
   bool has_marker;
   unsigned int content_last_line;
-  unsigned int marker_rel_x;
+  unsigned int last_line_length;
 } drawlist;
 
 unsigned int conch_blast_render(WINDOW *window, drawlist *l,

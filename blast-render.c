@@ -37,7 +37,7 @@ unsigned int conch_blast_render(WINDOW *window, drawlist *l,
       mvwaddnstr(window, y, x, l->content[i], strlen(l->content[i]));
 
       if (l->has_marker && l->content_last_line == i) {
-        render_extended_marker(window, y, x + l->marker_rel_x);
+        render_extended_marker(window, y, x + l->last_line_length);
       }
       y--;
     }
@@ -47,7 +47,7 @@ unsigned int conch_blast_render(WINDOW *window, drawlist *l,
       rendered_lines++;
       mvwaddnstr(window, y, x, l->content[i], strlen(l->content[i]));
       if (l->has_marker && l->content_last_line == i) {
-        render_extended_marker(window, y, x + l->marker_rel_x);
+        render_extended_marker(window, y, x + l->last_line_length);
       }
       y++;
     }
@@ -89,10 +89,9 @@ drawlist *conch_blast_prepare(blast *blast, int width, int *nlines,
 
     int last_line_idx = *nlines - 1;
     char *last_line = wrapped_blast[last_line_idx];
-    int len = strlen(last_line);
 
     instructions->content_last_line = last_line_idx;
-    instructions->marker_rel_x = len - strlen(BLAST_EXTENDED_MARKER);
+    instructions->last_line_length = strlen(last_line) - strlen(BLAST_EXTENDED_MARKER);
   }
 
   if (blast->attachment != NULL) {

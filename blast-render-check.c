@@ -108,7 +108,7 @@ START_TEST(test_conch_blast_prepare_extended_with_display_markers) {
   ck_assert_int_eq(nlines, 2);
   ASSERT_PTR_NOT_NULL(strstr(instructions->content[0], BLAST_EXTENDED_MARKER));
   ck_assert_int_eq(instructions->content_last_line, 0);
-  ck_assert_int_eq(instructions->marker_rel_x, 28);
+  ck_assert_int_eq(instructions->last_line_length, 28);
   ASSERT_PTR_NULL(instructions->content[2]);
 
   conch_drawlist_free(instructions);
@@ -134,7 +134,7 @@ START_TEST(test_conch_blast_prepare_extended_without_display_markers) {
   ck_assert_int_eq(nlines, 2);
   ASSERT_PTR_NULL(strstr(instructions->content[0], BLAST_EXTENDED_MARKER));
   ck_assert_int_eq(instructions->content_last_line, 0);
-  ck_assert_int_eq(instructions->marker_rel_x, 0);
+  ck_assert_int_eq(instructions->last_line_length, 0);
   ASSERT_PTR_NULL(instructions->content[2]);
 
   conch_drawlist_free(instructions);
@@ -158,7 +158,7 @@ START_TEST(test_conch_blast_prepare_extended_marker_at_start_of_line) {
   ck_assert_int_eq(nlines, 3);
   ck_assert_str_eq(instructions->content[1], BLAST_EXTENDED_MARKER);
   ck_assert_int_eq(instructions->content_last_line, 1);
-  ck_assert_int_eq(instructions->marker_rel_x, 0);
+  ck_assert_int_eq(instructions->last_line_length, 0);
   ASSERT_PTR_NULL(instructions->content[3]);
 
   conch_drawlist_free(instructions);
