@@ -2,11 +2,16 @@
 #define _DETAILVIEW_H
 
 #include "blastlist.h"
+#include "webfetcher.h"
+#include "anigif.h"
 
 typedef struct {
   blastlist *blastlist;
   int line_offset;
   int code_column_offset;
+
+  webfetch_result *attachment;
+  anigif *anigif;
 } detailview;
 
 detailview *conch_detailview_new(blastlist *blastlist);

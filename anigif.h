@@ -10,7 +10,8 @@ typedef struct anigif {
   struct timeval last_switch_time;
 } anigif;
 
-anigif *anigif_new(const char *filename);
+anigif *anigif_new_from_file(const char *filename);
+anigif *anigif_new_from_blob(const void *blob, const size_t length);
 void anigif_free(anigif *gif);
 
 #endif

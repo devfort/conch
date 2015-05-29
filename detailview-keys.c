@@ -25,7 +25,7 @@ keypress_result conch_detailview_keypress_dispatch(int key, detailview *v) {
     break;
   case '\r':
   case '\n':
-    return CONCH_LIST;
+    return CONCH_EXIT_DETAIL;
   }
   return CONCH_NOP;
 }

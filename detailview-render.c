@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "anigif-render.h"
 #include "blast-render.h"
 #include "detailview-render.h"
 #include "listview.h"
@@ -156,4 +157,15 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   }
 
   delwin(pad);
+
+  // TODO: Render me properly into the pad so we can cope with an image and a
+  // code blast!
+  if (v->anigif) {
+    // Leave some padding between the image and the blast
+    summary_height++;
+
+    rect->height -= summary_height;
+    rect->top += summary_height;
+    anigif_render_frame(v->anigif, window, rect);
+  }
 }

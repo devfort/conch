@@ -144,7 +144,7 @@ int main(int argc, char **argv) {
   init_blasts(conn, bl);
   conch_listview_update(lv, bl);
 
-  detailview *dv = conch_detailview_new(bl);
+  detailview *dv = NULL;
 
   while (1) {
     if (!started) {
@@ -201,8 +201,15 @@ int main(int argc, char **argv) {
     case CONCH_DETAIL:
       if (bl->current != NULL) {
         current_view = VIEW_DETAIL;
+        dv = conch_detailview_new(bl);
         current_view_state = dv;
       }
+      break;
+    case CONCH_EXIT_DETAIL:
+      conch_detailview_free(dv);
+      dv = NULL;
+      current_view = VIEW_LIST;
+      current_view_state = lv;
       break;
     case CONCH_LIST:
       current_view = VIEW_LIST;
