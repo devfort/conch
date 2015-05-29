@@ -20,6 +20,7 @@ typedef struct listview {
   bool stick_to_head;
   bool at_head;
   char *search_term;
+  char *username;
 } listview;
 
 listview *conch_listview_new(conch_cli_options const *opts);
@@ -31,6 +32,7 @@ void conch_listview_jump_to_next_unread(listview *lv);
 void conch_listview_select_next_blast(listview *lv);
 void conch_listview_select_prev_blast(listview *lv);
 bool conch_listview_has_unread_blasts(listview *lv);
+void conch_listview_create_blast(listview *lv);
 bool conch_listview_search_forward(listview *lv);
 bool conch_listview_repeat_search_forward(listview *lv);
 void conch_listview_free(listview *lv);

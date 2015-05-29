@@ -14,6 +14,10 @@
 #include "strutils.h"
 #include "explode.h"
 
+
+// This is exposed as global so various* views can get at it
+// * currently just the listview for posting
+mouthpiece *conn;
 static lua_State *L;
 static bool use_lua = false;
 

@@ -49,6 +49,11 @@ keypress_result conch_listview_keypress_dispatch(int key, listview *lv) {
     conch_listview_repeat_search_forward(lv);
     break;
 
+  case 'i':
+    // i for insert into the database mode
+    conch_listview_create_blast(lv);
+    break;
+
   case '\r':
   case '\n':
     return CONCH_DETAIL;

@@ -4,13 +4,17 @@
 #include <assert.h>
 
 #include "listview.h"
+#include "backend.h"
 #include "keys.h"
+
+extern mouthpiece *conn;
 
 listview *conch_listview_new(conch_cli_options const *opts) {
   listview *lv = calloc(1, sizeof(listview));
   lv->stick_to_head = opts->stick_to_head;
   lv->at_head = true;
   lv->page_size = 0;
+  lv->username = opts->username;
   return lv;
 }
 
@@ -146,6 +150,28 @@ blast *conch_listview_find_and_select_blast(listview *lv, const char *term) {
   }
 
   return cur;
+}
+
+void conch_listview_create_blast(listview *lv) {
+  char *content = calloc(1024, sizeof(char));
+  int max_y = getmaxy(curscr);
+  int max_x = getmaxx(curscr);
+
+  mvhline(max_y - 1, 0, ' ', max_x);
+  mvaddstr(max_y - 1, 0, ":");
+  move(max_y - 1, 1);
+  wrefresh(curscr);
+
+  conch_getstr_input_config();
+
+  getnstr(content, 1024 - 1);
+
+  conch_default_input_config();
+
+  if (strlen(content) != 0) {
+    blastresult *post = conch_blast_post(conn, lv->username, content, NULL);
+    free(post);
+  }
 }
 
 bool conch_listview_search_forward(listview *lv) {

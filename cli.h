@@ -7,6 +7,7 @@ typedef struct {
   bool stick_to_head;
   char *host;
   char *database;
+  char *username;
 } conch_cli_options;
 
 conch_cli_options conch_parse_command_line_args(int argc, char **argv);

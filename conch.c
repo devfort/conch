@@ -22,6 +22,7 @@
 #define SPLASH_DELAY 20
 
 static bool toggle_conchview;
+extern mouthpiece *conn;
 
 WINDOW *init_screen() {
   setlocale(LC_ALL, "");
@@ -108,7 +109,6 @@ int main(int argc, char **argv) {
   conchview *cv;
   keypress_result res;
   listview *lv;
-  mouthpiece *conn;
   view_type current_view;
   void *current_view_state;
   int splash_display_cycles = SPLASH_DELAY / KEY_DELAY;
