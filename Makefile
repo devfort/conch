@@ -79,9 +79,9 @@ blast-render-check: blast-render.o blastlist.o strutils.o colors.o
 blastlist-check: blastlist.o backend.o strutils.o
 backend-check: backend.o strutils.o .testdb
 wordwrap-check: wordwrap.o
-listview-check: listview.o blastlist.o strutils.o keys.o listview-keys.o detailview-keys.o detailview.o
+listview-check: listview.o blastlist.o strutils.o keys.o listview-keys.o detailview-keys.o detailview.o backend.o config.o explode.o
 strutils-check: strutils.o
-config-check: config.o backend.o strutils.o
+config-check: config.o backend.o strutils.o explode.o
 
 logs:
 	mkdir -p logs
