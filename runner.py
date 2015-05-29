@@ -7,49 +7,112 @@ reasonable time.
 
 """
 
+from __future__ import print_function
+
 from hypothesis.stateful import GenericStateMachine
-import pexpect.ANSI
 import hypothesis.strategies as strat
 from hypothesis.settings import Verbosity, Settings
 import unittest
 import time
 from collections import namedtuple
 import psycopg2
+import tmux
+import binascii
+import os
+from leven import levenshtein
 
-
-Window = namedtuple('Window', ('width', 'height'))
 Blast = namedtuple('Blast', ('user', 'content', 'extended', 'attachment'))
 Sleep = namedtuple('Sleep', ('time',))
+Search = namedtuple('Search', ('search',))
+Start = namedtuple('Start', ('width', 'height'))
+
+start_strategy = strat.builds(
+    Start, strat.integers(20, 200), strat.integers(1, 200),)
+
+
+search_strategy = strat.text().map(Search)
 
 sleep_strategy = strat.builds(
     Sleep, strat.integers(1, 100)
 )
 
-window_strategy = strat.builds(
-    Window,
-    strat.integers(1, 100),
-    strat.integers(1, 100),
-)
-
 
 class RunnerMachine(GenericStateMachine):
 
-    @property
-    def child(self):
+    def init_app(self, width, height):
         """We lazily launch the child process on first use.
 
         This lets us test both the case where we've started with some
         data in the database and also the empty case.
 
         """
-        if self.__child is None:
-            self.__child = pexpect.spawn(
-                './conch --host=localhost --database=bugle_expect')
-            self.screen = pexpect.ANSI.ANSI()
-            self.update_screen()
-            time.sleep(1)
-            self.read_all_available()
-        return self.__child
+        assert self.tmux is None
+        self.name = binascii.hexlify(os.urandom(8))
+        self.success_terminator = "success-" + binascii.hexlify(
+            os.urandom(8)).decode('utf-8')
+        self.fail_terminator = "fail-" + binascii.hexlify(
+            os.urandom(8)).decode('utf-8')
+        self.tmux = tmux.Tmux(self.name)
+        sessions = self.tmux.sessions()
+        assert len(sessions) == 1
+        self.tmux.new_session(
+            name=self.name,
+            command=(
+                './conch --host=localhost '
+                '--database=bugle_expect && echo %s || echo %s; sleep 5'
+            ) % (self.success_terminator, self.fail_terminator),
+            width=width, height=height
+        )
+        assert len(self.tmux.sessions()) == 2
+        self.tmux.kill_session(sessions[0])
+        panes = self.tmux.panes()
+        assert len(panes) == 1
+        self.target_pane = panes[0]
+        self.press("@")
+        self.await_text("/dev/fort 11", timeout=5)
+        self.wait_to_stabilize()
+
+    def fail(self, message):
+        raise ValueError(message)
+
+    def current_screen(self):
+        screen = self.tmux.capture_pane(self.target_pane)
+        if not hasattr(self, 'last_screen'):
+            self.last_screen = screen
+        elif (
+            self.success_terminator not in self.last_screen and
+            self.fail_terminator not in self.last_screen
+        ):
+            self.last_screen = screen
+        return screen
+
+    def await(self, screen_filter, timeout, message=''):
+        start = time.time()
+        while time.time() <= start + timeout:
+            screen = self.current_screen()
+            if screen_filter(screen):
+                return screen
+        if message:
+            self.fail(
+                "Timed out for waiting for %s" % (message,)
+            )
+        else:
+            self.fail("Timed out while waiting")
+
+    def await_text(self, text, timeout=1):
+        return self.await(
+            lambda screen: text in screen, timeout=timeout,
+            message="text %r to appear" % (text,)
+        )
+
+    def await_no_text(self, text, timeout=1):
+        return self.await(
+            lambda screen: text not in screen, timeout=timeout,
+            message="text %r to disappear" % (text,)
+        )
+
+    def press(self, key):
+        return self.tmux.send_keys(self.target_pane, [key])
 
     def __init__(self):
         """Starting a new state machine run connects to the database and gives
@@ -57,7 +120,7 @@ class RunnerMachine(GenericStateMachine):
         self.connection = psycopg2.connect(
             'host=localhost dbname=bugle_expect user=bugle'
         )
-        self.__child = None
+        self.tmux = None
         cursor = self.connection.cursor()
         cursor.execute('truncate table bugle_blast cascade')
         cursor.execute("select setval('bugle_blast_id_seq', 1);")
@@ -76,44 +139,43 @@ class RunnerMachine(GenericStateMachine):
                     max_size=50)),
         )
 
-    def update_screen(self):
-        """Try to read at least one screen from the buffer, timing out quickly
-        if none is available."""
-        width, height = self.child.getwinsize()
-        to_read = width * height
-
-        try:
-            data = self.child.read_nonblocking(to_read, 0.01)
-            self.last_screen = data
-            self.screen.process(data)
-            return True
-        except pexpect.TIMEOUT:
-            return False
-
-    def read_all_available(self):
-        """Read as much from the terminal buffer as ncurses has given us."""
-        try:
-            while self.update_screen():
-                pass
-        except pexpect.EOF:
-            pass
+    def wait_to_stabilize(self, timeout=2):
+        screen = self.current_screen()
+        start = time.time()
+        while True:
+            time.sleep(0.5)
+            new_screen = self.current_screen()
+            size_difference = levenshtein(screen, new_screen)
+            if size_difference <= 2:
+                return
+            screen = new_screen
+            if time.time() >= start + 2:
+                print(new_screen)
+                self.fail("Took too long to stabilize")
 
     def steps(self):
+        if self.tmux is None:
+            return self.blast_strategy | start_strategy
+
         return (
             strat.just('\t') |
-            strat.text('j', average_size=5) |
-            strat.text('k', average_size=5) |
+            strat.text('j') |
+            strat.text('k') |
             strat.just('0') |
             strat.just('s') |
-            window_strategy |
+            strat.just('g') |
+            strat.just('G') |
+            strat.just('n') |
+            strat.just('PageUp') |
+            strat.just('PageDown') |
+            strat.just('Enter') |
             self.blast_strategy |
-            sleep_strategy
+            sleep_strategy |
+            search_strategy
         )
 
     def execute_step(self, step):
-        if isinstance(step, Window):
-            self.child.setwinsize(step.width, step.height)
-        elif isinstance(step, Blast):
+        if isinstance(step, Blast):
             cursor = self.connection.cursor()
             cursor.execute("""
                 insert into bugle_blast(user_id, message, extended, attachment)
@@ -124,14 +186,23 @@ class RunnerMachine(GenericStateMachine):
             """, tuple(step))
             self.connection.commit()
             cursor.close()
+        elif isinstance(step, Start):
+            self.init_app(step.width, step.height)
         elif isinstance(step, Sleep):
             time.sleep(step.time / 1000.0)
+        elif isinstance(step, Search):
+            self.press("/")
+            if step.search:
+                buf = self.tmux.a_buffer()
+                self.tmux.set_buffer(buf, step.search)
+                self.tmux.execute_command(
+                    "paste-buffer", "-b", buf, "-d", "-t", self.target_pane)
+            self.press("Enter")
         else:
-            for c in step:
-                self.child.send(c)
-                self.update_screen()
-        self.read_all_available()
-        assert self.child.isalive()
+            assert isinstance(step, str)
+            self.press(step)
+        if self.tmux is not None:
+            self.wait_to_stabilize()
 
     def teardown(self):
         """Close down the child program by sending it a q signal.
@@ -140,13 +211,13 @@ class RunnerMachine(GenericStateMachine):
         it hasn't closed down by then that's definitely a bug.
 
         """
-        assert self.child.isalive()
-        self.child.send('q')
-        start = time.time()
-        while self.child.isalive():
-            self.read_all_available()
-            assert time.time() <= start + 10
-        assert self.child.status == 0
+        self.connection.close()
+        if self.tmux is None:
+            return
+        self.current_screen()
+        self.tmux.shutdown()
+        print(self.last_screen)
+        assert self.fail_terminator not in self.last_screen.replace("\n", "")
 
 Settings.default.verbosity = Verbosity.debug
 Settings.default.timeout = -1

@@ -36,7 +36,7 @@ class Tmux(object):
     def execute_command(self, *command):
         try:
             return subprocess.check_output(
-                ["tmux", "-L", self.name] + list(map(str, command)),
+                ["tmux", "-L", self.name] + list(command),
                 stderr=subprocess.STDOUT
             ).decode('ascii')
         except subprocess.CalledProcessError as e:
@@ -45,7 +45,7 @@ class Tmux(object):
     def new_session(
         self, width=80, height=24, window=None, name=None, command=None
     ):
-        arguments = ["new-session", "-d", "-x", width, "-y", height]
+        arguments = ["new-session", "-d", "-x", str(width), "-y", str(height)]
         if window is not None:
             arguments.extend([
                 "-n", window
