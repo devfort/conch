@@ -38,11 +38,20 @@ Be very afraid.
 
 ## Installing
 
-  make check all # run tests and build conch
-  sudo make install # installs binaries and man pages
+To build: `make`.
+
+To install: `sudo make install`. This allows you to run conch from any directory and includes a man page.
+
+To run the tests: `make check`.
 
 On Linux you'll need to install the packages that are listed in the [Vagrantfile](/Vagrantfile)
 (or just use the vagrant VM).
+
+If you don't use the vagrant machine, note that you'll have to rename `clang-format`:
+
+    sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-3.6 10
+
+(The last argument is a priority number; arbitrary but necessary.)
 
 On OS X you'll need to install
 
@@ -69,18 +78,6 @@ CK_DEFAULT_TIMEOUT=6`.
 You will need postgres installed and running and your current user will need to be a
 postgres superuser. Your pg\_hba.conf should be set up to allow passwordless local
 connections to the bugle\_test database as the bugle user.
-
-## Making it work on your system
-
-To rename your copy of a library so it matches what compilation expects:
-
-    sudo update-alternatives --install /path/to/new_thing new_thingname /path/to/existing_thing 10
-
-For example:
-
-    sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-3.6 10
-
-(The last argument is a priority number; arbitrary but necessary.)
 
 ## Vagrant
 

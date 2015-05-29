@@ -34,11 +34,13 @@ Vagrant.configure(2) do |config|
     sudo apt-get install -y libmagickwand-dev libcaca-dev
     sudo apt-get install -y libncurses5-dev libncursesw5-dev
     sudo apt-get install -y postgresql libpq-dev
-    sudo apt-get install -y check
-    sudo apt-get install -y clang-format-3.6
-    sudo apt-get install -y python-virtualenv python-dev tmux
     sudo apt-get install -y liblua5.2-dev
     sudo apt-get install -y libcurl4-openssl-dev
+
+    # packages required for dev & testing
+    sudo apt-get install -y check
+    sudo apt-get install -y python-virtualenv python-dev tmux
+    sudo apt-get install -y clang-format-3.6
 
     # To rename clang-format to what the Makefile expects
     sudo update-alternatives --install /usr/bin/clang-format clang-format /usr/bin/clang-format-3.6 10
