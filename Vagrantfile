@@ -14,18 +14,15 @@ Vagrant.configure(2) do |config|
   if on_a_fort
     config.vm.box_url = "http://files.fort/boxes/chef-ubuntu-14.04.box"
     config.vm.box_check_update = false
+    config.vm.provision "shell", inline: <<-SHELL
+      sudo sed -ibackup s,archive.ubuntu.com/ubuntu,apt.fort,g /etc/apt/sources.list
+      sudo sed -ibackup s,us.apt,apt,g /etc/apt/sources.list
+    SHELL
   end
 
   config.ssh.forward_agent = true
 
   config.vm.provision "shell", inline: <<-SHELL
-    ## when on a fort, use the clonque apt repo
-    ## should be removed if building VM off fort
-    sudo sed -ibackup s,archive.ubuntu.com/ubuntu,apt.fort,g /etc/apt/sources.list
-    ## if using the fort box, it's actually us.archive.ubuntu.com :(
-    ## doing both will have no effect if file was as expected
-    sudo sed -ibackup s,us.apt,apt,g /etc/apt/sources.list
-
     sudo apt-get update
 
     # required for development on the VM
