@@ -1,8 +1,7 @@
 #include "listview-keys.h"
+#include "explode.h"
 
 #include <curses.h>
-
-extern void fatal_error(const char *, ...);
 
 keypress_result conch_listview_keypress_dispatch(int key, listview *lv) {
 

@@ -70,9 +70,10 @@ conch: \
   keys.o \
   strutils.o \
 	anigif.o \
-  wordwrap.o
+  wordwrap.o \
+	explode.o
 
-blast: blast.o backend.o strutils.o config.o
+blast: blast.o backend.o strutils.o config.o explode.o
 
 blast-render-check: blast-render.o blastlist.o strutils.o colors.o
 blastlist-check: blastlist.o backend.o strutils.o

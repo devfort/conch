@@ -9,6 +9,7 @@
 #include "listview-render.h"
 #include "wordwrap.h"
 #include "strutils.h"
+#include "explode.h"
 
 #define PADDING_TOP 1
 #define PADDING_BOTTOM 1
@@ -31,16 +32,6 @@ int calculate_summary_blast_height(blast *blast, int usable_window_width) {
   // is
   // zero indexed, and +1 again to make room for the author
   return (lines + 1) + 1;
-}
-
-void fatal_error(const char *fmt, ...) {
-  va_list args;
-  va_start(args, fmt);
-  endwin();
-  vfprintf(stderr, fmt, args);
-  fprintf(stderr, "\n");
-  va_end(args);
-  abort();
 }
 
 void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {

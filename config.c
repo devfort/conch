@@ -12,6 +12,7 @@
 
 #include "config.h"
 #include "strutils.h"
+#include "explode.h"
 
 static lua_State *L;
 static bool use_lua = false;
@@ -55,8 +56,7 @@ static void parse_config(const char *filename, settings *settings) {
   
   luaL_openlibs(L);
   if (luaL_dofile(L, filename)) {
-    //TODO: change to fatal_error
-    fprintf(stderr, "Couldn't read config file %s\n", filename);
+    fatal_error("config: Couldn't read config file %s", filename);
   } else {
     struct {
       char *var;
@@ -87,8 +87,7 @@ static bool use_config(const char *filename) {
     return true;
   } else {
     if (!strcmp(filename, DEFAULT_CONFIG_LOCATION)) {
-      fprintf(stderr, "Couldn't read config file %s: %s\n", filename,
-              strerror(errno));
+      fatal_error("Couldn't read config file %s: %s", filename, strerror(errno));
     }
     return false;
   }
