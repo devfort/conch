@@ -51,15 +51,6 @@ On OS X you'll need to install
   make
   make install
 
-Do the next bit if we don't have Homebrew for ImageMagick yet. Or look longingly at Ash more.
-
-  curl -O http://apt.fort/pool/main/i/imagemagick/imagemagick_6.7.7.10.orig.tar.bz2
-  tar -jxvf imagemagick_6.7.7.10.orig.tar.bz2
-  cd ImageMagick-6.7.7-10/
-  ./configure
-  make
-  make install
-
 ## Testing
 
 To run the tests: `make check`. If they are timing out, you can use the
