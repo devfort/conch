@@ -36,9 +36,8 @@ unsigned int conch_blast_render(WINDOW *window, drawlist *l,
       rendered_lines++;
       mvwaddnstr(window, y, x, l->content[i], strlen(l->content[i]));
 
-      if (l->has_marker && l->marker_rel_y == i) {
-        render_extended_marker(window, y + l->marker_rel_y,
-                               x + l->marker_rel_x);
+      if (l->has_marker && l->content_last_line == i) {
+        render_extended_marker(window, y, x + l->marker_rel_x);
       }
       y--;
     }
@@ -47,9 +46,8 @@ unsigned int conch_blast_render(WINDOW *window, drawlist *l,
     for (int i = 0; i < nlines && rendered_lines < maxlines; i++) {
       rendered_lines++;
       mvwaddnstr(window, y, x, l->content[i], strlen(l->content[i]));
-      if (l->has_marker && l->marker_rel_y == i) {
-        render_extended_marker(window, y + l->marker_rel_y,
-                               x + l->marker_rel_x);
+      if (l->has_marker && l->content_last_line == i) {
+        render_extended_marker(window, y, x + l->marker_rel_x);
       }
       y++;
     }
@@ -90,12 +88,10 @@ drawlist *conch_blast_prepare(blast *blast, int width, int *nlines,
     instructions->has_marker = true;
 
     int last_line_idx = *nlines - 1;
-
     char *last_line = wrapped_blast[last_line_idx];
-
     int len = strlen(last_line);
 
-    instructions->marker_rel_y = last_line_idx;
+    instructions->content_last_line = last_line_idx;
     instructions->marker_rel_x = len - strlen(BLAST_EXTENDED_MARKER);
 
     // And lets be tidy and not draw it in white, then re-draw in color

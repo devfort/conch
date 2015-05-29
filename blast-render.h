@@ -9,7 +9,7 @@
 typedef struct {
   char **content;
   bool has_marker;
-  unsigned int marker_rel_y;
+  unsigned int content_last_line;
   unsigned int marker_rel_x;
 } drawlist;
 
