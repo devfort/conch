@@ -45,8 +45,11 @@ START_TEST(test_unreadable_config) {
   creat(unreadable, O_CREAT | O_TRUNC | S_IWUSR);
 
   if (setjmp(check_jump) == 0) {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
     settings config = conch_load_config(unreadable);
     config.username = "using the username";
+#pragma GCC diagnostic pop
   } else {
     caught = true;
   }
@@ -58,8 +61,11 @@ END_TEST
 START_TEST(test_clock_function_error) {
   char *explode = "rsrc/config/explode.lua";
   char clock_buffer[100];
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-but-set-variable"
   settings config = conch_load_config(explode);
   config.username = "using the username";
+#pragma GCC diagnostic pop
   generate_clock_text(100, clock_buffer);
   ck_assert_msg(true, "generate_clock_text should not crash");
 }
