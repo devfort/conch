@@ -19,6 +19,7 @@ static char const *help_text = {
   "Global keyboard shortcuts:\n"
   "\n"
   "    q         quit\n"
+  "    ?         toggle help\n"
   "    @         toggle screensaver\n"
   "\n\n"
   "Timeline shortcuts:\n"
