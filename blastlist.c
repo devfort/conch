@@ -5,6 +5,7 @@
 
 #include "blastlist.h"
 #include "strutils.h"
+#include "explode.h"
 
 static void blastdata_copy(blast *b, blastdata *d) {
   b->id = d->id;
@@ -19,8 +20,7 @@ static blast *blast_new() {
   blast *b = calloc(1, sizeof(blast));
 
   if (b == NULL) {
-    fprintf(stderr, "conch_blast_new: could not alloc\n");
-    abort();
+    fatal_error("conch_blast_new: could not alloc");
   }
 
   return b;
@@ -39,8 +39,7 @@ blastlist *conch_blastlist_new() {
   blastlist *bl = calloc(1, sizeof(blastlist));
 
   if (bl == NULL) {
-    fprintf(stderr, "conch_blastlist_new: could not alloc\n");
-    abort();
+    fatal_error("conch_blastlist_new: could not alloc");
   }
 
   return bl;

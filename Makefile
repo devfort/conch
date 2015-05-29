@@ -92,11 +92,11 @@ conch: \
 
 blast: blast.o backend.o strutils.o config.o explode.o
 
-blast-render-check: blast-render.o blastlist.o strutils.o colors.o
-blastlist-check: blastlist.o backend.o strutils.o
-backend-check: backend.o strutils.o .testdb
+blast-render-check: blast-render.o blastlist.o strutils.o explode.o colors.o
+blastlist-check: blastlist.o backend.o strutils.o explode.o
+backend-check: backend.o strutils.o explode.o .testdb
 listview-check: listview.o blastlist.o strutils.o keys.o listview-keys.o detailview-keys.o detailview.o backend.o config.o explode.o anigif.o webfetcher.o
-strutils-check: strutils.o
+strutils-check: strutils.o explode.o
 config-check: config.o backend.o strutils.o check-explode.o
 
 logs:

@@ -5,6 +5,7 @@
 #include <string.h>
 
 #include "strutils.h"
+#include "explode.h"
 
 char *strclone(const char *c) {
   if (c == NULL) {
@@ -14,8 +15,7 @@ char *strclone(const char *c) {
   char *target = malloc(strlen(c) + 1);
 
   if (target == NULL) {
-    fprintf(stderr, "strclone: could not alloc\n");
-    abort();
+    fatal_error("strclone: could not alloc");
   }
 
   strcpy(target, c);
@@ -30,8 +30,7 @@ char *strcopycat(const char *c, const char *d) {
   char *target = malloc(n + strlen(d) + 1);
 
   if (target == NULL) {
-    fprintf(stderr, "strcopycat: could not alloc\n");
-    abort();
+    fatal_error("strcopycat: could not alloc");
   }
 
   strcpy(target, c);
@@ -48,8 +47,7 @@ char *stralleycat(int count, char **strs) {
 
   char *result = malloc(size * sizeof(char));
   if (result == NULL) {
-    fprintf(stderr, "stralleycat: could not alloc\n");
-    abort();
+    fatal_error("stralleycat: could not alloc");
   }
 
   for (i = 0; i < count; i++) {
@@ -65,8 +63,7 @@ char *stralleycat(int count, char **strs) {
 char *strcopytrunc(char const *const src, unsigned int width) {
   char *result = malloc((width + 1) * sizeof(char));
   if (result == NULL) {
-    fprintf(stderr, "strcopytrunc: could not alloc\n");
-    abort();
+    fatal_error("strcopytrunc: could not alloc");
   }
 
   strncpy(result, src, width);
