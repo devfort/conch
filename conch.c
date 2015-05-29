@@ -8,6 +8,7 @@
 #include "caca-driver.h"
 #include "cli.h"
 #include "colors.h"
+#include "config.h"
 #include "keys.h"
 #include "conchview-render.h"
 #include "conchview.h"
@@ -115,7 +116,7 @@ int main(int argc, char **argv) {
   int splash_display_cycles = SPLASH_DELAY / KEY_DELAY;
   bool started = false;
   settings config = {
-    .page_size = 42,
+    .page_size = DEFAULT_PAGE_SIZE,
   };
 
   opts = conch_parse_command_line_args(argc, argv);
