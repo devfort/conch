@@ -76,15 +76,13 @@ conch: \
 	listview.o \
 	render.o \
 	strutils.o \
-	webfetcher.o \
-	wordwrap.o
+	webfetcher.o
 
 blast: blast.o backend.o strutils.o config.o explode.o
 
 blast-render-check: blast-render.o blastlist.o strutils.o colors.o
 blastlist-check: blastlist.o backend.o strutils.o
 backend-check: backend.o strutils.o .testdb
-wordwrap-check: wordwrap.o
 listview-check: listview.o blastlist.o strutils.o keys.o listview-keys.o detailview-keys.o detailview.o backend.o config.o explode.o anigif.o webfetcher.o
 strutils-check: strutils.o
 config-check: config.o backend.o strutils.o check-explode.o

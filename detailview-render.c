@@ -8,32 +8,11 @@
 #include "detailview-render.h"
 #include "listview.h"
 #include "listview-render.h"
-#include "wordwrap.h"
 #include "strutils.h"
 #include "explode.h"
 
 #define PADDING_TOP 1
 #define PADDING_BOTTOM 1
-
-int calculate_summary_blast_height(blast *blast, int usable_window_width) {
-  wordwrap_s wrap;
-  init_wordwrap(&wrap, blast->content, usable_window_width);
-
-  int lines = 0;
-  for (token_s *token = wordwrap(&wrap); token != NULL;
-       token = wordwrap(&wrap)) {
-    lines = token->y;
-  }
-
-  if (blast->attachment != NULL) {
-    lines++;
-  }
-
-  // We want the blast, plus one line for author information. 1 because line
-  // is
-  // zero indexed, and +1 again to make room for the author
-  return (lines + 1) + 1;
-}
 
 void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   // Where to put the pad on screen
@@ -43,10 +22,15 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
 
   // Number of chars used to display line numbers
   const int line_no_width = 4;
+  const bool dont_show_extended_markers = false;
 
-  // TODO: rename this method call vv
-  int summary_height = calculate_summary_blast_height(
-      v->blastlist->current, rect->width - line_no_width);
+  int summary_lines, summary_height;
+
+  drawlist *dl =
+      conch_blast_prepare(v->blastlist->current, rect->width - line_no_width,
+                          &summary_lines, dont_show_extended_markers);
+
+  summary_height = summary_lines;
 
   int code_height = 0, code_width = 0;
   if (v->blastlist->current->extended) {
@@ -78,13 +62,8 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
     fatal_error("conch_detailview_render: Could not create vertical pad");
   }
 
-  const bool display_extended_markers = false;
   // Render the blast at 0,0 on the pad
-  int blast_height;
-  drawlist *dl =
-      conch_blast_prepare(v->blastlist->current, rect->width - line_no_width,
-                          &blast_height, display_extended_markers);
-  conch_blast_render(pad, dl, blast_height, 0, line_no_width, blast_height,
+  conch_blast_render(pad, dl, summary_lines, 0, line_no_width, summary_lines,
                      false);
   conch_drawlist_free(dl);
 
