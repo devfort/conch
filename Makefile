@@ -69,31 +69,30 @@ busy_loop:
 	while true; do git pull && (make conch || make clean conch) && ./conch -c conchrc.example -s; sleep 1; done
 
 conch: \
-  anigif.o \
+	anigif-render.o \
 	anigif.o \
-  anigif-render.o \
-  backend.o \
-  blastlist.o \
+	backend.o \
 	blast-render.o \
+	blastlist.o \
 	caca-driver.o \
 	cli.o \
 	colors.o \
 	conch-logo.o \
-  conchview.o \
-  conchview-render.o \
-  config.o \
-  detailview-keys.o \
-  detailview.o \
-  detailview-render.o \
-  explode.o \
-  help.o \
+	conchview-render.o \
+	conchview.o \
+	config.o \
+	detailview-keys.o \
+	detailview-render.o \
+	detailview.o \
+	explode.o \
+	help.o \
 	keys.o \
-  listview-keys.o \
-  listview.o \
-  listview-render.o \
-  render.o \
-  strutils.o \
-  webfetcher.o
+	listview-keys.o \
+	listview-render.o \
+	listview.o \
+	render.o \
+	strutils.o \
+	webfetcher.o
 
 blast: blast.o backend.o strutils.o config.o explode.o
 
