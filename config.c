@@ -29,10 +29,12 @@ void generate_clock_text(int time_str_limit,
     if (setjmp(savepoint) == 0) {
       lua_call(L, 0, 1);
       const char *result = lua_tostring(L, lua_gettop(L));
-      lua_pop(L, 1);
       snprintf(time_str, time_str_limit, " %s ", result);
+      lua_pop(L, 1);
       return;
     }
+  } else {
+    lua_pop(L, 1);
   }
 
   time_t now = time(NULL);
