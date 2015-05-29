@@ -40,7 +40,7 @@ Be very afraid.
 
 On Linux you'll need to install
 
-  sudo apt-get install lbmagickwand-dev libcaca-dev libncurses5 liblua5.2-dev
+  sudo apt-get install libmagickwand-dev libcaca-dev libncurses5 liblua5.2-dev
 
 On OS X you'll need to install
 
