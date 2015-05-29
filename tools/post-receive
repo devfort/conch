@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Example post receive hook to run on clonque or information radiator
 # put in your source repo in the as hooks/post-receive and chown +x
