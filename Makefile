@@ -67,28 +67,30 @@ busy_loop:
 	while true; do git pull && (make conch || make clean conch) && ./conch -c conchrc.example -s; sleep 1; done
 
 conch: \
-	anigif-render.o \
+  anigif.o \
 	anigif.o \
-	backend.o \
+  anigif-render.o \
+  backend.o \
+  blastlist.o \
 	blast-render.o \
-	blastlist.o \
 	caca-driver.o \
 	cli.o \
 	colors.o \
-	conchview-render.o \
-	conchview.o \
-	config.o \
-	detailview-keys.o \
-	detailview-render.o \
-	detailview.o \
-	explode.o \
+	conch-logo.o \
+  conchview.o \
+  conchview-render.o \
+  config.o \
+  detailview-keys.o \
+  detailview.o \
+  detailview-render.o \
+  explode.o \
 	keys.o \
-	listview-keys.o \
-	listview-render.o \
-	listview.o \
-	render.o \
-	strutils.o \
-	webfetcher.o
+  listview-keys.o \
+  listview.o \
+  listview-render.o \
+  render.o \
+  strutils.o \
+  webfetcher.o
 
 blast: blast.o backend.o strutils.o config.o explode.o
 
@@ -119,9 +121,10 @@ PG_BIN_DIR=$(shell pg_config --bindir)
 	touch .expectdb
 
 clean:
-	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST) .testdb .expectdb venv logs
+	rm -rf *.o $(DEPS) $(BINS) $(BINS_TEST) conch-logo.c .testdb .expectdb venv logs
 
 reformat: *.c *.h
+	@rm -f conch-logo.c
 	clang-format -i *.h *.c
 
 coverage: *.gcda *.gcno
@@ -144,6 +147,13 @@ coverage: *.gcda *.gcno
 $(BINS): %: %.o
 	@echo "LD  $@"
 	$(SILENT)$(CC) -o $@ $^ $(LDFLAGS)
+
+conch-logo.c: rsrc/conch-emoji.png
+	(echo "#include <stdint.h>" && \
+		echo "#include <stdlib.h>" && \
+		echo "const uint8_t logo_data[] = {" && \
+		xxd -p $< | sed -e 's/\(..\)/0x\1, /g' && echo "};" && \
+		echo "const size_t logo_length = sizeof(logo_data);") > $@
 
 venv:
 	virtualenv venv --python=python2.7
