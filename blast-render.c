@@ -93,7 +93,8 @@ drawlist *conch_blast_prepare(blast *blast, int width, bool display_marker) {
     char *last_line = wrapped_blast[last_line_idx];
 
     instructions->content_last_line = last_line_idx;
-    instructions->last_line_length = strlen(last_line) - strlen(BLAST_EXTENDED_MARKER);
+    instructions->last_line_length =
+        strlen(last_line) - strlen(BLAST_EXTENDED_MARKER);
   }
 
   if (blast->attachment != NULL) {

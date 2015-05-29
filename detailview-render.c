@@ -61,8 +61,7 @@ void conch_detailview_render(detailview *v, WINDOW *window, winrect *rect) {
   }
 
   // Render the blast at 0,0 on the pad
-  conch_blast_render(pad, dl, dl->nlines, 0, line_no_width, dl->nlines,
-                     false);
+  conch_blast_render(pad, dl, dl->nlines, 0, line_no_width, dl->nlines, false);
   conch_drawlist_free(dl);
 
   // Flush renders to ncurses internal state.
