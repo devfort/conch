@@ -74,7 +74,7 @@ START_TEST(test_conch_blast_prepare_attachment) {
     .user = "joebloggs",
     .content = "This line is 27 chars long.",
     .posted_at = "two blue moons ago",
-    .attachment = "http://example.com/secretstashofimagesofsomedescription.zip",
+    .attachment = "http://example.com/foo.zip",
   };
 
   instructions = conch_blast_prepare(&b, 40, &nlines, true);
