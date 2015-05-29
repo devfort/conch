@@ -40,7 +40,13 @@ Be very afraid.
 
 To build: `make`.
 
-To install: `sudo make install`. This allows you to run conch from any directory and includes a man page.
+To install: `sudo make install`. This allows you to run conch from any
+directory, and includes a man page.
+
+You can also install to a custom location (which doesn't require
+installing as root):
+
+  make install PREFIX=$USER/local
 
 To run the tests: `make check`.
 
