@@ -15,6 +15,7 @@
 static char const *startup_msgs[] = {
   "reconfiguring display...", "reticulating splines...", "contacting titans...",
   "approaching aural passages...", "monitoring plutonium phase changes...",
+  "leaking memory...",
 };
 
 void conch_conchview_render(conchview *v, WINDOW *w, winrect *rect) {
