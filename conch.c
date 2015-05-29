@@ -195,8 +195,10 @@ int main(int argc, char **argv) {
       current_view_state = cv;
       break;
     case CONCH_DETAIL:
-      current_view = VIEW_DETAIL;
-      current_view_state = dv;
+      if (bl->current != NULL) {
+        current_view = VIEW_DETAIL;
+        current_view_state = dv;
+      }
       break;
     case CONCH_LIST:
       current_view = VIEW_LIST;

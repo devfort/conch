@@ -159,6 +159,10 @@ class TestConchCommand(unittest.TestCase):
         self.press("g")
         self.await_text("Message 1 for test")
 
+    def test_detail_view_should_not_segfault_when_database_is_empty(self):
+        self.wait_for_loading_screen()
+        self.press("Enter")
+
 
 if __name__ == '__main__':
     unittest.main()
