@@ -40,11 +40,26 @@ Be very afraid.
 
 On Linux you'll need to install
 
-  sudo apt-get install libimlib2-dev libcaca-dev libncurses5 liblua5.2-dev
+  sudo apt-get install lbmagickwand-dev libcaca-dev libncurses5 liblua5.2-dev
 
 On OS X you'll need to install
 
   echo Ask Ash what the Homebrew packages are.
+  curl -O http://apt.fort/pool/main/i/imagemagick/imagemagick_6.7.7.10.orig.tar.bz2
+  tar -jxvf imagemagick_6.7.7.10.orig.tar.bz2
+  cd ImageMagick-6.7.7-10/
+  ./configure
+  make
+  make install
+
+Do the next bit if we don't have Homebrew for ImageMagick yet. Or look longingly at Ash more.
+
+  curl -O http://apt.fort/pool/main/i/imagemagick/imagemagick_6.7.7.10.orig.tar.bz2
+  tar -jxvf imagemagick_6.7.7.10.orig.tar.bz2
+  cd ImageMagick-6.7.7-10/
+  ./configure
+  make
+  make install
 
 ## Testing
 
