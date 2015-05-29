@@ -72,13 +72,8 @@ drawlist *conch_blast_prepare(blast *blast, int width, bool display_marker) {
     message = blast->content;
   }
 
-  int nlines = 0;
-  char **wrapped_blast = wrap_lines(message, width);
-
-  // Find NULL at end of lines
-  while (wrapped_blast[nlines]) {
-    nlines++;
-  }
+  unsigned int nlines;
+  char **wrapped_blast = wrap_lines(message, width, &nlines);
 
   // Ensure we have space for another pointer at the end of the list of lines to
   // account for the attribution.

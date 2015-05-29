@@ -116,7 +116,7 @@ int count_lines_and_find_length_of_longest(const char *string,
   return lines + 1;
 }
 
-char **wrap_lines(char *text, int max_line_length) {
+char **wrap_lines(char *text, int max_line_length, unsigned int *nout) {
   char **lines = malloc(1024 * sizeof(char *));
   int lines_required = 0;
   char *start_of_line, *remaining_content;
@@ -157,17 +157,20 @@ char **wrap_lines(char *text, int max_line_length) {
     }
     start_of_line = remaining_content;
   }
-  lines[lines_required] = NULL;
+
+  if (nout != NULL) {
+    *nout = lines_required;
+  }
 
   return lines;
 }
 
-void wrap_lines_free(char **wrapped_lines) {
+void wrap_lines_free(char **wrapped_lines, unsigned int nlines) {
   if (wrapped_lines == NULL) {
     return;
   }
 
-  for (int i = 0; wrapped_lines[i]; i++) {
+  for (int i = 0; i < nlines; i++) {
     free(wrapped_lines[i]);
   }
 

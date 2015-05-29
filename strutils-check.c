@@ -5,6 +5,12 @@
 
 #include "strutils.h"
 
+#define ASSERT_STRARY_EQ(exp_len, act_len, exp_ary, act_ary)                   \
+  ck_assert_int_eq(exp_len, act_len);                                          \
+  for (unsigned int i = 0; i < exp_len; i++) {                                 \
+    ck_assert_str_eq(exp_ary[i], act_ary[i]);                                  \
+  }
+
 START_TEST(test_strcopytrunc) {
   char const *const input = "Hello, world, I am far too long for the screen.";
   char *result;
@@ -85,224 +91,163 @@ START_TEST(
 END_TEST
 
 START_TEST(test_no_wrap_when_text_fits_on_one_line) {
-  char *expected_blast_lines[1024];
-  char **actual_blast_lines;
+  unsigned int nout;
+  char *expected[] = {
+    "We're going to need a bigger boat",
+  };
 
-  int available_width = 42;
+  char **actual = wrap_lines("We're going to need a bigger boat", 42, &nout);
 
-  expected_blast_lines[0] = "We're going to need a bigger boat";
-  expected_blast_lines[1] = NULL;
+  ASSERT_STRARY_EQ(1, nout, expected, actual);
 
-  actual_blast_lines =
-      wrap_lines("We're going to need a bigger boat", available_width);
-  for (int i = 0; expected_blast_lines[i]; i++) {
-    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
-  }
-
-  wrap_lines_free(actual_blast_lines);
+  wrap_lines_free(actual, nout);
 }
 END_TEST
 
 START_TEST(test_lines_wrap_at_13) {
-  char *expected_blast_lines[1024];
-  char **actual_blast_lines;
+  unsigned int nout;
+  char *expected[] = {
+    "We're going", "to need a", "bigger boat",
+  };
 
-  int available_width = 13;
+  char **actual = wrap_lines("We're going to need a bigger boat", 13, &nout);
 
-  expected_blast_lines[0] = "We're going";
-  expected_blast_lines[1] = "to need a";
-  expected_blast_lines[2] = "bigger boat";
-  expected_blast_lines[3] = NULL;
+  ASSERT_STRARY_EQ(3, nout, expected, actual);
 
-  actual_blast_lines =
-      wrap_lines("We're going to need a bigger boat", available_width);
-  for (int i = 0; expected_blast_lines[i]; i++) {
-    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
-  }
-
-  wrap_lines_free(actual_blast_lines);
+  wrap_lines_free(actual, nout);
 }
 END_TEST
 
 START_TEST(test_lines_wrap_at_30) {
-  char *expected_blast_lines[1024];
-  char **actual_blast_lines;
+  unsigned int nout;
+  char *expected[] = {
+    "We're going to need a bigger", "boat",
+  };
 
-  int available_width = 30;
+  char **actual = wrap_lines("We're going to need a bigger boat", 30, &nout);
 
-  expected_blast_lines[0] = "We're going to need a bigger";
-  expected_blast_lines[1] = "boat";
-  expected_blast_lines[2] = NULL;
+  ASSERT_STRARY_EQ(2, nout, expected, actual);
 
-  actual_blast_lines =
-      wrap_lines("We're going to need a bigger boat", available_width);
-  for (int i = 0; expected_blast_lines[i]; i++) {
-    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
-  }
-
-  wrap_lines_free(actual_blast_lines);
+  wrap_lines_free(actual, nout);
 }
 END_TEST
 
 START_TEST(test_wrap_lines_with_multiple_spaces) {
-  char *expected_blast_lines[1024];
-  char **actual_blast_lines;
+  unsigned int nout;
+  char *expected[] = {
+    "We're going to", "need a bigger", "boat",
+  };
 
-  int available_width = 14;
+  char **actual = wrap_lines("We're going to    need a bigger boat", 14, &nout);
 
-  expected_blast_lines[0] = "We're going to";
-  expected_blast_lines[1] = "need a bigger";
-  expected_blast_lines[2] = "boat";
-  expected_blast_lines[3] = NULL;
+  ASSERT_STRARY_EQ(3, nout, expected, actual);
 
-  actual_blast_lines =
-      wrap_lines("We're going to    need a bigger boat", available_width);
-  for (int i = 0; expected_blast_lines[i]; i++) {
-    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
-  }
-
-  wrap_lines_free(actual_blast_lines);
+  wrap_lines_free(actual, nout);
 }
 END_TEST
 
 // probably ideally it would trim a trailing space
 // but for the purposes of this, it doesn't really matter
 START_TEST(test_wrap_lines_lands_on_a_space) {
-  char *expected_blast_lines[1024];
-  char **actual_blast_lines;
+  unsigned int nout;
+  char *expected[] = {
+    "We're going to ", "need a bigger", "boat",
+  };
 
-  int available_width = 15;
+  char **actual = wrap_lines("We're going to    need a bigger boat", 15, &nout);
 
-  expected_blast_lines[0] = "We're going to "; // note the trailing space
-  expected_blast_lines[1] = "need a bigger";
-  expected_blast_lines[2] = "boat";
-  expected_blast_lines[3] = NULL;
+  ASSERT_STRARY_EQ(3, nout, expected, actual);
 
-  actual_blast_lines =
-      wrap_lines("We're going to    need a bigger boat", available_width);
-  for (int i = 0; expected_blast_lines[i]; i++) {
-    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
-  }
-
-  wrap_lines_free(actual_blast_lines);
+  wrap_lines_free(actual, nout);
 }
 END_TEST
 
 START_TEST(test_wrap_lines_with_no_spaces) {
-  char *expected_blast_lines[1024];
-  char **actual_blast_lines;
+  unsigned int nout;
+  char *expected[] = {
+    "You'rego", "ingtonee", "dabigger", "boat",
+  };
 
-  expected_blast_lines[0] = "You'rego";
-  expected_blast_lines[1] = "ingtonee";
-  expected_blast_lines[2] = "dabigger";
-  expected_blast_lines[3] = "boat";
-  expected_blast_lines[4] = NULL;
+  char **actual = wrap_lines("You'regoingtoneedabiggerboat", 8, &nout);
 
-  int available_width = 8;
+  ASSERT_STRARY_EQ(4, nout, expected, actual);
 
-  actual_blast_lines =
-      wrap_lines("You'regoingtoneedabiggerboat", available_width);
-  for (int i = 0; expected_blast_lines[i]; i++) {
-    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
-  }
-
-  wrap_lines_free(actual_blast_lines);
+  wrap_lines_free(actual, nout);
 }
 END_TEST
 
 // We can't accurately test wrapping output because rendering
 // depends on where the string is broken, so just check nothing explodes
 START_TEST(test_wrap_lines_with_odd_unicode_doesnt_explode) {
-  char **actual_blast_lines;
+  unsigned int nout;
 
-  int available_width = 13;
-
-  actual_blast_lines =
+  char **actual =
       wrap_lines("H̕͝ ̛G̢̧̛Ó̧̕D̶͘ ̢ST̶͢ÓP T͠H̷͏E̵̸̛͝ "
-                 "̶́͝P̷͡Ą͠͠͡I̷͟N̶͜!¡!",
-                 available_width);
+                 "P̷͡Ą͠͠͡I̷͟N̶͜!¡!",
+                 13, &nout);
 
-  wrap_lines_free(actual_blast_lines);
+  wrap_lines_free(actual, nout);
 }
 END_TEST
 
 START_TEST(test_wrap_lines_empty_text) {
-  char *expected_blast_lines[1024];
-  char **actual_blast_lines;
+  unsigned int nout;
+  char *expected[] = {
+    "",
+  };
 
-  int available_width = 15;
+  char **actual = wrap_lines("", 15, &nout);
 
-  expected_blast_lines[0] = "";
-  expected_blast_lines[1] = NULL;
+  ASSERT_STRARY_EQ(1, nout, expected, actual);
 
-  actual_blast_lines = wrap_lines("", available_width);
-  for (int i = 0; expected_blast_lines[i]; i++) {
-    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
-  }
-
-  wrap_lines_free(actual_blast_lines);
+  wrap_lines_free(actual, nout);
 }
 END_TEST
 
 START_TEST(test_wrap_lines_null_text) {
-  char *expected_blast_lines[1024];
-  char **actual_blast_lines;
+  unsigned int nout;
+  char *expected[] = {
+    "",
+  };
 
-  int available_width = 15;
+  char **actual = wrap_lines(NULL, 15, &nout);
 
-  expected_blast_lines[0] = "";
-  expected_blast_lines[1] = NULL;
+  ASSERT_STRARY_EQ(1, nout, expected, actual);
 
-  actual_blast_lines = wrap_lines(NULL, available_width);
-  for (int i = 0; expected_blast_lines[i]; i++) {
-    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
-  }
+  wrap_lines_free(actual, nout);
+}
+END_TEST
 
-  wrap_lines_free(actual_blast_lines);
+START_TEST(test_wrap_lines_zero_width) {
+  unsigned int nout;
+  char *expected[] = {
+    "",
+  };
+
+  char **actual = wrap_lines("We're going to need a bigger boat", 0, &nout);
+
+  ASSERT_STRARY_EQ(1, nout, expected, actual);
+
+  wrap_lines_free(actual, nout);
+}
+END_TEST
+
+START_TEST(test_wrap_lines_negative_width) {
+  unsigned int nout;
+  char *expected[] = {
+    "",
+  };
+
+  char **actual = wrap_lines("We're going to need a bigger boat", -5, &nout);
+
+  ASSERT_STRARY_EQ(1, nout, expected, actual);
+
+  wrap_lines_free(actual, nout);
 }
 END_TEST
 
 START_TEST(test_wrap_lines_free) {
-  char **actual_blast_lines = NULL;
-  wrap_lines_free(actual_blast_lines);
-}
-END_TEST
-
-START_TEST(test_lines_wrap_zero_length_passed) {
-  char *expected_blast_lines[1024];
-  char **actual_blast_lines;
-
-  int available_width = 0;
-
-  expected_blast_lines[0] = "";
-  expected_blast_lines[1] = NULL;
-
-  actual_blast_lines =
-      wrap_lines("We're going to need a bigger boat", available_width);
-  for (int i = 0; expected_blast_lines[i]; i++) {
-    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
-  }
-
-  wrap_lines_free(actual_blast_lines);
-}
-END_TEST
-
-START_TEST(test_lines_wrap_negative_length_passed) {
-  char *expected_blast_lines[1024];
-  char **actual_blast_lines;
-
-  int available_width = -5;
-
-  expected_blast_lines[0] = "";
-  expected_blast_lines[1] = NULL;
-
-  actual_blast_lines =
-      wrap_lines("We're going to need a bigger boat", available_width);
-  for (int i = 0; expected_blast_lines[i]; i++) {
-    ck_assert_str_eq(expected_blast_lines[i], actual_blast_lines[i]);
-  }
-
-  wrap_lines_free(actual_blast_lines);
+  wrap_lines_free(NULL, 0);
 }
 END_TEST
 
@@ -349,8 +294,9 @@ Suite *strutils_suite(void) {
   ADD_TEST_CASE(s, test_wrap_lines_free);
   ADD_TEST_CASE(s, test_wrap_lines_with_no_spaces);
   ADD_TEST_CASE(s, test_wrap_lines_with_odd_unicode_doesnt_explode);
-  ADD_TEST_CASE(s, test_lines_wrap_zero_length_passed);
-  ADD_TEST_CASE(s, test_lines_wrap_negative_length_passed);
+  ADD_TEST_CASE(s, test_wrap_lines_zero_width);
+  ADD_TEST_CASE(s, test_wrap_lines_negative_width);
+  ADD_TEST_CASE(s, test_wrap_lines_free);
 
   return s;
 }
