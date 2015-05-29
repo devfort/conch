@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Example post receive hook to run on clonque or information radiator
+# put in your source repo in the as hooks/post-receive and chown +x
+
+# `blast` will need to be built from conch and installed on the $PATH
+
+while read old_ref new_ref ref_name
+do
+  if [ "refs/heads/master" = "${ref_name}" ]
+  then
+    message=$(git log --format="%h: %s" -n 1 ${new_ref})
+    user=$(git log --format="%aN" -n 1 ${new_ref})
+    blast -u ${user} --extended=<(git log -n 1 "${new_ref}") "${message}"
+  fi
+done
