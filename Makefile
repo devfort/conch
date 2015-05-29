@@ -60,8 +60,8 @@ INSTALLDIRS = $(DESTDIR)$(man1dir) $(DESTDIR)$(bindir)
 
 install: $(BINS) $(MANPAGES)
 	install -d $(INSTALLDIRS)
-	install -t $(DESTDIR)$(bindir) $(BINS)
-	install -t $(DESTDIR)$(man1dir) $(MANPAGES)
+	install $(BINS) $(DESTDIR)$(bindir)
+	install $(MANPAGES) $(DESTDIR)$(man1dir)
 
 busy_loop:
 	while true; do git pull && (make conch || make clean conch) && ./conch -c conchrc.example -s; sleep 1; done
