@@ -8,3 +8,54 @@ database = "bugle"
 -- as it's created by the django migrations
 username = "subversion"
 page_size = 42
+
+-- example clock customisation
+-- if you want a fuzzy emoji clock uncomment the 
+-- definition of clock_format_func
+-- or write your own fun interpretation of time
+
+-- clock_format_func = function()
+--  return emoji_clock()
+-- end
+
+hours = {
+  "🕐",
+  "🕑",
+  "🕒",
+  "🕓",
+  "🕔",
+  "🕕",
+  "🕖",
+  "🕗",
+  "🕘",
+  "🕙",
+  "🕚",
+  "🕛",
+}
+
+half_hours = {
+  "🕜",
+  "🕝",
+  "🕞",
+  "🕟",
+  "🕠",
+  "🕡",
+  "🕢",
+  "🕣",
+  "🕤",
+  "🕥",
+  "🕦",
+  "🕧",
+}
+
+emoji_clock = function()
+  hour = tonumber(os.date("%H")) % 12
+  min = tonumber(os.date("%M"))
+  if min < 15 then
+    return hours[hour] .. " "
+  elseif min < 45 then
+    return half_hours[hour] .. " "
+  else
+    return hours[(hour + 1) % 12] .. " "
+  end
+end
