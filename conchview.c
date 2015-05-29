@@ -8,7 +8,7 @@
 conchview *conch_conchview_new(conch_cli_options const *opts) {
   conchview *v = calloc(1, sizeof(conchview));
 
-  v->gif = anigif_new("rsrc/piano.gif");
+  v->gif = anigif_new("rsrc/conch-emoji.png");
 
   return v;
 }

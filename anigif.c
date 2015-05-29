@@ -32,16 +32,26 @@ void render_wand_to_screen(MagickWand *wand, WINDOW *window, winrect *rect) {
   size_t im_cols = MagickGetImageWidth(wand);
   size_t im_rows = MagickGetImageHeight(wand);
 
-  int lines = rect->height;
-  int cols = rect->width;
+  float lines = rect->height;
+  float cols = rect->width;
 
-  float im_aspect = (float)im_cols / (float)(im_rows * CHARACTER_ASPECT_RATIO);
+  float im_aspect = (float)im_cols / (float)im_rows;
+  float rect_aspect = (float)cols / (float)lines;
 
-  int chk_lines = cols * im_aspect;
-  if (chk_lines > lines) {
-    cols = lines / im_aspect;
+  if (im_aspect > rect_aspect) {
+    lines = (cols / 2) * im_aspect;
+
+    if (rect->height < lines) {
+      lines = rect->height;
+      cols = lines / im_aspect;
+    }
   } else {
-    lines = chk_lines;
+    cols = (lines * 2) * im_aspect;
+
+    if (rect->width < cols) {
+      cols = rect->width;
+      lines = (cols / 2) / im_aspect;
+    }
   }
 
   int rmask = 0x00ff0000;
@@ -57,7 +67,7 @@ void render_wand_to_screen(MagickWand *wand, WINDOW *window, winrect *rect) {
   MagickExportImagePixels(wand, 0, 0, im_cols, im_rows, "BGRA", CharPixel,
                           pixels);
 
-  caca_canvas_t *cv = caca_create_canvas(rect->top, rect->left);
+  caca_canvas_t *cv = caca_create_canvas(0, 0);
   caca_set_canvas_size(cv, cols, lines);
   caca_clear_canvas(cv);
   caca_set_dither_algorithm(dither, "none");
