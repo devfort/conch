@@ -67,20 +67,22 @@ void conch_listview_jump_to_next_unread(listview *lv) {
 }
 
 void conch_listview_select_next_blast(listview *lv) {
-  if (lv->blasts->current == NULL) {
+  if (lv->blasts->current == NULL || lv->blasts->current->next == NULL) {
     return;
   }
-  if (lv->blasts->current->next) {
-    if (lv->blasts->current == lv->bottom) {
-      lv->bottom = lv->bottom->next;
-      lv->render_from_bottom = true;
-    }
-    lv->blasts->current = lv->blasts->current->next;
-  }
-  if (lv->render_overflow && lv->bottom == lv->blasts->current) {
+
+  lv->blasts->current = lv->blasts->current->next;
+
+  if (lv->bottom == lv->blasts->current->prev) {
+    // We've moved the cursor past the bottom of the screen.
+    lv->bottom = lv->blasts->current;
+    lv->render_from_bottom = true;
+  } else if (lv->bottom == lv->blasts->current && lv->render_overflow) {
+    // We've moved the cursor to the last blast, which is partially rendered.
     lv->render_from_bottom = true;
   }
-  lv->at_head = (lv->blasts->current->prev == NULL);
+
+  lv->at_head = false;
 }
 
 void conch_listview_jump_to_bottom(listview *lv) {
@@ -93,23 +95,26 @@ void conch_listview_jump_to_bottom(listview *lv) {
 }
 
 void conch_listview_select_prev_blast(listview *lv) {
-  if (lv->blasts->current == NULL) {
+  if (lv->blasts->current == NULL || lv->blasts->current->prev == NULL) {
     return;
   }
-  if (lv->blasts->current->prev) {
-    bool current_is_latest_read = (lv->latest_read == lv->blasts->current);
-    if (lv->blasts->current == lv->top) {
-      lv->top = lv->top->prev;
-      lv->render_from_bottom = false;
-    }
-    lv->blasts->current = lv->blasts->current->prev;
-    if (current_is_latest_read) {
-      lv->latest_read = lv->blasts->current;
-    }
-  }
-  if (lv->render_overflow && lv->top == lv->blasts->current) {
+
+  lv->blasts->current = lv->blasts->current->prev;
+
+  if (lv->top == lv->blasts->current->next) {
+    // We've moved the cursor past the top of the screen.
+    lv->top = lv->blasts->current;
+    lv->render_from_bottom = false;
+  } else if (lv->top == lv->blasts->current && lv->render_overflow) {
+    // We've moved the cursor to the first blast, which is partially rendered.
     lv->render_from_bottom = false;
   }
+
+  // If we were at the latest read blast before moving, update latest read.
+  if (lv->latest_read == lv->blasts->current->next) {
+    lv->latest_read = lv->blasts->current;
+  }
+
   lv->at_head = (lv->blasts->current->prev == NULL);
 }
 
