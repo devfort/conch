@@ -171,7 +171,7 @@ void conch_listview_create_blast(listview *lv) {
   mvhline(max_y - 1, 0, ' ', max_x);
   mvaddstr(max_y - 1, 0, ":");
   move(max_y - 1, 1);
-  wrefresh(curscr);
+  wnoutrefresh(curscr);
 
   conch_getstr_input_config();
 
@@ -200,7 +200,7 @@ bool conch_listview_search_forward(listview *lv) {
   mvhline(max_y - 1, 0, ' ', max_x);
   mvaddstr(max_y - 1, 0, "/");
   move(max_y - 1, 1);
-  wrefresh(curscr);
+  wnoutrefresh(curscr);
 
   conch_getstr_input_config();
 

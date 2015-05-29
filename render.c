@@ -148,11 +148,8 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
   int max_x = getmaxx(window);
   int max_y = getmaxy(window);
 
-  werase(window);
-
   if (max_y < 2 * CHROME_BORDER_HEIGHT) {
     mvwaddstr(window, ORIGIN_Y, ORIGIN_X, "Window too small! Embiggen!");
-    wrefresh(window);
     return;
   }
 
@@ -195,6 +192,4 @@ void render_view(WINDOW *window, view_type current_view, void *view_state) {
                       "unread  /: search  q: quit ");
 
   render_watermark(window, show_spinner);
-
-  wrefresh(window);
 }

@@ -10,7 +10,7 @@ char *expand_home(const char *path);
 
 int count_lines_and_find_length_of_longest(const char *string,
                                            int *out_longest_line);
-char **wrap_lines(char *text, int width, unsigned int *nlines);
+char **wrap_lines(char const *const text, int width, unsigned int *nlines);
 void wrap_lines_free(char **wrapped_lines, unsigned int nlines);
 
 #endif /* _DUTCH_PATISSERIE_DELICACIES_H */

@@ -158,9 +158,9 @@ static char **appendline(char **lines, unsigned int *nlines, char *l, char *r) {
  *
  * Writes the number of wrapped lines to the pointer `nlines`.
  */
-char **wrap_lines(char *text, int width, unsigned int *nlines) {
-  char *cursl = text;
-  char *cursr = text;
+char **wrap_lines(char const *const text, int width, unsigned int *nlines) {
+  char *cursl = (char *)text;
+  char *cursr = (char *)text;
   char *lastbreak = NULL;
   char **result = NULL;
 

@@ -9,6 +9,7 @@
 #include "cli.h"
 #include "colors.h"
 #include "config.h"
+#include "help.h"
 #include "keys.h"
 #include "conchview-render.h"
 #include "conchview.h"
@@ -24,6 +25,7 @@
 #define SPLASH_DELAY 20
 
 static bool toggle_conchview;
+static bool display_help;
 extern mouthpiece *conn;
 
 WINDOW *init_screen() {
@@ -173,12 +175,25 @@ int main(int argc, char **argv) {
       ungetch('@');
     }
 
+    werase(win);
     render_view(win, current_view, current_view_state);
+    // Flush view renders to window virtual buffer. If we don't do this,
+    // pad refreshes have no effect.
+    wnoutrefresh(win);
+    if (display_help) {
+      conch_help_render(win);
+    }
+    wrefresh(win);
 
     int key = wgetch(win);
 
     if (lv->bottom != NULL && lv->bottom->next == NULL) {
       update_old_blasts(conn, bl);
+    }
+
+    if (key == '?') {
+      display_help = !display_help;
+      continue;
     }
 
     // Annoying special case.

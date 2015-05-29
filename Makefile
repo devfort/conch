@@ -84,6 +84,7 @@ conch: \
   detailview.o \
   detailview-render.o \
   explode.o \
+  help.o \
 	keys.o \
   listview-keys.o \
   listview.o \
