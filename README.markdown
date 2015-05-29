@@ -38,6 +38,9 @@ Be very afraid.
 
 ## Installing
 
+  make check all # run tests and build conch
+  sudo make install # installs binaries and man pages
+
 On Linux you'll need to install the packages that are listed in the [Vagrantfile](/Vagrantfile)
 (or just use the vagrant VM).
 
