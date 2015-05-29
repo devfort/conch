@@ -23,6 +23,10 @@ keypress_result conch_detailview_keypress_dispatch(int key, detailview *v) {
   case KEY_RIGHT:
     conch_detailview_scroll_code_right(v);
     break;
+  case 'e':
+  case 'v':
+    conch_detailview_edit_code_snippet(v);
+    break;
   case '\r':
   case '\n':
     return CONCH_EXIT_DETAIL;

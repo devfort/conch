@@ -22,4 +22,6 @@ void conch_detailview_scroll_up(detailview *v);
 void conch_detailview_scroll_code_left(detailview *v);
 void conch_detailview_scroll_code_right(detailview *v);
 
+void conch_detailview_edit_code_snippet(detailview *v);
+
 #endif /* _DETAILVIEW_H */
