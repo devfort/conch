@@ -7,9 +7,13 @@
 
 #include <curl/curl.h>
 
-void conch_webfetcher_init() { curl_global_init(CURL_GLOBAL_ALL); }
+void conch_webfetcher_init() {
+  curl_global_init(CURL_GLOBAL_ALL);
+}
 
-void conch_webfetcher_cleanup() { curl_global_cleanup(); }
+void conch_webfetcher_cleanup() {
+  curl_global_cleanup();
+}
 
 // This is a callback function called by curl when it has read a chunk of data.
 // Curl needs us to return the number of bytes dealt with and if it doesn't

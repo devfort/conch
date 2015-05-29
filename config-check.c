@@ -50,7 +50,7 @@ START_TEST(test_unreadable_config) {
   } else {
     caught = true;
   }
-  
+
   ck_assert_msg(caught, "fatal error was not called");
 }
 END_TEST

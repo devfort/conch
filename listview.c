@@ -249,4 +249,6 @@ void conch_listview_page_up(listview *lv) {
   }
 }
 
-void conch_listview_free(listview *lv) { free(lv); }
+void conch_listview_free(listview *lv) {
+  free(lv);
+}

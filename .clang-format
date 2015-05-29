@@ -5,6 +5,7 @@
 #
 BasedOnStyle: Mozilla
 Language: Cpp
+AllowShortFunctionsOnASingleLine: Empty
 AllowAllParametersOfDeclarationOnNextLine: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: false
 IndentCaseLabels: false

@@ -120,12 +120,20 @@ static void render_chrome(WINDOW *window, char *title_text) {
   mvwaddstr(window, ORIGIN_Y, CHROME_PADDING_X, title_text);
 }
 
-void conch_status_clear() { status[0] = '\0'; }
+void conch_status_clear() {
+  status[0] = '\0';
+}
 
-void conch_status_set(const char *msg) { strncpy(status, msg, STATUS_MAXLEN); }
+void conch_status_set(const char *msg) {
+  strncpy(status, msg, STATUS_MAXLEN);
+}
 
-void conch_spinner_hide() { show_spinner = false; }
-void conch_spinner_show() { show_spinner = true; }
+void conch_spinner_hide() {
+  show_spinner = false;
+}
+void conch_spinner_show() {
+  show_spinner = true;
+}
 
 static void render_status_message(WINDOW *window) {
   size_t len = strlen(status);

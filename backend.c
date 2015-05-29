@@ -107,7 +107,9 @@ void conch_let_silence_fall(mouthpiece *mp) {
   PQsetNoticeProcessor(mp->connection, defaultNoticeProcessor, NULL);
 }
 
-static uint32_t pg_char_to_int(char *s) { return ntohl(*((int32_t *)s)); }
+static uint32_t pg_char_to_int(char *s) {
+  return ntohl(*((int32_t *)s));
+}
 
 static resultset *pg_result_to_resultset(mouthpiece *mp,
                                          PGresult *query_result) {

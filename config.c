@@ -14,7 +14,6 @@
 #include "strutils.h"
 #include "explode.h"
 
-
 // This is exposed as global so various* views can get at it
 // * currently just the listview for posting
 mouthpiece *conn;
@@ -27,8 +26,7 @@ static int everybody_panic(lua_State *L) {
   longjmp(savepoint, 1);
 }
 
-void generate_clock_text(int time_str_limit,
-                                char *time_str) {
+void generate_clock_text(int time_str_limit, char *time_str) {
   if (use_lua) {
     lua_getglobal(L, "clock_format_func");
     int idx = lua_gettop(L);
@@ -57,7 +55,7 @@ static void parse_config(const char *filename, settings *settings) {
 
   lua_CFunction panic = everybody_panic;
   lua_atpanic(L, panic);
-  
+
   luaL_openlibs(L);
   if (luaL_dofile(L, filename)) {
     fatal_error("config: Couldn't read config file %s", filename);
@@ -91,7 +89,8 @@ static bool use_config(const char *filename) {
     return true;
   } else {
     if (!strcmp(filename, DEFAULT_CONFIG_LOCATION)) {
-      fatal_error("Couldn't read config file %s: %s", filename, strerror(errno));
+      fatal_error("Couldn't read config file %s: %s", filename,
+                  strerror(errno));
     }
     return false;
   }
