@@ -32,7 +32,7 @@
 
 # Conch
 
-Conch is an ncurses client for Bugle, written in C.
+Conch is an ncurses client for [Bugle](https://github.com/devfort/bugle), written in C.
 
 Be very afraid.
 
