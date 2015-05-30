@@ -194,7 +194,6 @@ START_TEST(test_wrap_lines_with_no_spaces) {
 }
 END_TEST
 
-/*
 START_TEST(test_wrap_lines_preserves_newlines) {
   unsigned int nout;
   char *expected[] = {
@@ -209,7 +208,6 @@ START_TEST(test_wrap_lines_preserves_newlines) {
   wrap_lines_free(actual, nout);
 }
 END_TEST
-*/
 
 // We can't accurately test wrapping output because rendering
 // depends on where the string is broken, so just check nothing explodes
@@ -323,13 +321,13 @@ Suite *strutils_suite(void) {
   ADD_TEST_CASE(s, test_lines_wrap_at_13);
   ADD_TEST_CASE(s, test_lines_wrap_at_30);
   ADD_TEST_CASE(s, test_wrap_lines_with_multiple_spaces);
-  //ADD_TEST_CASE(s, test_wrap_lines_does_not_strip_leading_spaces);
+  // ADD_TEST_CASE(s, test_wrap_lines_does_not_strip_leading_spaces);
   ADD_TEST_CASE(s, test_wrap_lines_lands_on_a_space);
   ADD_TEST_CASE(s, test_wrap_lines_empty_text);
   ADD_TEST_CASE(s, test_wrap_lines_null_text);
   ADD_TEST_CASE(s, test_wrap_lines_free);
   ADD_TEST_CASE(s, test_wrap_lines_with_no_spaces);
-  //ADD_TEST_CASE(s, test_wrap_lines_preserves_newlines);
+  ADD_TEST_CASE(s, test_wrap_lines_preserves_newlines);
   ADD_TEST_CASE(s, test_wrap_lines_with_odd_unicode_doesnt_explode);
   ADD_TEST_CASE(s, test_wrap_lines_zero_width);
   ADD_TEST_CASE(s, test_wrap_lines_negative_width);

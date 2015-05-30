@@ -147,6 +147,12 @@ char **wrap_lines(char *text, int max_line_length, unsigned int *nout) {
       }
     }
 
+    char *newline = strstr(start_of_line, "\n");
+
+    if (NULL != newline) {
+      remaining_content = newline;
+    }
+
     strncat(line, start_of_line, remaining_content - start_of_line);
 
     lines[lines_required] = line;
