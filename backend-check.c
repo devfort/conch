@@ -27,6 +27,9 @@ START_TEST(test_can_connect_and_disconnect) {
 }
 END_TEST
 
+/*
+* Test cannot work off fort
+*
 START_TEST(test_can_connect_and_disconnect_production) {
   settings settings = {.page_size = 10,
                        .database = "bugle",
@@ -36,6 +39,7 @@ START_TEST(test_can_connect_and_disconnect_production) {
   conch_disconnect(mp);
 }
 END_TEST
+*/
 
 START_TEST(test_can_retrieve_most_recent) {
   settings settings = {.page_size = 10 };
@@ -254,10 +258,14 @@ END_TEST
 Suite *backend_suite(void) {
   Suite *s = suite_create("backend");
 
+  /*
+  * Test cannot work off fort
+  *
   TCase *tc = tcase_create("test_can_connect_and_disconnect_production");
   tcase_set_timeout(tc, 6);
   tcase_add_test(tc, test_can_connect_and_disconnect_production);
   suite_add_tcase(s, tc);
+  */
 
   ADD_TEST_CASE(s, test_can_connect_and_disconnect);
   ADD_TEST_CASE(s, test_can_retrieve_most_recent);
