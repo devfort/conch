@@ -180,15 +180,15 @@ psycopg2: venv/lib/python3.4/site-packages/psycopg2
 %-check.o: %-check.c
 	@mkdir -p $(DEPS)
 	@echo "CC  $@"
-	# $@: target
-	# $<: first prereq
+	@# $@: target
+	@# $<: first prereq
 	$(SILENT)$(CC) -o $@ -c $< $(CFLAGS_TEST) \
 		-MMD -MF $(DEPS)/$(notdir $(patsubst %.c,%.d,$<))
 
 %-check: %-check.o
 	@echo "LD  $@"
-	# $^: all prereqs
-	# we filter only those prereqs that match "%.o" i.e. are object files
+	@# $^: all prereqs
+	@# we filter only those prereqs that match "%.o" i.e. are object files
 	$(SILENT)$(CC) -o $@ $(filter %.o,$^) $(LDFLAGS_TEST)
 
 %.o: %.c
