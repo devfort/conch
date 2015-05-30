@@ -249,4 +249,5 @@ terminate:
   conch_listview_free(lv);
   conch_disconnect(conn);
   conch_webfetcher_cleanup();
+  MagickWandTerminus();
 }
