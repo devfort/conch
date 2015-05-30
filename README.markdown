@@ -46,7 +46,7 @@ directory, and includes a man page.
 You can also install to a custom location (which doesn't require
 installing as root):
 
-  make install PREFIX=$USER/local
+    make install PREFIX=$USER/local
 
 To run the tests: `make check`.
 
@@ -54,8 +54,8 @@ To run the tests: `make check`.
 
 You'll need to install various packages. We suggest using homebrew:
 
-  echo Ask Ash what the Homebrew packages are.
-  brew install ImageMagick libcaca ncurses libpq lua52 libcurl4 check
+    echo Ask Ash what the Homebrew packages are.
+    brew install ImageMagick libcaca ncurses libpq lua52 libcurl4 check
 
 ### Linux (using vagrant)
 
@@ -95,16 +95,16 @@ database to connect as a superuser, which is considered unwise.
 Conch connects to a postgres database. Once everything is set up,
 you just do:
 
-  conch
+    conch
 
 This should work out of the box at a fort, but in other places you'll
 need to at least override the hostname of the database:
 
-  conch -H your.database.server
+    conch -H your.database.server
 
 You may also need to change the database name from the default ("bugle"):
 
-  conch -d your-dbname
+    conch -d your-dbname
 
 ### Setting up your postgres database for development
 
@@ -112,9 +112,9 @@ With postgres on your local machine set up for testing (for which, see
 above), you want a database called "bugle" with the correct database
 schema:
 
-  createdb -O bugle bugle
-  psql -h localhost -U bugle bugle < rsrc/schema.sql
-  psql -h localhost -U bugle bugle < rsrc/add-trigger.sql
+    createdb -O bugle bugle
+    psql -h localhost -U bugle bugle < rsrc/schema.sql
+    psql -h localhost -U bugle bugle < rsrc/add-trigger.sql
 
 The first `psql` command is the schema, the second is a custom SQL
 trigger which we use to detect when there are new blasts available.
@@ -127,15 +127,15 @@ run the command above.)
 
 You then want to create a bugle user in that database:
 
-  psql -h localhost -U bugle bugle -c \
-  "INSERT INTO auth_user (id, username, first_name, last_name, email, password, is_staff, is_superuser, is_active, last_login, date_joined) VALUES (1, 'myusername', '', '', '', '', false, false, true, NOW(), NOW())"
+    psql -h localhost -U bugle bugle -c \
+    "INSERT INTO auth_user (id, username, first_name, last_name, email, password, is_staff, is_superuser, is_active, last_login, date_joined) VALUES (1, 'myusername', '', '', '', '', false, false, true, NOW(), NOW())"
 
 (The database schema is compatible with the bugle web app, which means
 there are lots of fields not used by conch. Sorry about that.)
 
 You can then run conch connecting to this database using this username:
 
-  conch -u myusername -H localhost
+    conch -u myusername -H localhost
 
 ### Setting up a postgres database for production
 
@@ -167,16 +167,16 @@ it will only be able to modify the bugle database itself(+).
 
 To do that you want the following in your `pg_hba.conf`:
 
-  host all bugle 0.0.0.0/0 trust
+    host all bugle 0.0.0.0/0 trust
 
 Then restart your postgres server.
 
 Then create the user and database, and set up the database schema:
 
-  createuser bugle
-  createdb -O bugle bugle
-  psql -U bugle bugle < rsrc/schema.sql
-  psql -U bugle bugle < rsrc/add-trigger.sql
+    createuser bugle
+    createdb -O bugle bugle
+    psql -U bugle bugle < rsrc/schema.sql
+    psql -U bugle bugle < rsrc/add-trigger.sql
 
 Finally you need to create users as required using the `INSERT INTO`
 SQL command given earlier. Conch doesn't support per-user
