@@ -122,6 +122,7 @@ listview-check: \
 	config.o \
 	detailview-keys.o \
 	detailview.o \
+	detailview-thread.o \
 	explode.o \
 	keys.o \
 	listview-keys.o \
