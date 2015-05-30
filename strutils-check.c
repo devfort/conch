@@ -148,7 +148,7 @@ START_TEST(test_wrap_lines_with_multiple_spaces) {
 END_TEST
 
 /*
-START_TEST(test_wrap_lines_does_not_strip_leading_spaces) {
+START_TEST(test_wrap_lines_does_not_strip_spaces_after_newline) {
   unsigned int nout;
   char *expected[] = {
     "      We're going to need", "      a bigger boat",
@@ -321,7 +321,7 @@ Suite *strutils_suite(void) {
   ADD_TEST_CASE(s, test_lines_wrap_at_13);
   ADD_TEST_CASE(s, test_lines_wrap_at_30);
   ADD_TEST_CASE(s, test_wrap_lines_with_multiple_spaces);
-  // ADD_TEST_CASE(s, test_wrap_lines_does_not_strip_leading_spaces);
+  // ADD_TEST_CASE(s, test_wrap_lines_does_not_strip_spaces_after_newline);
   ADD_TEST_CASE(s, test_wrap_lines_lands_on_a_space);
   ADD_TEST_CASE(s, test_wrap_lines_empty_text);
   ADD_TEST_CASE(s, test_wrap_lines_null_text);
