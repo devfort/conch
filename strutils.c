@@ -158,8 +158,12 @@ char **wrap_lines(char *text, int max_line_length, unsigned int *nout) {
     lines[lines_required] = line;
     lines_required++;
 
-    while ((0 < strlen(remaining_content)) && isspace(*remaining_content)) {
+    if (newline) {
       remaining_content++;
+    } else {
+      while ((0 < strlen(remaining_content)) && isspace(*remaining_content)) {
+        remaining_content++;
+      }
     }
     start_of_line = remaining_content;
   }
