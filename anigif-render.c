@@ -66,6 +66,7 @@ void render_wand_to_screen(MagickWand *wand, WINDOW *window, winrect *rect) {
 
   mvw_ncurses_display(window, rect->top + start_y, rect->left + start_x, cv);
 
+  caca_free_dither(dither);
   caca_free_canvas(cv);
   free(pixels);
 }
