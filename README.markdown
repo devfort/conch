@@ -55,7 +55,7 @@ To run the tests: `make check`.
 You'll need to install various packages. We suggest using homebrew:
 
     echo Ask Ash what the Homebrew packages are.
-    brew install ImageMagick libcaca ncurses libpq lua52 libcurl4 check
+    brew install ImageMagick libcaca libpq lua check
 
 ### Linux (using vagrant)
 
