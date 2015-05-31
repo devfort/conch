@@ -44,6 +44,9 @@ START_TEST(test_unreadable_config) {
   // this file should not have read permission
   creat(unreadable, O_CREAT | O_TRUNC | S_IWUSR);
 
+  // this test is linked with check-explode.o instead of explode.o
+  // which mocks fatal_error to longjmp back to check_jump
+  // jmp_buf checkjump is allocated in checkrunner.h
   if (setjmp(check_jump) == 0) {
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-but-set-variable"
