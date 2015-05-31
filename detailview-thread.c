@@ -11,10 +11,13 @@
 void conch_detailview_fetchattachment(detailview *v) {
   v->attachment = conch_webfetcher_get(v->blastlist->current->attachment);
 
+  if (v->attachment == NULL || !v->attachment->success) {
+    return;
+  }
+
   // If we have an attachment and it's Content-Type from the server is
   // image/* then try to display it
-  if (v->attachment &&
-      strncmp(v->attachment->content_type, "image/", strlen("image/")) == 0) {
+  if (strncmp(v->attachment->content_type, "image/", strlen("image/")) == 0) {
     v->anigif = anigif_new_from_blob(v->attachment->content,
                                      v->attachment->content_length);
   }
@@ -32,11 +35,14 @@ void *fetch_func(void *p) {
 
   result->attachment = conch_webfetcher_get(v->blastlist->current->attachment);
 
+  if (result->attachment == NULL || !result->attachment->success) {
+    return NULL;
+  }
+
   // If we have an attachment and it's Content-Type from the server is
   // image/* then try to display it
-  if (result->attachment &&
-      strncmp(result->attachment->content_type, "image/", strlen("image/")) ==
-          0) {
+  if (strncmp(result->attachment->content_type, "image/", strlen("image/")) ==
+      0) {
     result->anigif = anigif_new_from_blob(result->attachment->content,
                                           result->attachment->content_length);
   }
